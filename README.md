@@ -1,2 +1,4 @@
 # UsefulCodes
-Some useful codes provided
+
+此工程下用于存放一些平时开发中容易使用到的代码。便于需要时直接进行使用。
+

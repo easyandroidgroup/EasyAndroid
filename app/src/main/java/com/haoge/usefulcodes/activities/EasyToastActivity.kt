@@ -5,7 +5,7 @@ import android.widget.Toast
 import butterknife.OnClick
 import com.haoge.usefulcodes.BaseActivity
 import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.components.EasyToast
+import com.haoge.usefulcodes.utils.easy.EasyToast
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

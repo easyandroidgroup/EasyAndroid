@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.components
+package com.haoge.usefulcodes.utils.easy
 
 import android.annotation.SuppressLint
 import android.os.Looper
@@ -18,7 +18,7 @@ import com.haoge.usefulcodes.utils.cache.SingleCache
 class EasyToast private constructor(private val toast: Toast, private val tv: TextView?, private val isDefault: Boolean) {
 
     fun show(resId:Int) {
-        show(SingleCache.context!!.getString(resId))
+        show(SingleCache.getApplicationContext().getString(resId))
     }
 
     fun show(message:String) {
@@ -54,16 +54,16 @@ class EasyToast private constructor(private val toast: Toast, private val tv: Te
         private fun default(): EasyToast {
             checkThread()
             @SuppressLint("ShowToast")
-            val toast = Toast.makeText(SingleCache.context, "", Toast.LENGTH_SHORT)
+            val toast = Toast.makeText(SingleCache.getApplicationContext(), "", Toast.LENGTH_SHORT)
             return EasyToast(toast, null, true)
         }
 
         @JvmStatic
         fun create(layoutId: Int, tvId: Int, duration: Int): EasyToast {
             checkThread()
-            val container = LayoutInflater.from(SingleCache.context).inflate(layoutId, null)
+            val container = LayoutInflater.from(SingleCache.getApplicationContext()).inflate(layoutId, null)
             val tv:TextView = container.findViewById(tvId)
-            val toast = Toast(SingleCache.context)
+            val toast = Toast(SingleCache.getApplicationContext())
             toast.view = container
             toast.duration = duration
             return EasyToast(toast, tv, false)

@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.components
+package com.haoge.usefulcodes.utils.safe
 
 import android.app.Activity
 import android.app.Dialog
@@ -14,7 +14,7 @@ import com.haoge.usefulcodes.utils.cache.SingleCache
  *
  * AUTHOR: haoge
  */
-object SafeDialogHandle {
+object SafeDialog {
 
     fun safeShowDialog(dialog: Dialog) {
         if (Looper.myLooper() == Looper.getMainLooper()) {

@@ -6,8 +6,8 @@ import android.widget.*
 import butterknife.OnClick
 import com.haoge.usefulcodes.BaseActivity
 import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.components.EasyToast
-import com.haoge.usefulcodes.utils.tools.DimenConverter
+import com.haoge.usefulcodes.utils.easy.EasyToast
+import com.haoge.usefulcodes.utils.easy.EasyDimension
 
 /**
  * @author haoge on 2018/5/10
@@ -18,7 +18,7 @@ class DimenConverterActivity:BaseActivity() {
     val mShown:TextView by lazy { findViewById<TextView>(R.id.shown_tv) }
     val mSelector:RadioGroup by lazy { findViewById<RadioGroup>(R.id.selector) }
 
-    var mDimenConverter:DimenConverter? = null
+    var mEasyDimension: EasyDimension? = null
     var value:Float = 0.0f
     var unitName:String = ""
 
@@ -40,7 +40,7 @@ class DimenConverterActivity:BaseActivity() {
             else -> Pair(TypedValue.COMPLEX_UNIT_PX, "PX")
         }
         unitName = name
-        mDimenConverter = DimenConverter.create(value, unit)
+        mEasyDimension = EasyDimension.create(value, unit)
         mShown.text = "转换器创建成功，数值为${value}单位为$unitName"
     }
 
@@ -49,7 +49,7 @@ class DimenConverterActivity:BaseActivity() {
         if (checkConverterCreated()) {
             val result = """
                 >原始数值为${value}单位为$unitName
-                >转换后数值为${mDimenConverter?.toPX()}单位为PX
+                >转换后数值为${mEasyDimension?.toPX()}单位为PX
             """.trimMargin(">")
             mShown.text = result
         }
@@ -60,7 +60,7 @@ class DimenConverterActivity:BaseActivity() {
         if (checkConverterCreated()) {
             val result = """
                 >原始数值为${value}单位为$unitName
-                >转换后数值为${mDimenConverter?.toSP()}单位为SP
+                >转换后数值为${mEasyDimension?.toSP()}单位为SP
             """.trimMargin(">")
             mShown.text = result
         }
@@ -71,7 +71,7 @@ class DimenConverterActivity:BaseActivity() {
         if (checkConverterCreated()) {
             val result = """
                 >原始数值为${value}单位为$unitName
-                >转换后数值为${mDimenConverter?.toDIP()}单位为DIP
+                >转换后数值为${mEasyDimension?.toDIP()}单位为DIP
             """.trimMargin(">")
             mShown.text = result
         }
@@ -82,7 +82,7 @@ class DimenConverterActivity:BaseActivity() {
         if (checkConverterCreated()) {
             val result = """
                 >原始数值为${value}单位为$unitName
-                >转换后数值为${mDimenConverter?.toPT()}单位为PT
+                >转换后数值为${mEasyDimension?.toPT()}单位为PT
             """.trimMargin(">")
             mShown.text = result
         }
@@ -93,7 +93,7 @@ class DimenConverterActivity:BaseActivity() {
         if (checkConverterCreated()) {
             val result = """
                 >原始数值为${value}单位为$unitName
-                >转换后数值为${mDimenConverter?.toIN()}单位为IN
+                >转换后数值为${mEasyDimension?.toIN()}单位为IN
             """.trimMargin(">")
             mShown.text = result
         }
@@ -104,14 +104,14 @@ class DimenConverterActivity:BaseActivity() {
         if (checkConverterCreated()) {
             val result = """
                 >原始数值为${value}单位为$unitName
-                >转换后数值为${mDimenConverter?.toMM()}单位为MM
+                >转换后数值为${mEasyDimension?.toMM()}单位为MM
             """.trimMargin(">")
             mShown.text = result
         }
     }
 
     fun checkConverterCreated():Boolean {
-        return if (mDimenConverter == null) {
+        return if (mEasyDimension == null) {
             EasyToast.DEFAULT.show("请先创建转换器")
             false
         } else {

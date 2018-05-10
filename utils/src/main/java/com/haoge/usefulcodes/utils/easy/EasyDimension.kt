@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.tools
+package com.haoge.usefulcodes.utils.easy
 
 import android.util.DisplayMetrics
 import android.util.TypedValue
@@ -8,7 +8,7 @@ import com.haoge.usefulcodes.utils.cache.SingleCache
  * 尺寸数值转换器。用于方便的在不同的尺寸单位之间进行转换
  * @author haoge on 2018/5/10
  */
-class DimenConverter private constructor(private val pixel:Float, private val metrics: DisplayMetrics){
+class EasyDimension private constructor(private val pixel:Float, private val metrics: DisplayMetrics){
 
     fun toPX() = pixel
 
@@ -24,9 +24,9 @@ class DimenConverter private constructor(private val pixel:Float, private val me
 
     companion object {
         @JvmStatic
-        fun create(value:Float, unit:Int):DimenConverter {
-            val metrics = SingleCache.context!!.resources.displayMetrics
-            return DimenConverter(TypedValue.applyDimension(unit, value, metrics), metrics!!)
+        fun create(value:Float, unit:Int): EasyDimension {
+            val metrics = SingleCache.getApplicationContext().resources.displayMetrics
+            return EasyDimension(TypedValue.applyDimension(unit, value, metrics), metrics!!)
         }
     }
 }

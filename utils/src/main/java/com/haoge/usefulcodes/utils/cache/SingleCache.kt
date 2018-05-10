@@ -15,12 +15,20 @@ import android.os.Looper
  */
 @SuppressLint("StaticFieldLeak")
 object SingleCache {
-    internal var context:Context? = null
+    private var context:Context? = null
     var mainHandler: Handler = Handler(Looper.getMainLooper())
 
     fun init(context: Context) {
         if (this.context == null) {
-            this.context = context.applicationContext;
+            this.context = context.applicationContext
+        }
+    }
+
+    fun getApplicationContext():Context {
+        if (context == null) {
+            throw RuntimeException("Please call [Single.init(context)] first")
+        } else {
+            return context as Context
         }
     }
 }

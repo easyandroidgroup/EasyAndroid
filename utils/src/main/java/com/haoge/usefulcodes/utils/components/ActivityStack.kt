@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.components
+package com.haoge.usefulcodes.utils.components
 
 import android.app.Activity
 import android.app.Application
@@ -23,14 +23,14 @@ object ActivityStack {
         }
 
         application = context.applicationContext as Application
-        application!!.registerActivityLifecycleCallbacks(Callback())
+        application?.registerActivityLifecycleCallbacks(Callback())
     }
 
     private class Callback : Application.ActivityLifecycleCallbacks {
 
-        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle) {
-            if (!ActivityStack.stack.contains(activity)) {
-                ActivityStack.stack.push(activity)
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+            if (!stack.contains(activity)) {
+                stack.push(activity)
             }
         }
 
@@ -42,11 +42,11 @@ object ActivityStack {
 
         override fun onActivityStopped(activity: Activity) {}
 
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {}
 
         override fun onActivityDestroyed(activity: Activity) {
-            if (ActivityStack.stack.contains(activity)) {
-                ActivityStack.stack.remove(activity)
+            if (stack.contains(activity)) {
+                stack.remove(activity)
             }
         }
     }

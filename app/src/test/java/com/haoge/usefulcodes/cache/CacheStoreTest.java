@@ -1,5 +1,7 @@
 package com.haoge.usefulcodes.cache;
 
+import com.haoge.usefulcodes.utils.cache.CacheStore;
+
 import org.junit.Test;
 
 public class CacheStoreTest {
@@ -22,5 +24,6 @@ public class CacheStoreTest {
         CacheStore.INSTANCE.put("这条数据会填满目前的容器");
         int index = CacheStore.INSTANCE.put("这条数据应该会导致容器进行扩容，并返回首个空位索引(index=10)");
         System.out.println("index = " + index);
+
     }
 }

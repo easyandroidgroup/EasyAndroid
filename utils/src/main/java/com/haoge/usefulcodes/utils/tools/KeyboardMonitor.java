@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.tools;
+package com.haoge.usefulcodes.utils.tools;
 
 import android.app.Activity;
 import android.view.View;

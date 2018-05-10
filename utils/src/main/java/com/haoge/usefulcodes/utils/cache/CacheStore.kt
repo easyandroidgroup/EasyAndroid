@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.cache
+package com.haoge.usefulcodes.utils.cache
 
 import java.util.Arrays
 

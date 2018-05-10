@@ -1,7 +1,10 @@
 package com.haoge.usefulcodes.utils.tools
 
-object CommonTool {
+object CommonUtil {
 
+    /**
+     * 判断对象是否为空
+     */
     fun isEmpty(data: Any?): Boolean =  when {
             data == null -> true
             data is CharSequence -> data.length == 0
@@ -10,4 +13,6 @@ object CommonTool {
             data.javaClass.isArray -> (data as Array<*>).size == 0
             else -> false
         }
+
+
 }

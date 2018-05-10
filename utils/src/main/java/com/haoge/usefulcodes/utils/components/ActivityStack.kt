@@ -26,12 +26,31 @@ object ActivityStack {
         application?.registerActivityLifecycleCallbacks(Callback())
     }
 
+    fun push(activity: Activity) {
+        if (!stack.contains(activity)) {
+            stack.push(activity)
+        }
+    }
+
+    fun pop(activity: Activity) {
+        if (stack.contains(activity)) {
+            stack.remove(activity)
+        }
+    }
+
+    fun pop() {
+        if (!stack.isEmpty()) {
+            val pop = stack.pop()
+            if (!pop.isFinishing) {
+                pop.finish()
+            }
+        }
+    }
+
     private class Callback : Application.ActivityLifecycleCallbacks {
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-            if (!stack.contains(activity)) {
-                stack.push(activity)
-            }
+            push(activity)
         }
 
         override fun onActivityStarted(activity: Activity) { }
@@ -45,9 +64,7 @@ object ActivityStack {
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle?) {}
 
         override fun onActivityDestroyed(activity: Activity) {
-            if (stack.contains(activity)) {
-                stack.remove(activity)
-            }
+            pop(activity)
         }
     }
 }

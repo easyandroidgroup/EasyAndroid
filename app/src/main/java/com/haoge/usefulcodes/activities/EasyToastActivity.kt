@@ -14,8 +14,6 @@ import java.util.concurrent.Executors
  */
 class EasyToastActivity :BaseActivity(){
 
-    val pool:ExecutorService = Executors.newSingleThreadExecutor()
-
     // 创建EasyToast实例需要在主线程进行初始化，所以就直接在外面一次性创建了
     val default = EasyToast.DEFAULT
     val creator = EasyToast.create(R.layout.toast_style, R.id.toast_tv, Toast.LENGTH_SHORT)
@@ -32,7 +30,7 @@ class EasyToastActivity :BaseActivity(){
 
     @OnClick(R.id.showOnSubThreadWithDefault)
     fun showOnSubThreadWithDefault() {
-        pool.execute { default.show("使用默认样式在子线程中进行展示") }
+        Instance.pool.execute { default.show("使用默认样式在子线程中进行展示") }
     }
 
     @OnClick(R.id.showOnMainThreadWithCreated)
@@ -42,17 +40,22 @@ class EasyToastActivity :BaseActivity(){
 
     @OnClick(R.id.showOnSubThreadWithCreate)
     fun showOnSubThreadWithCreate() {
-        pool.execute { creator.show("使用自定义样式在子线程中进行展示") }
+        Instance.pool.execute { creator.show("使用自定义样式在子线程中进行展示") }
     }
 
     @OnClick(R.id.showMultiTimeToast)
     fun showMultiTimeToast() {
-        pool.execute {
+        Instance.pool.execute {
             for (index in 0..10) {
                 default.show("自动更新无延迟提醒：$index")
                 Thread.sleep(500)
             }
             default.show("循环完毕")
         }
+    }
+
+    // 为减小内存开销，创建一次线程池
+    object Instance {
+        val pool:ExecutorService = Executors.newSingleThreadExecutor()
     }
 }

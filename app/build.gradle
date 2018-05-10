@@ -25,6 +25,7 @@ def butterknife_version='8.8.1'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"

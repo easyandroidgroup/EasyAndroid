@@ -48,7 +48,7 @@ object EasyFormater {
             return formatJSONArray(data)
         }
 
-        return StringBuilder(data)
+        return StringBuilder(if (data.isEmpty()) "" else "\"$data\"")
     }
 
     fun formatJSONArray(data: String): StringBuilder {
@@ -132,9 +132,10 @@ object EasyFormater {
     }
 
     private fun appendLines(result:StringBuilder, data:String) {
-        if (!data.isEmpty()){
-            result.append("\t").append(data).append("\n")
+        if (data.isEmpty()) {
+            return
         }
+        result.append("\t").append(data).append("\n")
     }
 
     private fun scanFields(any: Any, clazz: Class<*>, container: MutableMap<String, Any>) {

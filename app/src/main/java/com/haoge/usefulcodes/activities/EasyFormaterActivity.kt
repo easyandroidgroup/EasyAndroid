@@ -1,6 +1,7 @@
 package com.haoge.usefulcodes.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import butterknife.OnClick
 import com.alibaba.fastjson.JSON
@@ -72,6 +73,7 @@ class EasyFormaterActivity:BaseActivity() {
         message.add(mapOf(Pair("1", 1), Pair("2", 2)))
         message.add(JSON.toJSONString(message))
         mResult.text = message.format()
+        Log.e("EasyFormater", message.format())
     }
 
     data class User(var name:String, var address:Address)

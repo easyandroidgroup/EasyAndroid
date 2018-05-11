@@ -2,6 +2,7 @@ package com.haoge.usefulcodes.activities
 
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.View
 import android.widget.*
 import butterknife.OnClick
 import com.haoge.usefulcodes.BaseActivity

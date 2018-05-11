@@ -6,13 +6,16 @@ import android.app.ListActivity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import com.haoge.usefulcodes.activities.DimenConverterActivity
+import com.haoge.usefulcodes.activities.EasyFormaterActivity
 import com.haoge.usefulcodes.activities.EasyToastActivity
+import com.haoge.usefulcodes.utils.easy.EasyLog
 
 /**
  * @author haoge on 2018/5/9
@@ -21,12 +24,15 @@ class DemosActivity:ListActivity() {
 
     private val mContainer = arrayListOf<Item<*>>(
             Item("测试EasyToast", EasyToastActivity::class.java),
+            Item("测试EasyFormater", EasyFormaterActivity::class.java),
             Item("测试DimenConverter", DimenConverterActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listAdapter = DemosAdapter(this, mContainer)
+        Log.e("DemosActivity", "onCreate: (DemosActivity.kt:31)")
+
     }
 }
 

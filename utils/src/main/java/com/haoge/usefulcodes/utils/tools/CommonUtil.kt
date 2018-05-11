@@ -13,6 +13,5 @@ object CommonUtil {
             data.javaClass.isArray -> (data as Array<*>).size == 0
             else -> false
         }
-
-
 }
+

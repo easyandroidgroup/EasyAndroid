@@ -21,6 +21,8 @@ class EasyToastActivity :BaseActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_easy_toast)
+
+
     }
 
     @OnClick(R.id.showOnMainThreadWithDefault)

@@ -23,7 +23,6 @@ class EasyDimension private constructor(private val pixel:Float, private val met
     fun toMM() = pixel / metrics.xdpi / (1.0f / 25.4f)
 
     companion object {
-        @JvmStatic
         fun create(value:Float, unit:Int): EasyDimension {
             val metrics = SingleCache.getApplicationContext().resources.displayMetrics
             return EasyDimension(TypedValue.applyDimension(unit, value, metrics), metrics!!)

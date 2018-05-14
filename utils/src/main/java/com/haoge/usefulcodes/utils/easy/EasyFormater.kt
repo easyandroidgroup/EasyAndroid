@@ -67,7 +67,7 @@ class EasyFormater private constructor(private val builder: Builder) {
             }
 
         } catch (e:Exception) {
-            return StringBuilder(data)
+            return StringBuilder("\"$data\"")
         }
         result.append(if (isFlat) "]" else "\n]")
         return result
@@ -77,11 +77,29 @@ class EasyFormater private constructor(private val builder: Builder) {
         val result = StringBuilder("{")
         var isFlat = true
         try {
-            val obj = JSONObject(data)
-            isFlat = obj.length() > builder.maxMapSize
-            appendIterator(result, obj.keys(), isFlat)
+            val json = JSONObject(data)
+            val length = json.length()
+            val keys = json.keys()
+            isFlat = length > builder.maxArraySize
+            var hasNext = keys.hasNext()
+            while (hasNext) {
+                if (!isFlat) {
+                    result.append("\n")
+                }
+
+                val sub = StringBuilder()
+                val next = keys.next()
+                sub.append(formatString(next)).append(":").append(json.optString(next))
+
+                hasNext = keys.hasNext()
+                if (hasNext) {
+                    sub.append(", ")
+                }
+                appendSubString(result, sub)
+            }
+
         } catch (e:Exception) {
-            return StringBuilder(data)
+            return StringBuilder("\"$data\"")
         }
         result.append(if (isFlat) "}" else "\n}")
         return result

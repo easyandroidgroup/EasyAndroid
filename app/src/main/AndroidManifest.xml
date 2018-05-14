@@ -18,5 +18,6 @@
         <activity android:name=".activities.EasyToastActivity" />
         <activity android:name=".activities.DimenConverterActivity" />
         <activity android:name=".activities.EasyFormaterActivity" />
+        <activity android:name=".activities.EasyLogActivity" />
     </application>
 </manifest>

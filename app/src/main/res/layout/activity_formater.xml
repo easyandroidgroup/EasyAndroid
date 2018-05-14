@@ -46,6 +46,12 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/formatException"
+            android:text="格式化Exception"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
             android:id="@+id/formatComplex"
             android:text="格式化复杂的对象"
             android:layout_width="match_parent"

@@ -14,6 +14,7 @@ import android.widget.BaseAdapter
 import android.widget.Button
 import com.haoge.usefulcodes.activities.DimenConverterActivity
 import com.haoge.usefulcodes.activities.EasyFormaterActivity
+import com.haoge.usefulcodes.activities.EasyLogActivity
 import com.haoge.usefulcodes.activities.EasyToastActivity
 import com.haoge.usefulcodes.utils.easy.EasyLog
 
@@ -25,6 +26,7 @@ class DemosActivity:ListActivity() {
     private val mContainer = arrayListOf<Item<*>>(
             Item("测试EasyToast", EasyToastActivity::class.java),
             Item("测试EasyFormater", EasyFormaterActivity::class.java),
+            Item("测试EasyLog", EasyLogActivity::class.java),
             Item("测试DimenConverter", DimenConverterActivity::class.java)
     )
 

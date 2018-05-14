@@ -33,4 +33,6 @@ dependencies {
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
 
     implementation project(':utils')
+
+    implementation 'com.orhanobut:logger:2.2.0'
 }

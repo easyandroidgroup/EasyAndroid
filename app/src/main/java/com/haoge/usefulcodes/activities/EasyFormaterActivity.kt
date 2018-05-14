@@ -7,7 +7,8 @@ import butterknife.OnClick
 import com.alibaba.fastjson.JSON
 import com.haoge.usefulcodes.BaseActivity
 import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.tools.format
+import com.haoge.usefulcodes.utils.easy.EasyFormater
+import com.haoge.usefulcodes.utils.easy.format
 
 /**
  * @author haoge on 2018/5/11
@@ -64,6 +65,11 @@ class EasyFormaterActivity:BaseActivity() {
         mResult.text = Age(100).format()
     }
 
+    @OnClick(R.id.formatException)
+    fun formatException() {
+        mResult.text = Exception().format()
+    }
+
     @OnClick(R.id.formatComplex)
     fun formatComplex() {
         val message = mutableListOf<Any>()
@@ -72,6 +78,7 @@ class EasyFormaterActivity:BaseActivity() {
         message.add(listOf(1,2,3,4))
         message.add(mapOf(Pair("1", 1), Pair("2", 2)))
         message.add(JSON.toJSONString(message))
+        message.add(User("King", Address("Earth", Age(100))))
         mResult.text = message.format()
         Log.e("EasyFormater", message.format())
     }

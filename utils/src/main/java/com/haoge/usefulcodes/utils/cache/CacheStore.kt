@@ -1,6 +1,6 @@
 package com.haoge.usefulcodes.utils.cache
 
-import java.util.Arrays
+import java.util.*
 
 /**
  * 进行临时性存储。方便将不方便放入Intent中进行存储的数据进行存储：

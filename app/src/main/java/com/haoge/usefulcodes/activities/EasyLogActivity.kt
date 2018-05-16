@@ -4,7 +4,7 @@ import android.os.Bundle
 import butterknife.OnClick
 import com.haoge.usefulcodes.BaseActivity
 import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.easy.EasyFormater
+import com.haoge.usefulcodes.utils.easy.EasyFormatter
 import com.haoge.usefulcodes.utils.easy.EasyLog
 import com.haoge.usefulcodes.utils.easy.format
 import com.orhanobut.logger.Logger
@@ -26,6 +26,6 @@ class EasyLogActivity:BaseActivity() {
 //        Log.println(Log.DEBUG, "EasyLog", list.format())
 //        Log.e("EasyLog", "", Exception())
         EasyLog.DEFAULT.e(list.format())
-        EasyFormater.newBuilder()
+        EasyFormatter.newBuilder()
     }
 }

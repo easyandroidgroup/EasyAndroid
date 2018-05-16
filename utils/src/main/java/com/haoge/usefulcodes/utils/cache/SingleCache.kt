@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.haoge.usefulcodes.utils.components.ActivityStack
 
 
 /**
@@ -21,12 +22,13 @@ object SingleCache {
     fun init(context: Context) {
         if (this.context == null) {
             this.context = context.applicationContext
+            ActivityStack.registerCallback(this.context)
         }
     }
 
     fun getApplicationContext():Context {
         if (context == null) {
-            throw RuntimeException("Please call [Single.init(context)] first")
+            throw RuntimeException("Please call [SingleCache.init(context)] first")
         } else {
             return context as Context
         }

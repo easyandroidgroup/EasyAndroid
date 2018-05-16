@@ -1,6 +1,8 @@
 package com.haoge.usefulcodes.utils.easy
 
 import android.util.Log
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.regex.Pattern
 
 /**
@@ -9,55 +11,73 @@ import java.util.regex.Pattern
 class EasyLog private constructor(
         private val upperName: String,
         private val enable: Boolean,
-        private val rules: Map<String, (StackTraceElement) -> String>,
+        private val rules: Map<String, (StackTraceElement, Thread) -> String>,
         private val formatStyle: Format,
-        private val formater: EasyFormater
+        private val formatter: EasyFormatter
 ){
-
+    /**
+     * 格式化数据any并进行Log.d()打印
+     */
     fun d(any: Any?) {
         if (!enable) {
             return
         }
-        val trace = findTrace()
-        print(formater.formatAny(any), trace, "d")
+        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "d", thread) }
     }
+    /**
+     * 格式化数据any并进行Log.i()打印
+     */
     fun i(any: Any?) {
         if (!enable) {
             return
         }
-        val trace = findTrace()
-        print(formater.formatAny(any), trace, "i")
+        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "i", thread) }
     }
+    /**
+     * 格式化数据any并进行Log.v()打印
+     */
     fun v(any: Any?) {
         if (!enable) {
             return
         }
-        val trace = findTrace()
-        print(formater.formatAny(any), trace, "v")
+        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "v", thread) }
     }
+    /**
+     * 格式化数据any并进行Log.w()打印
+     */
     fun w(any: Any?) {
         if (!enable) {
             return
         }
-        val trace = findTrace()
-        print(formater.formatAny(any), trace, "w")
+        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "w", thread) }
     }
+    /**
+     * 格式化数据any并进行Log.e()打印
+     */
     fun e(any: Any?) {
         if (!enable) {
             return
         }
-        val trace = findTrace()
-        print(formater.formatAny(any), trace, "e")
+        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "e", thread) }
     }
+    /**
+     * 格式化数据any并进行Log.wtf()打印
+     */
     fun wtf(any: Any?) {
         if (!enable) {
             return
         }
-        val trace = findTrace()
-        print(formater.formatAny(any), trace, "wtf")
+        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "wtf", thread) }
     }
 
-    private fun print(message:String, trace: StackTraceElement, type:String) {
+    // 将待打印数据传递到指定任务线程中去进行打印，避免出现阻塞UI线程的情况
+    private fun dispatchToLogPrinterThread(invoke:(Thread, StackTraceElement) -> Unit) {
+        val trace = findTrace()
+        val current = Thread.currentThread()
+        EXECUTOR.execute { invoke.invoke(current, trace) }
+    }
+
+    private fun print(message:String, trace: StackTraceElement, type:String, callThread:Thread) {
         val lines = message.lines()
         val copyLineRules = ArrayList<LineRules>()
 
@@ -75,15 +95,14 @@ class EasyLog private constructor(
         val result = StringBuilder("")
         val cacheRules = mutableMapOf<String, String>()
         var start = 0
-        for (index in copyLineRules.indices) {
-            val lineRule = copyLineRules[index]
+        for ((index, lineRule) in copyLineRules.withIndex()) {
             val lineMessage:String = if (lineRule.isMessage) {
                 lines[index - start]
             } else {
                 start++
                 ""
             }
-            result.append(parseLine(lineMessage, lineRule, trace, cacheRules)).append("\n")
+            result.append(parseLine(lineMessage, lineRule, trace, cacheRules, callThread)).append("\n")
         }
 
         when(type) {
@@ -98,18 +117,18 @@ class EasyLog private constructor(
 
     }
 
-    private fun parseLine(message: String, lineRules: LineRules, trace: StackTraceElement, cacheRules: MutableMap<String, String>): String {
+    private fun parseLine(message: String, lineRules: LineRules, trace: StackTraceElement, cacheRules: MutableMap<String, String>, callThread: Thread): String {
         var offset = 0
         var result = lineRules.origin
         val names = lineRules.names
         for ((index, name) in names) {
-            val replace = if (name == "#M") {
-                message
-            } else if (cacheRules[name] != null){
-                cacheRules[name]
-            } else {
-                cacheRules[name] = rules[name]?.invoke(trace)!!
-                cacheRules[name]
+            val replace = when {
+                name == "#M" -> message
+                cacheRules[name] != null -> cacheRules[name]
+                else -> {
+                    cacheRules[name] = rules[name]?.invoke(trace, callThread)!!
+                    cacheRules[name]
+                }
             }
             val start = index.plus(offset)
             result = result.substring(0, start) + replace + result.substring(start + 2)
@@ -142,8 +161,19 @@ class EasyLog private constructor(
     }
 
     companion object {
-        @JvmStatic
         val DEFAULT: EasyLog by lazy { Builder(EasyLog::class.java.canonicalName).build() }
+        val EXECUTOR: ExecutorService by lazy {
+            return@lazy Executors.newSingleThreadExecutor {
+                val thread = Thread(it)
+                thread.name = "EasyLog Printer Thread"
+                thread.priority = Thread.MIN_PRIORITY
+                thread.isDaemon = true
+                thread.setUncaughtExceptionHandler { t, e ->
+                    Log.e("EasyLog Printer ERROR", "EasyLog printer task has occurs some uncaught error. see stack traces for details:", e)
+                }
+                return@newSingleThreadExecutor thread
+            }
+        }
         @JvmStatic
         fun newBuilder(upper: Class<*>):Builder {
             return Builder(upper.canonicalName)
@@ -164,26 +194,35 @@ class EasyLog private constructor(
             >└───────────────
             """.trimMargin(">")
 
-        private val rules:MutableMap<String, (StackTraceElement)->String> = mutableMapOf(
-                Pair("#T", { _ -> "[${Thread.currentThread().name}]"}),
-                Pair("#F", { trace -> "(${trace.fileName}:${trace.lineNumber})"})
+        private val rules:MutableMap<String, (StackTraceElement, Thread)->String> = mutableMapOf(
+                Pair("#T", { _, thread -> "[${thread.name}]"}),
+                Pair("#F", { trace, _ -> "(${trace.fileName}:${trace.lineNumber})"})
         )
 
-        val formater by lazy {
-            val builder = EasyFormater.newBuilder()
+        val formatter by lazy {
+            val builder = EasyFormatter.newBuilder()
             builder.maxMapSize = 10
             builder.maxArraySize = 10
             builder.maxLines = 100
             return@lazy builder.build()
         }
 
-        fun addRule(name:String, rule:(StackTraceElement) -> String) {
+        fun addRule(name:String, rule:(StackTraceElement, Thread) -> String) {
             rules["#$name"] = rule
         }
 
         fun build():EasyLog {
+            return EasyLog(upperName, debug, rules, Format(format), formatter)
+        }
 
-            return EasyLog(upperName, debug, rules, Format(format), formater)
+        companion object {
+            val DEFAULT_FORMATTER:EasyFormatter by lazy {
+                val builder = EasyFormatter.newBuilder()
+                builder.maxMapSize = 10// 当映射型对象长度超过10时，平铺展示
+                builder.maxArraySize = 10// 当数组型对象长度超过10事，平铺展示
+                builder.maxLines = 100// 最高支持100行数据展示。
+                return@lazy builder.build()
+            }
         }
     }
 
@@ -225,3 +264,4 @@ class EasyLog private constructor(
 
     private class LineRules(val origin:String, val names:Set<Pair<Int, String>>, val isMessage:Boolean)
 }
+

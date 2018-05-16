@@ -13,23 +13,23 @@ import java.util.regex.Pattern
  *
  * @author haoge on 2018/5/10
  */
-class EasyFormater private constructor(private val builder: Builder) {
+class EasyFormatter private constructor(private val builder: Builder) {
 
     // 格式化List/Set集合数据
     private fun formatCollection(collection: Collection<*>): StringBuilder {
         val result = StringBuilder("[")
-        val isFlat = collection.size > builder.maxArraySize
+        val isFlat = isFlat(builder.maxArraySize, collection.size)
         appendIterator(result, collection.iterator(), isFlat)
-        result.append(if (isFlat) "]" else "\n]")
+        result.append("]")
         return result
     }
 
     // 格式化map数据
     private fun formatMap(map: Map<*, *>): StringBuilder {
         val result = StringBuilder("{")
-        val isFlat = map.size > builder.maxMapSize
+        val isFlat = isFlat(builder.maxMapSize, map.size)
         appendIterator(result, map.iterator(), isFlat)
-        result.append(if (isFlat) "}" else "\n}")
+        result.append("}")
         return result
     }
 
@@ -42,16 +42,15 @@ class EasyFormater private constructor(private val builder: Builder) {
             return formatJSONArray(data)
         }
 
-        return StringBuilder(if (data.isEmpty()) "" else "\"$data\"")
+        return StringBuilder(data)
     }
 
     private fun formatJSONArray(data: String): StringBuilder {
         val result = StringBuilder("[")
-        var isFlat = true
         try {
             val array = JSONArray(data)
             val length = array.length()
-            isFlat = length > builder.maxArraySize
+            val isFlat = isFlat(builder.maxArraySize, length)
 
             for (index in 0..(length - 1)) {
                 val sub = StringBuilder()
@@ -65,22 +64,23 @@ class EasyFormater private constructor(private val builder: Builder) {
                 }
                 appendSubString(result, sub)
             }
-
+            if (!isFlat) {
+                result.append("\n")
+            }
         } catch (e:Exception) {
-            return StringBuilder("\"$data\"")
+            return StringBuilder(data)
         }
-        result.append(if (isFlat) "]" else "\n]")
+        result.append("]")
         return result
     }
 
     private fun formatJSONObject(data: String): StringBuilder {
         val result = StringBuilder("{")
-        var isFlat = true
         try {
             val json = JSONObject(data)
             val length = json.length()
             val keys = json.keys()
-            isFlat = length > builder.maxArraySize
+            val isFlat = isFlat(builder.maxMapSize, length)
             var hasNext = keys.hasNext()
             while (hasNext) {
                 if (!isFlat) {
@@ -97,12 +97,22 @@ class EasyFormater private constructor(private val builder: Builder) {
                 }
                 appendSubString(result, sub)
             }
-
+            if (!isFlat) {
+                result.append("\n")
+            }
         } catch (e:Exception) {
-            return StringBuilder("\"$data\"")
+            return StringBuilder(data)
         }
-        result.append(if (isFlat) "}" else "\n}")
+        result.append("}")
         return result
+    }
+
+    private fun isFlat(maxSize:Int, length:Int):Boolean {
+        return when {
+            maxSize < 0 -> false
+            length <= maxSize -> false
+            else -> true
+        }
     }
 
     private fun formatException(any: Throwable): StringBuilder {
@@ -116,30 +126,41 @@ class EasyFormater private constructor(private val builder: Builder) {
                 || name.startsWith("javax")
                 || name.startsWith("kotlin")) {
             // 不对系统提供的类进行格式化
-            return StringBuilder("\"$name\"")
+            return StringBuilder(name)
         }
 
         val result = StringBuilder("{")
         val container = mutableMapOf<String, Any>()
         scanFields(any, any.javaClass, container)
 
-        val isFlat = container.size > builder.maxMapSize
+        val isFlat = isFlat(builder.maxMapSize, container.size)
         appendIterator(result, container.iterator(), isFlat)
 
-        result.append(if (isFlat) "}" else "\n}")
+        result.append("}")
         return result
     }
 
-    fun formatAny(any: Any?): String {
-        val result = formatAnyInternal(any)
-        return if (result.lines().size > builder.maxLines) {
-            result.replace(Pattern.compile("\n").toRegex(), "")
-        } else {
+    fun format(any: Any?): String {
+        val format = formatAny(any)
+        val lines = format.lines()
+        return if (isFlat(builder.maxLines, lines.size)) {
+            // 总长度大于受限长度。需要进行平铺处理
+            val result = StringBuilder()
+            for ((index, value) in lines.withIndex()) {
+                if (index < builder.maxLines) {
+                    result.append(value)
+                    result.append("\n")
+                } else {
+                    result.append(value.replace(Pattern.compile("(\t)").toRegex(), ""))
+                }
+            }
             result.toString()
+        } else {
+            format.toString()
         }
     }
 
-    private fun formatAnyInternal(any:Any?):StringBuilder =
+    private fun formatAny(any:Any?):StringBuilder =
         when(any) {
             null -> StringBuilder()
             is Collection<*> -> formatCollection(any)
@@ -164,11 +185,11 @@ class EasyFormater private constructor(private val builder: Builder) {
             val sub = StringBuilder()
             val next = iterator.next()
             if (next is Map.Entry<*, *>) {
-                sub.append(formatAnyInternal(next.key))
+                sub.append(formatAny(next.key))
                         .append(":")
-                        .append(formatAnyInternal(next.value))
+                        .append(formatAny(next.value))
             } else {
-                sub.append(formatAnyInternal(next))
+                sub.append(formatAny(next))
             }
 
             hasNext = iterator.hasNext()
@@ -176,6 +197,9 @@ class EasyFormater private constructor(private val builder: Builder) {
                 sub.append(", ")
             }
             appendSubString(container, sub)
+        }
+        if (!isFlat) {
+            container.append("\n")
         }
     }
 
@@ -231,22 +255,22 @@ class EasyFormater private constructor(private val builder: Builder) {
     class Builder internal constructor() {
 
         /**
-         * 最大行数，当格式化后的数据行数超过此数量后，将对数据进行平铺：只剩一行
+         * 最大行数，当格式化后的数据行数超过此数量后，将对超出部分数据进行平铺展示
          */
-        var maxLines:Int = 50
+        var maxLines:Int = -1
         /**
          * 最大Array尺寸，当Array(包括List/Set/Array/JSONArray)的长度超过此数量限制时：数据以平铺模式展示。
          */
-        var maxArraySize:Int = 20
+        var maxArraySize:Int = -1
         /**
          * 最大Map尺寸，当Map(包括Map/JSONObject/Bean)的长度超过此数量限制时：数据以平铺模式展示
          */
-        var maxMapSize:Int = 20
+        var maxMapSize:Int = -1
 
-        fun build():EasyFormater {
-            return EasyFormater(this)
+        fun build():EasyFormatter {
+            return EasyFormatter(this)
         }
     }
 }
 
-fun Any?.format():String = EasyFormater.DEFAULT.formatAny(this)
+fun Any?.format():String = EasyFormatter.DEFAULT.format(this)

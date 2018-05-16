@@ -27,7 +27,7 @@ class DemosActivity:ListActivity() {
             Item("测试EasyToast", EasyToastActivity::class.java),
             Item("测试EasyFormater", EasyFormaterActivity::class.java),
             Item("测试EasyLog", EasyLogActivity::class.java),
-            Item("测试DimenConverter", DimenConverterActivity::class.java)
+            Item("测试EasyDimension", DimenConverterActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

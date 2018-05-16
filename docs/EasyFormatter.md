@@ -31,6 +31,17 @@ formater.formatAny(any)// 支持格式化任意类型数据。
 
 ### 参数说明
 
-1. maxLines:最大输出行数。当格式化后的行数高于此输出限制，则将对内容进行平铺。
-2. maxArraySize: Array型数据(Array/List/Set/JSONArray)
+1. maxLines:
+
+最大输出行数。当格式化后的行数高于此输出限制，将对超出部门的数据进行平铺。即超出部分不进行换行
+
+2. maxArraySize:
+
+Array型数据(Array/List/Set/JSONArray)允许的最大行数，当数据中的此类数据长度超出限制。将对整体数据进行平铺
+
+3. maxMapSize
+
+对象型数据(Bean/JSONObject/Map)允许的最大行数，与maxArraySize类似。
+
+**当限制值为-1时。表示去除限制**
 

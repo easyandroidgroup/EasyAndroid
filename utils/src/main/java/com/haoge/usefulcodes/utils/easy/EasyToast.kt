@@ -21,15 +21,20 @@ class EasyToast private constructor(private val toast: Toast, private val tv: Te
         show(SingleCache.getApplicationContext().getString(resId))
     }
 
-    fun show(message:String) {
+    fun show(message:String, vararg any: Any) {
         if (TextUtils.isEmpty(message)) {
             return
         }
 
+        var result = message
+        if (any.isNotEmpty()) {
+            result = String.format(message, any)
+        }
+
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            showInternal(message)
+            showInternal(result)
         } else {
-            SingleCache.mainHandler.post { showInternal(message) }
+            SingleCache.mainHandler.post { showInternal(result) }
         }
     }
 
@@ -47,10 +52,8 @@ class EasyToast private constructor(private val toast: Toast, private val tv: Te
         /**
          * 默认提供的Toast实例，在首次使用时进行加载。
          */
-        @JvmStatic
         val DEFAULT: EasyToast by lazy { default() }
 
-        @JvmStatic
         private fun default(): EasyToast {
             checkThread()
             @SuppressLint("ShowToast")
@@ -58,7 +61,6 @@ class EasyToast private constructor(private val toast: Toast, private val tv: Te
             return EasyToast(toast, null, true)
         }
 
-        @JvmStatic
         fun create(layoutId: Int, tvId: Int, duration: Int): EasyToast {
             checkThread()
             val container = LayoutInflater.from(SingleCache.getApplicationContext()).inflate(layoutId, null)

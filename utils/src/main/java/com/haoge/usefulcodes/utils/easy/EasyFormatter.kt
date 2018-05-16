@@ -147,7 +147,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
             // 总长度大于受限长度。需要进行平铺处理
             val result = StringBuilder()
             for ((index, value) in lines.withIndex()) {
-                if (index < builder.maxLines) {
+                if (index < builder.maxLines - 1) {
                     result.append(value)
                     result.append("\n")
                 } else {
@@ -272,5 +272,3 @@ class EasyFormatter private constructor(private val builder: Builder) {
         }
     }
 }
-
-fun Any?.format():String = EasyFormatter.DEFAULT.format(this)

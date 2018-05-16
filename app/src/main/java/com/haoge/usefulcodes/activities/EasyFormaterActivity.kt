@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSON
 import com.haoge.usefulcodes.BaseActivity
 import com.haoge.usefulcodes.R
 import com.haoge.usefulcodes.utils.easy.EasyFormatter
-import com.haoge.usefulcodes.utils.easy.format
 
 /**
  * @author haoge on 2018/5/11
@@ -43,7 +42,7 @@ class EasyFormaterActivity:BaseActivity() {
 
     @OnClick(R.id.formatSimpleList)
     fun formatSimpleList() {
-        mResult.text = listOf("Hello", "kotlin", "new", "world").format()
+        mResult.text = mUsedFormatter.format(listOf("Hello", "kotlin", "new", "world"))
     }
 
     @OnClick(R.id.formatSimpleMap)

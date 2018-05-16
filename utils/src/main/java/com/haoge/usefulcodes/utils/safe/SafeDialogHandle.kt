@@ -14,9 +14,9 @@ import com.haoge.usefulcodes.utils.cache.SingleCache
  *
  * AUTHOR: haoge
  */
-object SafeDialog {
+object SafeDialogHandle {
 
-    fun safeShowDialog(dialog: Dialog) {
+    fun safeShowDialog(dialog: Dialog?) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             safeShowDialogOnMainThread(dialog)
             return
@@ -55,7 +55,7 @@ object SafeDialog {
         return bindAct
     }
 
-    fun safeDismissDialog(dialog: Dialog) {
+    fun safeDismissDialog(dialog: Dialog?) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             safeDismissDialogOnMainThread(dialog)
             return

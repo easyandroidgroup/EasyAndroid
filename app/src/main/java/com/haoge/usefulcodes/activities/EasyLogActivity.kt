@@ -6,7 +6,6 @@ import com.haoge.usefulcodes.BaseActivity
 import com.haoge.usefulcodes.R
 import com.haoge.usefulcodes.utils.easy.EasyFormatter
 import com.haoge.usefulcodes.utils.easy.EasyLog
-import com.haoge.usefulcodes.utils.easy.format
 import com.orhanobut.logger.Logger
 
 /**
@@ -25,7 +24,7 @@ class EasyLogActivity:BaseActivity() {
         Logger.d(list)
 //        Log.println(Log.DEBUG, "EasyLog", list.format())
 //        Log.e("EasyLog", "", Exception())
-        EasyLog.DEFAULT.e(list.format())
+        EasyLog.DEFAULT.e(list)
         EasyFormatter.newBuilder()
     }
 }

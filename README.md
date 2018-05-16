@@ -4,7 +4,10 @@
 
 ## AndroidCodes
 
+
+
 - [EasyDimension](./docs/EasyDimension.md)
+>
 - [EasyFormatter](./docs/EasyFormatter.md)
 - [EasyLog](./docs/EasyLog.md)
 - [EasyToast](./docs/EasyToast.md)
@@ -22,4 +25,4 @@
 
 - [local-properties-loader](./gradles/local-properties-loader.gradle)
 
->
+> 用于自动加载项目根目录下的local.properties文件。将其中的属性加载到properties中供方便使用

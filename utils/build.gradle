@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 android {
@@ -26,3 +26,5 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
+
+apply from: '../gradles/javadoc-generator-android.gradle'

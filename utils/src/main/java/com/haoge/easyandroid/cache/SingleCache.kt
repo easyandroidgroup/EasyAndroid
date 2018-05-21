@@ -1,10 +1,10 @@
-package com.haoge.usefulcodes.utils.cache
+package com.haoge.easyandroid.cache
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import com.haoge.usefulcodes.utils.components.ActivityStack
+import com.haoge.easyandroid.components.ActivityStack
 
 
 /**
@@ -20,9 +20,9 @@ object SingleCache {
     var mainHandler: Handler = Handler(Looper.getMainLooper())
 
     internal fun init(context: Context) {
-        if (this.context == null) {
-            this.context = context.applicationContext
-            ActivityStack.registerCallback(this.context)
+        if (SingleCache.context == null) {
+            SingleCache.context = context.applicationContext
+            ActivityStack.registerCallback(SingleCache.context)
         }
     }
 

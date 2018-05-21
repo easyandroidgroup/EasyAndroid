@@ -1,7 +1,7 @@
-package com.haoge.usefulcodes
+package com.haoge.sample.easyandroid
 
 import android.app.Application
-import com.haoge.usefulcodes.utils.EasyAndroid
+import com.haoge.easyandroid.EasyAndroid
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 

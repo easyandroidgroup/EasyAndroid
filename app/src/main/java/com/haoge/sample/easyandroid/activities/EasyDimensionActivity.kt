@@ -1,19 +1,18 @@
-package com.haoge.usefulcodes.activities
+package com.haoge.sample.easyandroid.activities
 
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.View
 import android.widget.*
 import butterknife.OnClick
-import com.haoge.usefulcodes.BaseActivity
-import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.easy.EasyToast
-import com.haoge.usefulcodes.utils.easy.EasyDimension
+import com.haoge.sample.easyandroid.BaseActivity
+import com.haoge.easyandroid.easy.EasyToast
+import com.haoge.easyandroid.easy.EasyDimension
+import com.haoge.sample.easyandroid.R
 
 /**
  * @author haoge on 2018/5/10
  */
-class DimenConverterActivity:BaseActivity() {
+class DimenConverterActivity: BaseActivity() {
 
     val mInput:EditText by lazy { findViewById<EditText>(R.id.number_input) }
     val mShown:TextView by lazy { findViewById<TextView>(R.id.shown_tv) }

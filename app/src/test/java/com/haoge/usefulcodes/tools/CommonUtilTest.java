@@ -1,6 +1,6 @@
 package com.haoge.usefulcodes.tools;
 
-import com.haoge.usefulcodes.utils.tools.CommonUtil;
+import com.haoge.easyandroid.tools.CommonUtil;
 
 import org.junit.Test;
 

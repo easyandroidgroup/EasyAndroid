@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes
+package com.haoge.sample.easyandroid
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -12,11 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
-import com.haoge.usefulcodes.activities.DimenConverterActivity
-import com.haoge.usefulcodes.activities.EasyFormaterActivity
-import com.haoge.usefulcodes.activities.EasyLogActivity
-import com.haoge.usefulcodes.activities.EasyToastActivity
-import com.haoge.usefulcodes.utils.easy.EasyLog
+import com.haoge.sample.easyandroid.activities.DimenConverterActivity
+import com.haoge.sample.easyandroid.activities.EasyFormaterActivity
+import com.haoge.sample.easyandroid.activities.EasyLogActivity
+import com.haoge.sample.easyandroid.activities.EasyToastActivity
 
 /**
  * @author haoge on 2018/5/9

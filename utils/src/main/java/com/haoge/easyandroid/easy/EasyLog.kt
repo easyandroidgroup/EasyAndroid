@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.easy
+package com.haoge.easyandroid.easy
 
 import android.util.Log
 import java.util.concurrent.ExecutorService
@@ -180,7 +180,7 @@ class EasyLog private constructor(
             }
         }
         @JvmStatic
-        fun newBuilder(upper: Class<*>):Builder {
+        fun newBuilder(upper: Class<*>): Builder {
             return Builder(upper.canonicalName)
         }
     }
@@ -219,12 +219,12 @@ class EasyLog private constructor(
             rules["#$name"] = rule
         }
 
-        fun build():EasyLog {
+        fun build(): EasyLog {
             return EasyLog(upperName, debug, rules, Format(formatStyle), Format(singleStyle), formatter)
         }
 
         companion object {
-            val DEFAULT_FORMATTER:EasyFormatter by lazy {
+            val DEFAULT_FORMATTER: EasyFormatter by lazy {
                 val builder = EasyFormatter.newBuilder()
                 builder.maxMapSize = 10// 当映射型对象长度超过10时，平铺展示
                 builder.maxArraySize = 10// 当数组型对象长度超过10事，平铺展示

@@ -1,18 +1,18 @@
-package com.haoge.usefulcodes.activities
+package com.haoge.sample.easyandroid.activities
 
 import android.os.Bundle
 import android.widget.Toast
 import butterknife.OnClick
-import com.haoge.usefulcodes.BaseActivity
-import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.easy.EasyToast
+import com.haoge.sample.easyandroid.BaseActivity
+import com.haoge.easyandroid.easy.EasyToast
+import com.haoge.sample.easyandroid.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
  * @author haoge on 2018/5/9
  */
-class EasyToastActivity :BaseActivity(){
+class EasyToastActivity : BaseActivity(){
 
     // 创建EasyToast实例需要在主线程进行初始化，所以就直接在外面一次性创建了
     val default = EasyToast.DEFAULT

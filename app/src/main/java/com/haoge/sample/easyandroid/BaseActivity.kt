@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes
+package com.haoge.sample.easyandroid
 
 import android.support.v7.app.AppCompatActivity
 import butterknife.ButterKnife

@@ -1,20 +1,20 @@
-package com.haoge.usefulcodes.activities
+package com.haoge.sample.easyandroid.activities
 
 import android.os.Bundle
 import android.widget.TextView
 import butterknife.OnClick
 import com.alibaba.fastjson.JSON
-import com.haoge.usefulcodes.BaseActivity
-import com.haoge.usefulcodes.R
-import com.haoge.usefulcodes.utils.easy.EasyFormatter
+import com.haoge.sample.easyandroid.BaseActivity
+import com.haoge.easyandroid.easy.EasyFormatter
+import com.haoge.sample.easyandroid.R
 
 /**
  * @author haoge on 2018/5/11
  */
-class EasyFormaterActivity:BaseActivity() {
+class EasyFormaterActivity: BaseActivity() {
 
     val mResult by lazy { findViewById<TextView>(R.id.result) }
-    val mDefaultFormatter:EasyFormatter = EasyFormatter.DEFAULT
+    val mDefaultFormatter: EasyFormatter = EasyFormatter.DEFAULT
     val mCustomformatter by lazy {
         val builder = EasyFormatter.newBuilder()
         builder.maxLines = 10 // 指定格式化后最大行数为10.
@@ -23,7 +23,7 @@ class EasyFormaterActivity:BaseActivity() {
         return@lazy builder.build()
     }
 
-    var mUsedFormatter:EasyFormatter = mDefaultFormatter
+    var mUsedFormatter: EasyFormatter = mDefaultFormatter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,9 +113,9 @@ class EasyFormaterActivity:BaseActivity() {
         return ""
     }
 
-    data class User(var name:String, var address:Address)
+    data class User(var name:String, var address: Address)
 
-    data class Address(var address:String, var age:Age)
+    data class Address(var address:String, var age: Age)
 
     data class Age(var age:Int)
 }

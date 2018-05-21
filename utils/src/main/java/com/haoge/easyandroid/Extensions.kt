@@ -1,8 +1,8 @@
-package com.haoge.usefulcodes.utils
+package com.haoge.easyandroid
 
 import android.app.Dialog
-import com.haoge.usefulcodes.utils.easy.EasyFormatter
-import com.haoge.usefulcodes.utils.safe.SafeDialogHandle
+import com.haoge.easyandroid.easy.EasyFormatter
+import com.haoge.easyandroid.safe.SafeDialogHandle
 
 fun Dialog?.safeShow() = SafeDialogHandle.safeShowDialog(this)
 fun Dialog?.safeDismiss() = SafeDialogHandle.safeDismissDialog(this)

@@ -1,7 +1,7 @@
-package com.haoge.usefulcodes.utils
+package com.haoge.easyandroid
 
 import android.content.Context
-import com.haoge.usefulcodes.utils.cache.SingleCache
+import com.haoge.easyandroid.cache.SingleCache
 
 /**
  * @author haoge on 2018/5/17

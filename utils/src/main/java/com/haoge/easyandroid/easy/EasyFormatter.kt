@@ -1,7 +1,7 @@
-package com.haoge.usefulcodes.utils.easy
+package com.haoge.easyandroid.easy
 
 import android.util.Log
-import com.haoge.usefulcodes.utils.tools.CommonUtil
+import com.haoge.easyandroid.tools.CommonUtil
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Modifier
@@ -247,7 +247,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     companion object {
         val DEFAULT by lazy { return@lazy Builder().build() }
-        fun newBuilder():Builder {
+        fun newBuilder(): Builder {
             return Builder()
         }
     }
@@ -267,7 +267,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
          */
         var maxMapSize:Int = -1
 
-        fun build():EasyFormatter {
+        fun build(): EasyFormatter {
             return EasyFormatter(this)
         }
     }

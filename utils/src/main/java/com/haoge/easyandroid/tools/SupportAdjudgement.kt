@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.tools
+package com.haoge.easyandroid.tools
 
 /**
  * @author haoge on 2018/5/15

@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.components
+package com.haoge.easyandroid.components
 
 import android.app.Activity
 import android.app.Application

@@ -1,11 +1,11 @@
-package com.haoge.usefulcodes.utils.safe
+package com.haoge.easyandroid.safe
 
 import android.app.Activity
 import android.app.Dialog
 import android.os.Looper
 import android.util.Log
 import android.view.ContextThemeWrapper
-import com.haoge.usefulcodes.utils.cache.SingleCache
+import com.haoge.easyandroid.cache.SingleCache
 
 /**
  * 对Dialog的show/dismiss操作进行封装，避免出现weakWindowToken问题。

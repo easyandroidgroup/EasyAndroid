@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.easy
+package com.haoge.easyandroid.easy
 
 import android.annotation.SuppressLint
 import android.os.Looper
@@ -6,7 +6,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.Toast
-import com.haoge.usefulcodes.utils.cache.SingleCache
+import com.haoge.easyandroid.cache.SingleCache
 
 /**
  * 一个简单易用的Toast封装类。用于提供易用的、多样式的Toast组件进行使用

@@ -1,4 +1,4 @@
-package com.haoge.usefulcodes.utils.cache
+package com.haoge.easyandroid.cache
 
 import java.util.*
 

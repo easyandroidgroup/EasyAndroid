@@ -1,6 +1,6 @@
 package com.haoge.usefulcodes.cache;
 
-import com.haoge.usefulcodes.utils.cache.CacheStore;
+import com.haoge.easyandroid.cache.CacheStore;
 
 import org.junit.Test;
 

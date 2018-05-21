@@ -6,7 +6,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.haoge.usefulcodes"
+        applicationId "com.haoge.sample.easyandroid"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1

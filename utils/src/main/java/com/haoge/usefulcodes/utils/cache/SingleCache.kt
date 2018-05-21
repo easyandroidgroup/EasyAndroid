@@ -19,7 +19,7 @@ object SingleCache {
     private var context:Context? = null
     var mainHandler: Handler = Handler(Looper.getMainLooper())
 
-    fun init(context: Context) {
+    internal fun init(context: Context) {
         if (this.context == null) {
             this.context = context.applicationContext
             ActivityStack.registerCallback(this.context)
@@ -28,7 +28,7 @@ object SingleCache {
 
     fun getApplicationContext():Context {
         if (context == null) {
-            throw RuntimeException("Please call [SingleCache.init(context)] first")
+            throw RuntimeException("Please call [EasyAndroid.init(context)] first")
         } else {
             return context as Context
         }

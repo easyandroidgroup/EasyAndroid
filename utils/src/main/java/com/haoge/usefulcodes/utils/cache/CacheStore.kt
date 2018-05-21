@@ -30,18 +30,31 @@ object CacheStore {
      * 根据索引取出该位置的数据并将此位置进行重新置空
      */
     fun <T> get(index: Int): T? {
+        return try {
+            get(index, true)
+        } catch (cast: ClassCastException) {
+            null
+        }
+    }
+
+    /**
+     * @param index 存储的值的索引下标
+     * @param remove 是否自动移除
+     */
+    fun <T> get(index:Int, remove:Boolean):T? {
         if (index < 0 || index >= stores.size) {
             return null
         }
         val value = stores[index]
-        stores[index] = null
+        if (remove) {
+            stores[index] = null
+        }
         try {
             @Suppress("UNCHECKED_CAST")
             return value as T
         } catch (cast: ClassCastException) {
             return null
         }
-
     }
 
     /**

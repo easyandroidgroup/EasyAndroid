@@ -12,7 +12,8 @@ class EasyLog private constructor(
         private val upperName: String,
         private val enable: Boolean,
         private val rules: Map<String, (StackTraceElement, Thread) -> String>,
-        private val formatStyle: Format,
+        private val formatStyle: Format,// 多行显示时的样式
+        private val singleStyle: Format,// 单行显示时的样式
         private val formatter: EasyFormatter
 ){
     /**
@@ -80,8 +81,12 @@ class EasyLog private constructor(
     private fun print(message:String, trace: StackTraceElement, type:String, callThread:Thread) {
         val lines = message.lines()
         val copyLineRules = ArrayList<LineRules>()
+        var format = formatStyle
+        if (lines.size == 1) {
+            format = singleStyle
+        }
 
-        for (lineRule in formatStyle.lineRules) {
+        for (lineRule in format.lineRules) {
             if (!lineRule.isMessage) {
                 copyLineRules.add(lineRule)
                 continue
@@ -181,38 +186,41 @@ class EasyLog private constructor(
     }
 
     class Builder internal constructor(val upperName:String) {
+        /**
+         * 是否开启日志输出？当为true时。才进行日志输出
+         */
         var debug = true
         /**
-         * #T -> ThreadName
-         * #F -> FileLine
-         * #M -> Message
+         * 格式化日志输出样式。
          */
-        var format = """
-            > [EasyLog]#F
+        var formatStyle = """
+            >[EasyLog]#F
             >┌──────#T───────
             >│#M
             >└───────────────
             """.trimMargin(">")
+
+        /**
+         * 单行显示日志输出样式：当被排版后的数据为单行时，使用此样式进行输出。
+         */
+        var singleStyle = "[EasyLog]#F ==> #M"
 
         private val rules:MutableMap<String, (StackTraceElement, Thread)->String> = mutableMapOf(
                 Pair("#T", { _, thread -> "[${thread.name}]"}),
                 Pair("#F", { trace, _ -> "(${trace.fileName}:${trace.lineNumber})"})
         )
 
-        val formatter by lazy {
-            val builder = EasyFormatter.newBuilder()
-            builder.maxMapSize = 10
-            builder.maxArraySize = 10
-            builder.maxLines = 100
-            return@lazy builder.build()
-        }
+        /**
+         * 数据格式器。用于对数据进行格式化排版操作。
+         */
+        val formatter = DEFAULT_FORMATTER
 
         fun addRule(name:String, rule:(StackTraceElement, Thread) -> String) {
             rules["#$name"] = rule
         }
 
         fun build():EasyLog {
-            return EasyLog(upperName, debug, rules, Format(format), formatter)
+            return EasyLog(upperName, debug, rules, Format(formatStyle), Format(singleStyle), formatter)
         }
 
         companion object {
@@ -239,13 +247,13 @@ class EasyLog private constructor(
                 }
 
                 if (msgIndex != -1) {
-                    throw RuntimeException("Find [#M] in 'format' more than on times. but it requires only once!")
+                    throw RuntimeException("Find [#M] in 'formatStyle' more than on times. but it requires only once!")
                 }
 
                 msgIndex = index
             }
             if (msgIndex == -1) {
-                throw RuntimeException("Could not find format-style : [#T] in format-String")
+                throw RuntimeException("Could not find formatStyle-style : [#T] in formatStyle-String")
             }
             for (index in lines.indices) {
                 val origin = lines[index]

@@ -3,7 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <Button
         android:id="@+id/showOnMainThreadWithDefault"
         android:text="在主线程中使用默认Toast"

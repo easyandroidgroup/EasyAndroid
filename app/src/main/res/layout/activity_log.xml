@@ -9,10 +9,41 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/logSimple"
-            android:text="打印简单数据"
+            android:id="@+id/printSingleLine"
+            android:text="打印单行数据"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printMultipleLine"
+            android:text="打印多行数据"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printShortList"
+            android:text="打印短列表"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printLongList"
+            android:text="打印长列表"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printJSONObject"
+            android:text="打印JSONObject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printJSONArray"
+            android:text="打印JSONArray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
 
     </LinearLayout>
 

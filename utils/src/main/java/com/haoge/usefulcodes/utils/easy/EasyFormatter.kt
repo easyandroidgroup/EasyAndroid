@@ -62,7 +62,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 if (index != length - 1) {
                     sub.append(",")
                 }
-                appendSubString(result, sub)
+                appendSubString(result, sub, isFlat)
             }
             if (!isFlat) {
                 result.append("\n")
@@ -95,7 +95,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 if (hasNext) {
                     sub.append(", ")
                 }
-                appendSubString(result, sub)
+                appendSubString(result, sub, isFlat)
             }
             if (!isFlat) {
                 result.append("\n")
@@ -196,20 +196,20 @@ class EasyFormatter private constructor(private val builder: Builder) {
             if (hasNext) {
                 sub.append(", ")
             }
-            appendSubString(container, sub)
+            appendSubString(container, sub, isFlat)
         }
         if (!isFlat) {
             container.append("\n")
         }
     }
 
-    private fun appendSubString(container:StringBuilder, subString:StringBuilder) {
+    private fun appendSubString(container:StringBuilder, subString:StringBuilder, isFlat: Boolean) {
         val lines = subString.lines()
         for ((index, value) in lines.withIndex()) {
-            if (index == 0) {
-                container.append("\t").append(value)
-            } else if (value.isNotEmpty()) {
-                container.append("\n").append("\t").append(value)
+            when {
+                isFlat -> container.append(value)
+                index == 0 -> container.append("\t").append(value)
+                value.isNotEmpty() -> container.append("\n").append("\t").append(value)
             }
         }
     }

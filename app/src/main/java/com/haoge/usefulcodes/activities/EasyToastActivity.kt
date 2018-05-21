@@ -21,8 +21,6 @@ class EasyToastActivity :BaseActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_easy_toast)
-
-
     }
 
     @OnClick(R.id.showOnMainThreadWithDefault)
@@ -59,5 +57,6 @@ class EasyToastActivity :BaseActivity(){
     // 为减小内存开销，创建一次线程池
     object Instance {
         val pool:ExecutorService = Executors.newSingleThreadExecutor()
+
     }
 }

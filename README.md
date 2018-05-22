@@ -22,7 +22,7 @@ implementation "com.github.yjfnypeu:EasyAndroid:$lastest_version"
 在Application中调用初识化方法：
 
 ```
-SingleCache.init(application)
+EasyAndroid.init(application)
 ```
 
 然后即可直接使用

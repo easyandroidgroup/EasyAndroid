@@ -22,7 +22,6 @@ object SingleCache {
     internal fun init(context: Context) {
         if (SingleCache.context == null) {
             SingleCache.context = context.applicationContext
-            ActivityStack.registerCallback(SingleCache.context)
         }
     }
 

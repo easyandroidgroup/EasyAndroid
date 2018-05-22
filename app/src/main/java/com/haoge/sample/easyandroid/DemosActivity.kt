@@ -12,10 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
-import com.haoge.sample.easyandroid.activities.DimenConverterActivity
-import com.haoge.sample.easyandroid.activities.EasyFormaterActivity
-import com.haoge.sample.easyandroid.activities.EasyLogActivity
-import com.haoge.sample.easyandroid.activities.EasyToastActivity
+import com.haoge.sample.easyandroid.activities.*
 
 /**
  * @author haoge on 2018/5/9
@@ -26,7 +23,8 @@ class DemosActivity:ListActivity() {
             Item("测试EasyToast", EasyToastActivity::class.java),
             Item("测试EasyFormater", EasyFormaterActivity::class.java),
             Item("测试EasyLog", EasyLogActivity::class.java),
-            Item("测试EasyDimension", DimenConverterActivity::class.java)
+            Item("测试EasyDimension", DimenConverterActivity::class.java),
+            Item("测试EasyReflect", EasyReflectActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

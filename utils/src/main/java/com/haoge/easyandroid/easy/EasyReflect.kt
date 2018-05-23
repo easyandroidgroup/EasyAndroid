@@ -1,9 +1,6 @@
 package com.haoge.easyandroid.easy
 
-import java.lang.reflect.AccessibleObject
-import java.lang.reflect.Constructor
-import java.lang.reflect.Field
-import java.lang.reflect.Method
+import java.lang.reflect.*
 
 /**
  * 一个简单的反射封装库。
@@ -16,52 +13,49 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
      * 使用匹配参数的构造函数创建一个对象实例，并生成新的EasyReflect实例返回
      */
     fun instance(vararg args:Any?):EasyReflect {
-        try {
-            val constructor = getConstructor(*args)
-            return create(constructor.newInstance(*args))
-        } catch (e:Exception) {
-            throw ReflectException(e)
-        }
+        return getConstructor(*types(*args)).newInstance(*args)
     }
 
     /**
      * 根据传入的参数类型匹配对应的构造器
      */
-    fun getConstructor(vararg args:Any?):Constructor<*> {
-        val types = types(*args)
-        val constructor = clazz.getDeclaredConstructor(*types)
-        accessible(constructor)
-        return constructor
+    fun getConstructor(vararg types:Class<*>):ConstructorReflect {
+        return ConstructorReflect(accessible(clazz.getDeclaredConstructor(*types)), this)
     }
 
     // 成员变量操作区
 
     /**
-     * 读取指定name的成员变量。并为此成员变量创建新的EasyReflect实例并返回
-     */
-    fun field(name: String):EasyReflect {
-        checkInstance()
-        val field = getField(name)
-        val value = field.get(instance)
-        return create(value?:field.type)
-    }
-
-    /**
      * 为指定name的成员变量赋值为value
      */
-    fun setField(name: String, value:Any?) {
-        checkInstance()
-        val field = getField(name)
-        field.set(instance, value)
+    fun setField(name: String, value:Any?):EasyReflect {
+        getField(name).setValue(value)
+        return this
     }
 
     /**
      * 根据指定name获取对应的Field
      */
-    fun getField(name:String):Field {
-        val field = clazz.getDeclaredField(name)
-        accessible(field)
-        return field
+    fun getField(name:String):FieldReflect {
+        var type:Class<*>? = clazz
+
+        val field = try {
+            accessible(type!!.getField(name))
+        } catch (e:NoSuchFieldException){
+            var find:Field? = null
+            do {
+                try {
+                    find = accessible(type!!.getDeclaredField(name))
+                    if (find != null) {
+                        break
+                    }
+                } catch (ignore:NoSuchFieldException) { }
+                type = type!!.superclass
+            } while (type != null)
+
+            find?: throw ReflectException(e)
+        }
+        return FieldReflect(field, this)
     }
 
     // 普通方法操作区
@@ -70,8 +64,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
      * 执行指定name的方法。并返回自身的EasyReflect实例
      */
     fun call(name: String, vararg args:Any?):EasyReflect{
-        checkInstance()
-        getMethod(name, *args).invoke(instance, *args)
+        getMethod(name, *types(*args)).call(*args)
         return this
     }
 
@@ -80,23 +73,27 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
      *
      * **请注意：指定name的方法必须含有有效的返回值。**
      */
-    fun method(name:String, vararg args:Any?):EasyReflect {
-        checkInstance()
-        val method = getMethod(name, *args)
-        if (method.returnType.name == "void") {
-            throw ReflectException("Method ${clazz.canonicalName}.$name not provide a valid return type" )
-        }
-        return create(method.invoke(instance, *args))
+    fun callWithReturn(name:String, vararg args:Any?):EasyReflect {
+        return getMethod(name, *types(*args)).callWithReturn(*args)
     }
 
     /**
      * 获取与此name与参数想匹配的Method实例
      */
-    fun getMethod(name: String, vararg args:Any?):Method {
-        val types = types(*args)
-        val method = clazz.getDeclaredMethod(name, *types)
-        accessible(method)
-        return method
+    fun getMethod(name: String, vararg types:Class<*>):MethodReflect {
+        var type:Class<*>? = clazz
+        val method = try {
+            accessible(type!!.getDeclaredMethod(name, *types))
+        } catch (e:NoSuchFieldException){
+            do {
+                try {
+                    accessible(type!!.getDeclaredMethod(name, *types))
+                } catch (ignore:NoSuchMethodException) {}
+                type = type!!.superclass
+            } while (type != null)
+            throw ReflectException(e)
+        }
+        return MethodReflect(method, this)
     }
 
     /**
@@ -158,14 +155,83 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         }
 
         @JvmStatic
-        fun <T:AccessibleObject> accessible(accessible:T) {
+        fun <T:AccessibleObject> accessible(accessible:T):T {
             if (!accessible.isAccessible) {
                 accessible.isAccessible = true
             }
+            return accessible
         }
     }
 
+    class ConstructorReflect(val constructor: Constructor<*>, val upper:EasyReflect) {
+        fun newInstance(vararg args:Any?):EasyReflect {
+            return create(constructor.newInstance(*args))
+        }
+    }
 
+    // 成员方法反射操作类
+    class MethodReflect(val method:Method, val upper:EasyReflect) {
+        val isStatic = Modifier.isStatic(method.modifiers)
+        fun call(vararg args:Any?):MethodReflect {
+            if (isStatic) {
+                method.invoke(upper.clazz, *args)
+            } else {
+                upper.checkInstance()
+                method.invoke(upper.instance, *args)
+            }
+            return this
+        }
+
+        fun callWithReturn(vararg args:Any?):EasyReflect {
+            val value = if (isStatic) {
+                method.invoke(upper.clazz, *args)
+            } else {
+                upper.checkInstance()
+                method.invoke(upper.instance, *args)
+            }
+
+            return create(value?:method.returnType)
+        }
+    }
+
+    // 成员变量反射操作类
+    class FieldReflect(val field:Field, val upper:EasyReflect){
+        val isStatic = Modifier.isStatic(field.modifiers)
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T> getValue():T? {
+            return try {
+                if (isStatic) {
+                    field.get(upper.clazz) as T
+                } else {
+                    upper.checkInstance()
+                    field.get(upper.instance) as T
+                }
+            } catch (e:Exception) {
+                null
+            }
+        }
+
+        fun setValue(value: Any?):FieldReflect {
+            if (isStatic) {
+                field.set(upper.clazz, value)
+            } else {
+                upper.checkInstance()
+                field.set(upper.instance, value)
+            }
+            return this
+        }
+
+        fun transform():EasyReflect {
+            val value = if (isStatic) {
+                field.get(upper.clazz)
+            } else {
+                upper.checkInstance()
+                field.get(upper.instance)
+            }
+            return create(value?:field.type)
+        }
+    }
 }
 
 /**
@@ -173,6 +239,5 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
  */
 class ReflectException : RuntimeException {
     constructor(message: String?) : super(message)
-    constructor(message: String?, cause: Throwable?) : super(message, cause)
     constructor(cause: Throwable?) : super(cause)
 }

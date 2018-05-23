@@ -9,8 +9,20 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/simple"
-            android:text="简单测试"
+            android:id="@+id/createTypes"
+            android:text="EasyReflect实例创建的几种方式"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/fieldReflect"
+            android:text="成员变量反射操作"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/methodReflect"
+            android:text="成员方法反射操作"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

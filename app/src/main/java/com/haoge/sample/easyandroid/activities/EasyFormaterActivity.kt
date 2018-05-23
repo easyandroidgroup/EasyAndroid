@@ -96,7 +96,7 @@ class EasyFormaterActivity: BaseActivity() {
         val message = mutableListOf<Any>()
         message.add(1)
         message.add("Haoge")
-        message.add(listOf(1,2,3,4))
+        message.add(listOf(1,2,3,4,5,6))
         message.add(mapOf(Pair("1", 1), Pair("2", 2)))
         message.add(JSON.toJSONString(message))
         message.add(User("King", Address("Earth", Age(100))))

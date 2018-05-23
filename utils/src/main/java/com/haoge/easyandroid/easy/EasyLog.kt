@@ -1,5 +1,6 @@
 package com.haoge.easyandroid.easy
 
+import android.text.TextUtils
 import android.util.Log
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -13,9 +14,19 @@ class EasyLog private constructor(
         private val enable: Boolean,
         private val rules: Map<String, (StackTraceElement, Thread) -> String>,
         private val formatStyle: Format,// 多行显示时的样式
-        private val singleStyle: Format,// 单行显示时的样式
+        private val singleStyle: Format?,// 单行显示时的样式
         private val formatter: EasyFormatter
 ){
+    private var tag:String = ""
+    /**
+     * 设置一个临时的tag值。在下次调用d/i/v/w/e/wtf方法进行日志输出时。进行使用。
+     *
+     * 使用后将自动置空。所以此tag的作用域[只在下一次打印]
+     */
+    fun tag(tag:String):EasyLog {
+        this.tag = tag
+        return this
+    }
     /**
      * 格式化数据any并进行Log.d()打印
      */
@@ -23,7 +34,7 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "d", thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "d", TAG, thread) }
     }
     /**
      * 格式化数据any并进行Log.i()打印
@@ -32,7 +43,7 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "i", thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "i",TAG, thread) }
     }
     /**
      * 格式化数据any并进行Log.v()打印
@@ -41,7 +52,7 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "v", thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "v",TAG, thread) }
     }
     /**
      * 格式化数据any并进行Log.w()打印
@@ -50,7 +61,7 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "w", thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "w",TAG, thread) }
     }
     /**
      * 格式化数据any并进行Log.e()打印
@@ -59,7 +70,7 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "e", thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG-> print(formatter.format(any), trace, "e",TAG, thread) }
     }
     /**
      * 格式化数据any并进行Log.wtf()打印
@@ -68,22 +79,24 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace -> print(formatter.format(any), trace, "wtf", thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "wtf",TAG, thread) }
     }
 
     // 将待打印数据传递到指定任务线程中去进行打印，避免出现阻塞UI线程的情况
-    private fun dispatchToLogPrinterThread(invoke:(Thread, StackTraceElement) -> Unit) {
+    private fun dispatchToLogPrinterThread(invoke:(Thread, StackTraceElement, String) -> Unit) {
         val trace = findTrace()
         val current = Thread.currentThread()
-        EXECUTOR.execute { invoke.invoke(current, trace) }
+        val TAG = if (tag.isEmpty()) trace.fileName else tag
+        tag = ""
+        EXECUTOR.execute { invoke.invoke(current, trace, TAG) }
     }
 
-    private fun print(message:String, trace: StackTraceElement, type:String, callThread:Thread) {
+    private fun print(message:String, trace: StackTraceElement, type:String, tag:String, callThread:Thread) {
         val lines = message.lines()
         val copyLineRules = ArrayList<LineRules>()
         var format = formatStyle
         if (lines.size == 1) {
-            format = singleStyle
+            format = singleStyle?:formatStyle
         }
 
         for (lineRule in format.lineRules) {
@@ -110,14 +123,15 @@ class EasyLog private constructor(
             result.append(parseLine(lineMessage, lineRule, trace, cacheRules, callThread)).append("\n")
         }
 
+
         when(type) {
-            "d" -> Log.d(trace.fileName, result.toString())
-            "v" -> Log.v(trace.fileName, result.toString())
-            "i" -> Log.i(trace.fileName, result.toString())
-            "e" -> Log.e(trace.fileName, result.toString())
-            "w" -> Log.w(trace.fileName, result.toString())
-            "wtf" -> Log.wtf(trace.fileName, result.toString())
-            else -> Log.d(trace.fileName, result.toString())
+            "d" -> Log.d(tag, result.toString())
+            "v" -> Log.v(tag, result.toString())
+            "i" -> Log.i(tag, result.toString())
+            "e" -> Log.e(tag, result.toString())
+            "w" -> Log.w(tag, result.toString())
+            "wtf" -> Log.wtf(tag, result.toString())
+            else -> Log.d(tag, result.toString())
         }
 
     }
@@ -220,7 +234,8 @@ class EasyLog private constructor(
         }
 
         fun build(): EasyLog {
-            return EasyLog(upperName, debug, rules, Format(formatStyle), Format(singleStyle), formatter)
+            val singleFormat = if (TextUtils.isEmpty(singleStyle)) null else Format(singleStyle)
+            return EasyLog(upperName, debug, rules, Format(formatStyle), singleFormat, formatter)
         }
 
         companion object {

@@ -56,5 +56,8 @@ class EasyLogActivity: BaseActivity() {
         EasyLog.DEFAULT.d(JSON.toJSONString(any))
     }
 
-
+    @OnClick(R.id.printWithCustomTag)
+    fun printWithCustomTag() {
+        EasyLog.DEFAULT.tag("Custom").d("This is custom tag log")
+    }
 }

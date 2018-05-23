@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <Button
             android:id="@+id/printSingleLine"
             android:text="打印单行数据"
@@ -44,7 +45,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-
+        <Button
+            android:id="@+id/printWithCustomTag"
+            android:text="使用自定义TAG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </ScrollView>

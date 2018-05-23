@@ -1,5 +1,6 @@
 package com.haoge.easyandroid.easy
 
+import android.text.TextUtils
 import android.util.Log
 import com.haoge.easyandroid.tools.CommonUtil
 import org.json.JSONArray
@@ -62,7 +63,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 if (index != length - 1) {
                     sub.append(",")
                 }
-                appendSubString(result, sub, isFlat)
+                appendSubString(result, sub)
             }
             if (!isFlat) {
                 result.append("\n")
@@ -95,7 +96,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 if (hasNext) {
                     sub.append(", ")
                 }
-                appendSubString(result, sub, isFlat)
+                appendSubString(result, sub)
             }
             if (!isFlat) {
                 result.append("\n")
@@ -196,20 +197,21 @@ class EasyFormatter private constructor(private val builder: Builder) {
             if (hasNext) {
                 sub.append(", ")
             }
-            appendSubString(container, sub, isFlat)
+            appendSubString(container, sub)
         }
         if (!isFlat) {
             container.append("\n")
         }
     }
 
-    private fun appendSubString(container:StringBuilder, subString:StringBuilder, isFlat: Boolean) {
+    private fun appendSubString(container:StringBuilder, subString:StringBuilder) {
         val lines = subString.lines()
         for ((index, value) in lines.withIndex()) {
-            when {
-                isFlat -> container.append(value)
-                index == 0 -> container.append("\t").append(value)
-                value.isNotEmpty() -> container.append("\n").append("\t").append(value)
+            if (index == 0) {
+                container.append(value).append(if (lines.size > 1) "\n" else "")
+            } else if (value.isNotEmpty()) {
+                container.append("\t").append(value)
+                        .append(if (index == lines.size - 1) "" else "\n")
             }
         }
     }

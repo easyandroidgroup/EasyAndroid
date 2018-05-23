@@ -11,3 +11,6 @@
 
 ## 基础APIs
 
+- ActivityStack.top()
+> 获取顶层Activity提供使用
+

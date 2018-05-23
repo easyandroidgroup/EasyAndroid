@@ -23,6 +23,14 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return ConstructorReflect(accessible(clazz.getDeclaredConstructor(*types)), this)
     }
 
+    fun getConstructors():List<ConstructorReflect> {
+        val list = mutableListOf<ConstructorReflect>()
+        for (constructor in clazz.declaredConstructors) {
+            list.add(ConstructorReflect(accessible(constructor), this))
+        }
+        return list
+    }
+
     // 成员变量操作区
     /**
      * 为指定name的成员变量赋值为value
@@ -59,7 +67,18 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
             find?: throw ReflectException(e)
         }
         return FieldReflect(field, this)
+    }
 
+    fun getFields():Map<String, FieldReflect> {
+        val map = mutableMapOf<String, FieldReflect>()
+        var type:Class<*>? = clazz
+        do {
+            for (field in type!!.declaredFields) {
+                map[field.name] = FieldReflect(accessible(field), this)
+            }
+            type = type.superclass
+        } while (type != null)
+        return map
     }
 
     // 普通方法操作区
@@ -97,6 +116,18 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
             throw ReflectException(e)
         }
         return MethodReflect(method, this)
+    }
+
+    fun getMethods():List<MethodReflect> {
+        val list = mutableListOf<MethodReflect>()
+        var type:Class<*>? = clazz
+        do {
+            for (method in type!!.declaredMethods) {
+                list.add(MethodReflect(accessible(method), this))
+            }
+            type = type.superclass
+        } while (type != null)
+        return list
     }
 
     /**
@@ -175,6 +206,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
     // 成员方法反射操作类
     class MethodReflect(val method:Method, val upper:EasyReflect) {
         val isStatic = Modifier.isStatic(method.modifiers)
+
         fun call(vararg args:Any?):MethodReflect {
             if (isStatic) {
                 method.invoke(upper.clazz, *args)

@@ -2,6 +2,8 @@
 
 一个简单易用的Toast封装类。用于提供易用的、多样式的Toast组件进行使用
 
+[Sample Activity](../app/src/main/java/com/haoge/sample/easyandroid/activities/EasyToastActivity.kt)
+
 ## 特性
 
 1. 支持在任意线程下进行toast提示

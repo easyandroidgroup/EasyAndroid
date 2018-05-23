@@ -2,6 +2,8 @@
 
 EasyFormater用于对任意类型数据进行格式化操作。
 
+[Sample Activity](../app/src/main/java/com/haoge/sample/easyandroid/activities/EasyFormaterActivity.kt)
+
 ## 用法
 
 ### 直接使用默认样式进行format.

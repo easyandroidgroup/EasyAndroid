@@ -14,7 +14,7 @@ import com.haoge.easyandroid.cache.SingleCache
  *
  * AUTHOR: haoge
  */
-object SafeDialogHandle {
+internal object SafeDialogHandle {
 
     fun safeShowDialog(dialog: Dialog?) {
         if (Looper.myLooper() == Looper.getMainLooper()) {

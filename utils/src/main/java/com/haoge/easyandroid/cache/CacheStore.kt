@@ -41,7 +41,7 @@ object CacheStore {
      * @param index 存储的值的索引下标
      * @param remove 是否自动移除
      */
-    fun <T> get(index:Int, remove:Boolean):T? {
+    fun <T> get(index:Int, remove:Boolean = true):T? {
         if (index < 0 || index >= stores.size) {
             return null
         }

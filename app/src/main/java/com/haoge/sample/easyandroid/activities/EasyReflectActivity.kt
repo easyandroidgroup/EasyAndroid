@@ -43,6 +43,9 @@ class EasyReflectActivity:BaseActivity() {
         println("name字段值是：${field.getValue<String>()}")
         field.setValue("重置名字")
         println("重置后的字段值是：${field.getValue<String>()}")
+
+        println("测试无具体实例时。调用静态变量")
+        println("静态变量值为：${EasyReflect.create(Test::class.java).getFieldValue<String>("staticValue")}")
     }
 
     @OnClick(R.id.methodReflect)
@@ -57,6 +60,9 @@ class EasyReflectActivity:BaseActivity() {
         method.call()
         println("使用MethodReflect执行方法并获取返回数据")
         println(method.callWithReturn())
+
+        println("测试无具体实例时。调用静态方法")
+        EasyReflect.create(Test::class.java).call("print", "这是传入参数")
     }
 }
 
@@ -66,6 +72,15 @@ class Test(val name:String){
     override fun toString(): String {
         println("toString方法被调用")
         return "Test(name='$name')"
+    }
+
+    companion object {
+        @JvmStatic
+        fun print(message:String) {
+            println("静态方法被调用,传入参数：$message")
+        }
+
+        var staticValue = "静态文本"
     }
 
 }

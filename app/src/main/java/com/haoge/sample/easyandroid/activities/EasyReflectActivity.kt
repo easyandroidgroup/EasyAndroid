@@ -30,7 +30,15 @@ class EasyReflectActivity:BaseActivity() {
 
     @OnClick(R.id.fieldReflect)
     fun fieldReflect() {
-        val field = EasyReflect.create(Test()).getField("name")
+        val reflect = EasyReflect.create(Test())
+
+        println("直接使用EasyReflect进行数据操作")
+        println(reflect.setField("name", "直接通过EasyReflect进行重置"))
+
+        println("直接使用EasyReflect获取变量数据")
+        println("获取的变量数据为：${reflect.getFieldValue<String>("name")}")
+
+        val field = reflect.getField("name")
         println("name字段类型是：${field.field.type}")
         println("name字段值是：${field.getValue<String>()}")
         field.setValue("重置名字")

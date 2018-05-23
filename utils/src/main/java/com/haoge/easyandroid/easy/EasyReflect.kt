@@ -24,7 +24,6 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
     }
 
     // 成员变量操作区
-
     /**
      * 为指定name的成员变量赋值为value
      */
@@ -33,8 +32,12 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return this
     }
 
+    fun <T> getFieldValue(name: String):T?{
+        return getField(name).getValue()
+    }
+
     /**
-     * 根据指定name获取对应的Field
+     * 根据指定name获取对应的FieldReflect
      */
     fun getField(name:String):FieldReflect {
         var type:Class<*>? = clazz
@@ -56,10 +59,10 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
             find?: throw ReflectException(e)
         }
         return FieldReflect(field, this)
+
     }
 
     // 普通方法操作区
-
     /**
      * 执行指定name的方法。并返回自身的EasyReflect实例
      */

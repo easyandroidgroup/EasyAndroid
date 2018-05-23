@@ -1,6 +1,5 @@
 package com.haoge.easyandroid.easy
 
-import android.text.TextUtils
 import android.util.Log
 import com.haoge.easyandroid.tools.CommonUtil
 import org.json.JSONArray
@@ -63,7 +62,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 if (index != length - 1) {
                     sub.append(",")
                 }
-                appendSubString(result, sub)
+                appendSubString(result, sub, isFlat)
             }
             if (!isFlat) {
                 result.append("\n")
@@ -96,7 +95,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 if (hasNext) {
                     sub.append(", ")
                 }
-                appendSubString(result, sub)
+                appendSubString(result, sub, isFlat)
             }
             if (!isFlat) {
                 result.append("\n")
@@ -197,18 +196,20 @@ class EasyFormatter private constructor(private val builder: Builder) {
             if (hasNext) {
                 sub.append(", ")
             }
-            appendSubString(container, sub)
+            appendSubString(container, sub, isFlat)
         }
         if (!isFlat) {
             container.append("\n")
         }
     }
 
-    private fun appendSubString(container:StringBuilder, subString:StringBuilder) {
+    private fun appendSubString(container: StringBuilder, subString: StringBuilder, isFlat: Boolean) {
         val lines = subString.lines()
         for ((index, value) in lines.withIndex()) {
             if (index == 0) {
-                container.append(value).append(if (lines.size > 1) "\n" else "")
+                if (!isFlat) container.append("\t")
+                container.append(value)
+                if (lines.size > 1) container.append("\n")
             } else if (value.isNotEmpty()) {
                 container.append("\t").append(value)
                         .append(if (index == lines.size - 1) "" else "\n")

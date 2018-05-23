@@ -13,4 +13,7 @@
 
 - ActivityStack.top()
 > 获取顶层Activity提供使用
-
+- SingleCache.mainHandler
+> 获取主线程的Handler进行使用
+- SingleCache.getApplicationContext()
+> 获取进程的Application Context实例

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import com.haoge.easyandroid.cache.SingleCache
 import java.util.*
 
 /**
@@ -12,10 +13,18 @@ import java.util.*
  */
 object ActivityStack {
     private var application: Application? = null
-    private val stack:LinkedList<Activity> = LinkedList()
+    val stack:LinkedList<Activity> = LinkedList()
 
+    /**
+     * 获取顶层Activity实例
+     */
     @Suppress("UNCHECKED_CAST")
     fun <T:Activity> top():T? = if (stack.isEmpty()) null else stack.last as T
+
+    /**
+     * 获取一个有效的Context实例。
+     */
+    fun getValidContext():Context = if (stack.isEmpty()) application!! else stack.last
 
     fun registerCallback(context: Context?) {
         if (application != null || context == null) {

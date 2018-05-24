@@ -34,7 +34,7 @@ class EasyLogActivity: BaseActivity() {
 
     @OnClick(R.id.printShortList)
     fun printShortList() {
-//        EasyLog.DEFAULT.d(listOf(1,2,3,4,5,6,7))
+        EasyLog.DEFAULT.d(listOf(1,2,3,4,5,6,7))
     }
 
     @OnClick(R.id.printLongList)
@@ -55,6 +55,12 @@ class EasyLogActivity: BaseActivity() {
         // 默认输出的列表最长长度为10，所以这里数量超出限制时。将会进行平铺展示。
         val any = mapOf(Pair("key1", "Hello"), Pair("key2", "World"), Pair("key3", "Kotlin"), Pair("key4", "EasyLog"))
         EasyLog.DEFAULT.d(JSON.toJSONString(any))
+    }
+
+    @OnClick(R.id.printException)
+    fun printException() {
+        // 默认输出的列表最长长度为10，所以这里数量超出限制时。将会进行平铺展示。
+        EasyLog.DEFAULT.e(Exception("此异常只用于进行堆栈打印"))
     }
 
     @OnClick(R.id.printWithCustomTag)

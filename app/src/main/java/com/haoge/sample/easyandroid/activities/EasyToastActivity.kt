@@ -25,22 +25,22 @@ class EasyToastActivity : BaseActivity(){
 
     @OnClick(R.id.showOnMainThreadWithDefault)
     fun showOnMainThreadWithDefault() {
-        default.show("使用默认样式在主线程中进行展示")
+        default.show("使用默认样式在主线程中进行展示, Thread: ${Thread.currentThread()}")
     }
 
     @OnClick(R.id.showOnSubThreadWithDefault)
     fun showOnSubThreadWithDefault() {
-        Instance.pool.execute { default.show("使用默认样式在子线程中进行展示") }
+        Instance.pool.execute { default.show("使用默认样式在子线程中进行展示, Thread: ${Thread.currentThread()}") }
     }
 
     @OnClick(R.id.showOnMainThreadWithCreated)
     fun showOnMainThreadWithCreated() {
-        creator.show("使用自定义样式在主线程中进行展示")
+        creator.show("使用自定义样式在主线程中进行展示, Thread: ${Thread.currentThread()}")
     }
 
     @OnClick(R.id.showOnSubThreadWithCreate)
     fun showOnSubThreadWithCreate() {
-        Instance.pool.execute { creator.show("使用自定义样式在子线程中进行展示") }
+        Instance.pool.execute { creator.show("使用自定义样式在子线程中进行展示, Thread: ${Thread.currentThread()}") }
     }
 
     @OnClick(R.id.showMultiTimeToast)
@@ -48,7 +48,7 @@ class EasyToastActivity : BaseActivity(){
         Instance.pool.execute {
             for (index in 0..10) {
                 default.show("自动更新无延迟提醒：$index")
-                Thread.sleep(500)
+                Thread.sleep(300)
             }
             default.show("循环完毕")
         }
@@ -57,6 +57,5 @@ class EasyToastActivity : BaseActivity(){
     // 为减小内存开销，创建一次线程池
     object Instance {
         val pool:ExecutorService = Executors.newSingleThreadExecutor()
-
     }
 }

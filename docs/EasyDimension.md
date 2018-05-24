@@ -4,6 +4,10 @@ EasyDimension用于快速的在系统提供的各种尺寸间(PX, DIP, SP, IN, P
 
 [Sample Activity](../app/src/main/java/com/haoge/sample/easyandroid/activities/EasyDimensionActivity.kt)
 
+## 特性
+
+- api简单直观
+
 ## 用法
 
 1. 传入待转换尺寸

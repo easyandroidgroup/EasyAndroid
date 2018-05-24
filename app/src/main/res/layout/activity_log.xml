@@ -50,6 +50,18 @@
             android:text="使用自定义TAG"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printWithCustomLogger"
+            android:text="使用自定义logger进行打印"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printWithPackageLogger"
+            android:text="使用二次封装后的logger进行打印"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </ScrollView>

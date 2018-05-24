@@ -11,12 +11,11 @@ import java.util.regex.Pattern
  */
 class EasyLog private constructor(
         private val upperName: String,
-        private val enable: Boolean,
+        var enable: Boolean,
         private val rules: Map<String, (StackTraceElement, Thread) -> String>,
         private val formatStyle: Format,// 多行显示时的样式
         private val singleStyle: Format?,// 单行显示时的样式
-        private val formatter: EasyFormatter
-){
+        private val formatter: EasyFormatter){
     private var tag:String = ""
     /**
      * 设置一个临时的tag值。在下次调用d/i/v/w/e/wtf方法进行日志输出时。进行使用。
@@ -194,8 +193,8 @@ class EasyLog private constructor(
             }
         }
         @JvmStatic
-        fun newBuilder(upper: Class<*>): Builder {
-            return Builder(upper.canonicalName)
+        fun newBuilder(upper: String = EasyLog::class.java.canonicalName): Builder {
+            return Builder(upper)
         }
     }
 
@@ -234,8 +233,14 @@ class EasyLog private constructor(
         }
 
         fun build(): EasyLog {
-            val singleFormat = if (TextUtils.isEmpty(singleStyle)) null else Format(singleStyle)
-            return EasyLog(upperName, debug, rules, Format(formatStyle), singleFormat, formatter)
+            val regexBuilder = StringBuilder("(#M")
+            for (rule in rules.keys) {
+                regexBuilder.append("|$rule")
+            }
+            val regex = regexBuilder.append(")+").toString()
+
+            val singleFormat = if (TextUtils.isEmpty(singleStyle)) null else Format(singleStyle, regex)
+            return EasyLog(upperName, debug, rules, Format(formatStyle, regex), singleFormat, formatter)
         }
 
         companion object {
@@ -249,7 +254,7 @@ class EasyLog private constructor(
         }
     }
 
-    private class Format(format:String) {
+    private class Format(format: String, regex: String) {
 
         val lineRules:ArrayList<LineRules> = ArrayList()
 
@@ -270,10 +275,12 @@ class EasyLog private constructor(
             if (msgIndex == -1) {
                 throw RuntimeException("Could not find formatStyle-style : [#T] in formatStyle-String")
             }
+
             for (index in lines.indices) {
                 val origin = lines[index]
+
                 val ruleSet = mutableSetOf<Pair<Int, String>>()
-                val pattern = Pattern.compile("#([TFM])+")
+                val pattern = Pattern.compile(regex)
                 val matcher = pattern.matcher(origin)
                 while(matcher.find()) {
                     val name = matcher.group()

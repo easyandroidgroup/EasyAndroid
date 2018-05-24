@@ -5,6 +5,7 @@ import butterknife.OnClick
 import com.alibaba.fastjson.JSON
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.easyandroid.easy.EasyLog
+import com.haoge.sample.easyandroid.BuildConfig
 import com.haoge.sample.easyandroid.R
 
 /**
@@ -33,7 +34,7 @@ class EasyLogActivity: BaseActivity() {
 
     @OnClick(R.id.printShortList)
     fun printShortList() {
-        EasyLog.DEFAULT.d(listOf(1,2,3,4,5,6,7))
+//        EasyLog.DEFAULT.d(listOf(1,2,3,4,5,6,7))
     }
 
     @OnClick(R.id.printLongList)
@@ -59,5 +60,38 @@ class EasyLogActivity: BaseActivity() {
     @OnClick(R.id.printWithCustomTag)
     fun printWithCustomTag() {
         EasyLog.DEFAULT.tag("Custom").d("This is custom tag log")
+    }
+
+    @OnClick(R.id.printWithCustomLogger)
+    fun printWithCustomLogger() {
+        val builder = EasyLog.newBuilder()
+        builder.singleStyle = "#N - #F - #M"
+        builder.addRule("N", {_,_ -> "[Haoge]"})
+        val log = builder.build()
+
+        // 输出单行数据
+        log.e("这里是单行数据")
+    }
+
+    @OnClick(R.id.printWithPackageLogger)
+    fun printWithPackageLogger() {
+        MyLog.e("这里是使用二次封装后的log进行打印")
+    }
+}
+
+object MyLog {
+    private val log by lazy {
+        val builder = EasyLog.newBuilder(MyLog::class.java.canonicalName)
+        builder.debug = BuildConfig.DEBUG
+        builder.singleStyle = "[MyLog]:#F => #M"
+        return@lazy builder.build()
+    }
+
+    fun d(message:Any?) {
+        log.d(message)
+    }
+
+    fun e(message: Any?) {
+        log.e(message)
     }
 }

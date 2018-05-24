@@ -36,6 +36,6 @@ dependencies {
     if (useLocal) {
         implementation project(':utils')
     } else {
-        implementation 'com.github.yjfnypeu:EasyAndroid:1.0.0'
+        implementation 'com.github.yjfnypeu:EasyAndroid:1.0.1'
     }
 }

@@ -13,9 +13,12 @@ EasyDimension用于快速的在系统提供的各种尺寸间(PX, DIP, SP, IN, P
 1. 传入待转换尺寸
 
 ```kotlin
-// value为原始数值。unit为数值单位。
-// unit单位使用系统提供的尺寸单位，如TypedValue.COMPLEX_UNIT_PX, TypedValue.COMPLEX_UNIT_DIP
-dimension = EasyDimension.create(value, unit)
+dimension = EasyDimension.withPX(value:Float)//原始尺寸单位PX
+dimension = EasyDimension.withDIP(value:Float)//原始尺寸单位PX
+dimension = EasyDimension.withSP(value:Float)//原始尺寸单位SP
+dimension = EasyDimension.withPT(value:Float)//原始尺寸单位PT
+dimension = EasyDimension.withIN(value:Float)//原始尺寸单位IN
+dimension = EasyDimension.withMM(value:Float)//原始尺寸单位MM
 ```
 
 2. 输出转换后的不同尺寸的数值
@@ -33,5 +36,5 @@ dimension.toMM()
 
 将30dp转换为px
 ```kotlin
-val pxResult = EasyDimension.create(30, TypedValue.COMPLEX_UNIT_DIP).toPX()
+val pxResult = EasyDimension.withDIP(30).toPX()
 ```

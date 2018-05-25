@@ -108,7 +108,7 @@ class FieldReflect(val field:Field, val upper:EasyReflect)
 // 仍然是首先创建EasyReflect实例
 val reflect = ...
 // 1. 读取此类所有的成员变量：
-val map:Map<String, FieldReflect> = reflect.getFields()
+val fields:List<FieldReflect> = reflect.getFields()
 // 2. 根据参数类型匹配指定的构造器
 val field:FieldReflect = reflect.getField(name:String)
 ```

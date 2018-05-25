@@ -15,6 +15,7 @@ import java.util.regex.Pattern
  */
 class EasyFormatter private constructor(private val builder: Builder) {
 
+    val list = mutableListOf<Any>()// 用于临时存放当前已被解析的类。防止出现循环引用导致栈溢出
     // 格式化List/Set集合数据
     private fun formatCollection(collection: Collection<*>): StringBuilder {
         val result = StringBuilder("[")
@@ -142,6 +143,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     fun format(any: Any?): String {
         val format = formatAny(any)
+        list.clear()
         val lines = format.lines()
         return if (isFlat(builder.maxLines, lines.size)) {
             // 总长度大于受限长度。需要进行平铺处理
@@ -163,14 +165,14 @@ class EasyFormatter private constructor(private val builder: Builder) {
     private fun formatAny(any:Any?):StringBuilder =
         when(any) {
             null -> StringBuilder()
-            is Collection<*> -> formatCollection(any)
-            is Map<*, *> -> formatMap(any)
-            any::class.java.isArray -> formatCollection(Arrays.asList(any))
+            is Collection<*> -> checkIfFormatted(any, {return@checkIfFormatted formatCollection(any)})
+            is Map<*, *> -> checkIfFormatted(any, {return@checkIfFormatted formatMap(any)})
+            is Array<*> -> checkIfFormatted(any, {return@checkIfFormatted formatCollection(Arrays.asList(*any))})
             is String -> formatString(any)
             is Throwable -> formatException(any)
             is Int, is Boolean, is Short, is Char, is Byte, is Long, is Float, is Double
             -> StringBuilder(any.toString())
-            else -> formatOther(any)
+            else -> checkIfFormatted(any, {return@checkIfFormatted formatOther(any)})
         }
 
     private fun appendIterator(container:StringBuilder, /*数据存储容器*/
@@ -246,6 +248,15 @@ class EasyFormatter private constructor(private val builder: Builder) {
             container[field.name] = value
         }
         scanFields(any, clazz.superclass, container)
+    }
+
+    private fun checkIfFormatted(any:Any, invoke:()-> StringBuilder):StringBuilder {
+        return if (list.contains(any)) {
+            StringBuilder("(circle ref):${any.javaClass.canonicalName}")
+        } else {
+            list.add(any)
+            invoke.invoke()
+        }
     }
 
     companion object {

@@ -8,6 +8,7 @@ import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.coroutines.experimental.buildSequence
 
 /**
  * @author haoge on 2018/5/9

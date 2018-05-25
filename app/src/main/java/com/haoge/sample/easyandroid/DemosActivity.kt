@@ -6,7 +6,6 @@ import android.app.ListActivity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,14 +22,13 @@ class DemosActivity:ListActivity() {
             Item("测试EasyToast", EasyToastActivity::class.java),
             Item("测试EasyFormater", EasyFormaterActivity::class.java),
             Item("测试EasyLog", EasyLogActivity::class.java),
-            Item("测试EasyDimension", DimenConverterActivity::class.java),
+            Item("测试EasyDimension", EasyDimensionActivity::class.java),
             Item("测试EasyReflect", EasyReflectActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listAdapter = DemosAdapter(this, mContainer)
-        Log.e("DemosActivity", "onCreate: (DemosActivity.kt:31)")
 
     }
 }

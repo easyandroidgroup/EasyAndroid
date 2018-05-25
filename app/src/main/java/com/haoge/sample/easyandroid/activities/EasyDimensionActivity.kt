@@ -12,7 +12,7 @@ import com.haoge.sample.easyandroid.R
 /**
  * @author haoge on 2018/5/10
  */
-class DimenConverterActivity: BaseActivity() {
+class EasyDimensionActivity: BaseActivity() {
 
     val mInput:EditText by lazy { findViewById<EditText>(R.id.number_input) }
     val mShown:TextView by lazy { findViewById<TextView>(R.id.shown_tv) }

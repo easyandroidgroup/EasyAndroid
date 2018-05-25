@@ -142,6 +142,17 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         }
     }
 
+    fun <T> proxy(proxy:Class<T>):T? {
+        @Suppress("UNCHECKED_CAST")
+        return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {proxy, method, args ->
+            try {
+                return@newProxyInstance this@EasyReflect.call(method.name, *args)
+            } catch (e:Exception) {
+                return@newProxyInstance method.defaultValue
+            }
+        }) as T
+    }
+
     // 检查是否存在有效的可操作实例。若不存在则抛出异常。
     private fun checkInstance() {
         if (instance != null) {

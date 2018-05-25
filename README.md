@@ -52,6 +52,8 @@ val result2:String = any.easyFormat()// 或者使用扩展函数。直接格式�
 - [EasyLog](./docs/EasyLog.md)
 > 用于简单的进行日志打印输出，支持格式化输出、自定义打印格式。
 
+- 支持在任意线程调用使用
+
 用法示例：
 ```
 val any:Any = create()// 创建待打印数据
@@ -73,12 +75,12 @@ EasyToast.create(layoutID:Int, tvID:Int, duration:Int).show(message)// 使用自
 用法示例：
 ```
 // 以类名Test为例
-class Test(val name:String) {
-    fun wrap(name:String):String = "包裹后的数据$name"
+class Test private constructor(private val name:String) {
+    private fun wrap(name:String):String = "包裹后的数据$name"
 }
 
 // 创建Reflect实例：
-var reflect = EasyReflect.create(Test())
+var reflect = EasyReflect.create(Test::class.java).instance("默认参数")
 
 // 为name字段赋值：
 reflect.setField("name", "EasyReflect")

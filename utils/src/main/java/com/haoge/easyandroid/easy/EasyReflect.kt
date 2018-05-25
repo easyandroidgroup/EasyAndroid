@@ -69,16 +69,16 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return FieldReflect(field, this)
     }
 
-    fun getFields():Map<String, FieldReflect> {
-        val map = mutableMapOf<String, FieldReflect>()
+    fun getFields():List<FieldReflect> {
+        val list = mutableListOf<FieldReflect>()
         var type:Class<*>? = clazz
         do {
             for (field in type!!.declaredFields) {
-                map[field.name] = FieldReflect(accessible(field), this)
+                list.add(FieldReflect(accessible(field), this))
             }
             type = type.superclass
         } while (type != null)
-        return map
+        return list
     }
 
     // 普通方法操作区
@@ -149,7 +149,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         }
 
         try {
-            instance = getConstructor().newInstance()
+            instance = getConstructor().constructor.newInstance()
         } catch (e:Exception) {
             throw ReflectException("Could not fount default constructor for [${clazz.canonicalName}] to create instance")
         }

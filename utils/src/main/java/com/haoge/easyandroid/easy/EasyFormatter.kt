@@ -127,10 +127,10 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 || name.startsWith("javax")
                 || name.startsWith("kotlin")) {
             // 不对系统提供的类进行格式化
-            return StringBuilder(name)
+            return StringBuilder(any.toString())
         }
 
-        val result = StringBuilder("{")
+        val result = StringBuilder("[${any.javaClass.simpleName}@${any.hashCode()}]{")
         val container = mutableMapOf<String, Any>()
         scanFields(any, any.javaClass, container)
 
@@ -252,7 +252,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     private fun checkIfFormatted(any:Any, invoke:()-> StringBuilder):StringBuilder {
         return if (list.contains(any)) {
-            StringBuilder("(circle ref):${any.javaClass.canonicalName}")
+            StringBuilder("(circle ref):${any.javaClass.simpleName}@${any.hashCode()}")
         } else {
             list.add(any)
             invoke.invoke()

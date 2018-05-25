@@ -8,21 +8,93 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/createTypes"
-            android:text="EasyReflect实例创建的几种方式"
+        <TextView
+            android:text="此页面点击效果请结合logcat进行查看"
+            android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/fieldReflect"
-            android:text="成员变量反射操作"
+            android:id="@+id/createWithInstance"
+            android:text="直接使用具体实例进行创建"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/methodReflect"
-            android:text="成员方法反射操作"
+            android:id="@+id/createWithClass"
+            android:text="直接使用Class进行创建"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/createWithClassName"
+            android:text="使用className进行创建"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/createByConstructor"
+            android:text="使用指定构造函数进行创建"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/getInstanceValue"
+            android:text="获取创建出来的对象实例"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/getFieldValueByNameWithReflect"
+            android:text="获取指定的成员变量的值"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/setFieldValueByNameWithReflect"
+            android:text="为指定成员变量赋值"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/callMethodWithReflect"
+            android:text="指定调用指定方法"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/callMethodWithReturnReflect"
+            android:text="调用方法并根据返回值创建新EasyReflect对象返回"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/getFieldsWithReflect"
+            android:text="获取所有的字段"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/getMethodsWithReflect"
+            android:text="获取所有的方法"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/getConstructorsWithReflect"
+            android:text="获取所有的构造函数"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/callStaticMethod"
+            android:text="调用静态方法"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/getStaticField"
+            android:text="访问静态变量"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

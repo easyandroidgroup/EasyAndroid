@@ -21,8 +21,6 @@ android {
     }
 }
 
-def useLocal = true
-
 def butterknife_version='8.8.1'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -33,9 +31,7 @@ dependencies {
 
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
-    if (useLocal) {
-        implementation project(':utils')
-    } else {
-        implementation 'com.github.yjfnypeu:EasyAndroid:1.0.1'
-    }
+
+    implementation project(':utils')
+//    implementation 'com.github.yjfnypeu:EasyAndroid:1.0.2'
 }

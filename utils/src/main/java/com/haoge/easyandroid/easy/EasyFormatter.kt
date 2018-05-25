@@ -130,7 +130,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
             return StringBuilder(any.toString())
         }
 
-        val result = StringBuilder("[${any.javaClass.simpleName}@${any.hashCode()}]{")
+        val result = StringBuilder("[${any.javaClass.simpleName}]{")
         val container = mutableMapOf<String, Any>()
         scanFields(any, any.javaClass, container)
 
@@ -252,7 +252,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     private fun checkIfFormatted(any:Any, invoke:()-> StringBuilder):StringBuilder {
         return if (list.contains(any)) {
-            StringBuilder("(circle ref):${any.javaClass.simpleName}@${any.hashCode()}")
+            StringBuilder("{(circle ref):${any.javaClass.simpleName}}")
         } else {
             list.add(any)
             invoke.invoke()

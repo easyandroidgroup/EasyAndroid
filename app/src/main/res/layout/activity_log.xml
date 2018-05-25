@@ -51,6 +51,24 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/printSimplePOJO"
+            android:text="打印简单对象"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printComplexPOJO"
+            android:text="打印复杂对象"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/printCirclePOJO"
+            android:text="打印循环引用对象"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
             android:id="@+id/printException"
             android:text="打印异常堆栈"
             android:layout_width="match_parent"

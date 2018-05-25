@@ -57,6 +57,26 @@ class EasyLogActivity: BaseActivity() {
         EasyLog.DEFAULT.d(JSON.toJSONString(any))
     }
 
+    @OnClick(R.id.printSimplePOJO)
+    fun printSimplePOJO() {
+        EasyLog.DEFAULT.d(Simple("Haoge"))
+    }
+
+    @OnClick(R.id.printComplexPOJO)
+    fun printComplexPOJO() {
+        EasyLog.DEFAULT.d(Complex("complex message", Simple("kotlin")))
+    }
+
+    @OnClick(R.id.printCirclePOJO)
+    fun printCirclePOJO() {
+        val a = CircleA(null)
+        val b = CircleB(null)
+        a.b = b
+        b.a = a
+
+        EasyLog.DEFAULT.e(a)
+    }
+
     @OnClick(R.id.printException)
     fun printException() {
         // 默认输出的列表最长长度为10，所以这里数量超出限制时。将会进行平铺展示。
@@ -101,3 +121,11 @@ object MyLog {
         log.e(message)
     }
 }
+
+data class Simple(val name:String)
+
+data class Complex(val message:String, val simple:Simple)
+
+data class CircleA(var b:CircleB?)
+
+data class CircleB(var a:CircleA?)

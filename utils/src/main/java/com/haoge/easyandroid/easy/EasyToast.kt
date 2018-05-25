@@ -65,6 +65,8 @@ class EasyToast private constructor(private val layoutId: Int = -1,
                 val container = LayoutInflater.from(SingleCache.getApplicationContext()).inflate(layoutId, null)
                 tv = container.findViewById(tvId)
                 toast = Toast(SingleCache.getApplicationContext())
+                toast?.view = container
+                toast?.duration = duration
             }
         }
     }

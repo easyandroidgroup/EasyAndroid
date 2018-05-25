@@ -142,7 +142,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         }
     }
 
-    fun <T> proxy(proxy:Class<T>):T? {
+    fun <T> proxy(proxy:Class<T>):T {
         @Suppress("UNCHECKED_CAST")
         return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {proxy, method, args ->
             try {

@@ -110,6 +110,15 @@ class EasyReflectActivity:BaseActivity() {
         val field = reflect.getField("staticValue")
         log.d("获取到的字段为：\n${field.easyFormat()} \n 值为：${field.getValue<String>()}")
     }
+
+    @OnClick(R.id.callMethodWithProxy)
+    fun callMethodWithProxy() {
+        val reflect = EasyReflect.create(Test::class.java)
+        val proxy = reflect.proxy(TestProxy::class.java)
+        val result = proxy.invoked("使用动态代理调用invoked方法参数")
+        log.e("调用invoked参数返回值：$result")
+        proxy.print("使用动态代理调用print方法参数")
+    }
 }
 
 // 用于进行测试的类
@@ -133,7 +142,11 @@ class Test private constructor(private val name:String){
         @JvmStatic
         private var staticValue = "静态文本"
     }
+}
 
+interface TestProxy {
+    fun invoked(name:String)// 对应Test.invoked方法
+    fun print(message:String)// 对应Test.print方法
 }
 
 data class A(var b:B?)

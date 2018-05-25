@@ -15,7 +15,13 @@ import com.haoge.easyandroid.cache.SingleCache
  *
  * AUTHOR: haoge
  */
-class EasyToast private constructor(private val toast: Toast, private val tv: TextView?, private val isDefault: Boolean) {
+class EasyToast private constructor(private val layoutId: Int = -1,
+                                    private val tvId: Int = -1,
+                                    private val duration: Int = Toast.LENGTH_SHORT,
+                                    private val isDefault: Boolean = true) {
+
+    var toast:Toast? = null
+    var tv:TextView? = null
 
     fun show(resId:Int) {
         show(SingleCache.getApplicationContext().getString(resId))
@@ -39,12 +45,27 @@ class EasyToast private constructor(private val toast: Toast, private val tv: Te
     }
 
     private fun showInternal(message: String) {
+        createToastIfNeeded()
+
         if (isDefault) {
-            toast.setText(message)
-            toast.show()
+            toast?.setText(message)
+            toast?.show()
         } else {
             tv?.text = message
-            toast.show()
+            toast?.show()
+        }
+    }
+
+    @SuppressLint("ShowToast")
+    private fun createToastIfNeeded() {
+        if (toast == null) {
+            if (isDefault) {
+                toast = Toast.makeText(SingleCache.getApplicationContext(), "", Toast.LENGTH_SHORT)
+            } else {
+                val container = LayoutInflater.from(SingleCache.getApplicationContext()).inflate(layoutId, null)
+                tv = container.findViewById(tvId)
+                toast = Toast(SingleCache.getApplicationContext())
+            }
         }
     }
 
@@ -55,28 +76,11 @@ class EasyToast private constructor(private val toast: Toast, private val tv: Te
         val DEFAULT: EasyToast by lazy { default() }
 
         private fun default(): EasyToast {
-            checkThread()
-            @SuppressLint("ShowToast")
-            val toast = Toast.makeText(SingleCache.getApplicationContext(), "", Toast.LENGTH_SHORT)
-            return EasyToast(toast, null, true)
+            return EasyToast(isDefault = true)
         }
 
         fun create(layoutId: Int, tvId: Int, duration: Int): EasyToast {
-            checkThread()
-            val container = LayoutInflater.from(SingleCache.getApplicationContext()).inflate(layoutId, null)
-            val tv:TextView = container.findViewById(tvId)
-            val toast = Toast(SingleCache.getApplicationContext())
-            toast.view = container
-            toast.duration = duration
-            return EasyToast(toast, tv, false)
-        }
-
-        // Toast限制：在执行了Looper.prepare()的线程中才能创建Toast实例
-        // 这里加强限制，仅限主线程创建
-        private fun checkThread() {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                throw RuntimeException("the toast-create method must called on main-thread")
-            }
+            return EasyToast(layoutId, tvId, duration, false)
         }
     }
 }

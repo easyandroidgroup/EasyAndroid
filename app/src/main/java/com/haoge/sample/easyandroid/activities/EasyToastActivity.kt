@@ -14,9 +14,8 @@ import java.util.concurrent.Executors
  */
 class EasyToastActivity : BaseActivity(){
 
-    // 创建EasyToast实例需要在主线程进行初始化，所以就直接在外面一次性创建了
-    val default = EasyToast.DEFAULT
-    val creator = EasyToast.create(R.layout.toast_style, R.id.toast_tv, Toast.LENGTH_SHORT)
+    val default by lazy { EasyToast.DEFAULT }
+    val creator by lazy { EasyToast.create(R.layout.toast_style, R.id.toast_tv, Toast.LENGTH_SHORT) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -144,10 +144,29 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
 
     fun <T> proxy(proxy:Class<T>):T {
         @Suppress("UNCHECKED_CAST")
-        return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {proxy, method, args ->
+        return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {_, method, args ->
             try {
                 return@newProxyInstance this@EasyReflect.call(method.name, *args)
             } catch (e:Exception) {
+
+                val methodName = method.name
+                if (methodName.startsWith("get")) {
+                    val name = methodName.substring(3,4).toLowerCase() + methodName.substring(4)
+                    // 当方法名为getter方法，读取成员变量字段或者读取map中对应key值
+                    try {
+                        val result = if (instance is Map<*, *>) {
+                            (instance as Map<String, *>)[name]
+                        } else {
+                            getFieldValue(name)
+                        }
+                        if (method.returnType.isInstance(result)) {
+                            return@newProxyInstance result
+                        }
+                    } catch (e:Exception) {
+                        // ignore, GO ON!
+                    }
+                }
+
                 return@newProxyInstance when (method.returnType.name) {
                     "int", "byte", "char", "long", "double", "float", "short" -> 0
                     "boolean" -> false

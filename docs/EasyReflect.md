@@ -153,3 +153,50 @@ methodReflect.call(varage args:Any?)
 // 2. 执行此方法。并将返回值作为数据。创建出新的EasyReflect实例返回
 val newReflect = methodReflect.callWithReturn(varage args:Any?)
 ```
+
+### 使用动态代理进行托管访问
+
+当你需要对某个类进行访问，但是又不想通过写死名字的方式去调用时，可以使用此特性：
+
+假设我们有以下的类，需要进行访问：
+
+```
+class Test private constructor(private val name:String){
+    constructor():this("默认名字")
+
+    fun invoked(name:String){
+        ...
+    }
+
+    companion object {
+        @JvmStatic
+        private fun print(message:String) {
+            ...
+        }
+    }
+}
+```
+
+然后我们想通过代理接管的方式来进行方法调用、访问：
+
+- 配置代理接口：
+
+```
+interface Proxy {
+    fun invoked(name:String)// 托管到Test.invoked方法
+    fun print(message:String) // 托管到Test.print方法
+    fun getName():String // 访问成员变量：name
+}
+```
+
+注册托管代理并直接使用：
+
+```
+val reflect = EasyReflect.create(Test::class.java)
+// 注册托管代理
+val proxy:Proxy = reflect.proxy(Proxy::class.java)
+// 使用托管代理直接调用执行
+proxy.invoked("invoked")// 等同调用Test.invoked("invoked")
+proxy.print("message") // 等同调用Test.print("message")
+val name = proxy.getName() // 等同调用Test.name
+```

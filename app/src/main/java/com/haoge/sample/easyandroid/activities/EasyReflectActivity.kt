@@ -118,6 +118,7 @@ class EasyReflectActivity:BaseActivity() {
         val result = proxy.invoked("使用动态代理调用invoked方法参数")
         log.e("调用invoked参数返回值：$result")
         proxy.print("使用动态代理调用print方法参数")
+        EasyLog.DEFAULT.d("notDefine result :${proxy.notDefine()}")
     }
 }
 
@@ -147,6 +148,7 @@ class Test private constructor(private val name:String){
 interface TestProxy {
     fun invoked(name:String)// 对应Test.invoked方法
     fun print(message:String)// 对应Test.print方法
+    fun notDefine():Int// 无对应方法
 }
 
 data class A(var b:B?)

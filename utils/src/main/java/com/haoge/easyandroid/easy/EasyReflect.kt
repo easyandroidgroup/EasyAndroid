@@ -148,7 +148,11 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
             try {
                 return@newProxyInstance this@EasyReflect.call(method.name, *args)
             } catch (e:Exception) {
-                return@newProxyInstance method.defaultValue
+                return@newProxyInstance when (method.returnType.name) {
+                    "int", "byte", "char", "long", "double", "float", "short" -> 0
+                    "boolean" -> false
+                    else -> method.defaultValue
+                }
             }
         }) as T
     }

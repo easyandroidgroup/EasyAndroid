@@ -14,10 +14,12 @@ class MVPDemoActivity:BaseMVPActivity<DemoPresenter>(),DemoView {
     override fun createPresenter() = DemoPresenter(this)
 
     override fun onQuerySuccess(message: String?) {
+        // 接收数据请求任务的返回数据并展示
         EasyToast.DEFAULT.show(message)
     }
 
     override fun initPage() {
+        // 发起数据请求任务
         presenter?.requestData()
     }
 

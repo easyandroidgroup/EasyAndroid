@@ -27,12 +27,12 @@ class EasyToast private constructor(private val layoutId: Int = -1,
         show(SingleCache.getApplicationContext().getString(resId))
     }
 
-    fun show(message:String, vararg any: Any) {
+    fun show(message:String?, vararg any: Any) {
         if (TextUtils.isEmpty(message)) {
             return
         }
 
-        var result = message
+        var result = message as String
         if (any.isNotEmpty()) {
             result = String.format(message, any)
         }

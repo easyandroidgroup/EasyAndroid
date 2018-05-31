@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import com.haoge.sample.easyandroid.activities.*
+import com.haoge.sample.easyandroid.activities.mvp.MVPDemoActivity
 
 /**
  * @author haoge on 2018/5/9
@@ -23,7 +24,8 @@ class DemosActivity:ListActivity() {
             Item("测试EasyFormater", EasyFormaterActivity::class.java),
             Item("测试EasyLog", EasyLogActivity::class.java),
             Item("测试EasyDimension", EasyDimensionActivity::class.java),
-            Item("测试EasyReflect", EasyReflectActivity::class.java)
+            Item("测试EasyReflect", EasyReflectActivity::class.java),
+            Item("测试MVPDemo", MVPDemoActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

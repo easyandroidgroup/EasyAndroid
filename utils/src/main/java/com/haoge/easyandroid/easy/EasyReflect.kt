@@ -20,7 +20,19 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
      * 根据传入的参数类型匹配对应的构造器
      */
     fun getConstructor(vararg types:Class<*>):ConstructorReflect {
-        return ConstructorReflect(accessible(clazz.getDeclaredConstructor(*types)), this)
+        val constructor:Constructor<*> = try {
+            clazz.getDeclaredConstructor(*types)
+        } catch (e:NoSuchMethodException) {
+            var matched:Constructor<*>? = null
+            for (constructor in clazz.declaredConstructors) {
+                if (match(constructor.parameterTypes, types)) {
+                    matched = constructor
+                    break
+                }
+            }
+            matched?:throw ReflectException("")
+        }
+        return ConstructorReflect(accessible(constructor), this)
     }
 
     fun getConstructors():List<ConstructorReflect> {
@@ -61,7 +73,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
                         break
                     }
                 } catch (ignore:NoSuchFieldException) { }
-                type = type!!.superclass
+                type = type?.superclass
             } while (type != null)
 
             find?: throw ReflectException(e)
@@ -69,6 +81,9 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return FieldReflect(field, this)
     }
 
+    /**
+     * 获取所有的字段。包括父类的
+     */
     fun getFields():List<FieldReflect> {
         val list = mutableListOf<FieldReflect>()
         var type:Class<*>? = clazz
@@ -118,6 +133,9 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return MethodReflect(method, this)
     }
 
+    /**
+     * 获取所有的方法：包括父类的
+     */
     fun getMethods():List<MethodReflect> {
         val list = mutableListOf<MethodReflect>()
         var type:Class<*>? = clazz
@@ -142,13 +160,15 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         }
     }
 
+    /**
+     * 创建一个与此class相绑定的动态代理
+     */
     fun <T> proxy(proxy:Class<T>):T {
         @Suppress("UNCHECKED_CAST")
         return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {_, method, args ->
             try {
                 return@newProxyInstance this@EasyReflect.call(method.name, *args)
             } catch (e:Exception) {
-
                 val methodName = method.name
                 if (methodName.startsWith("get")) {
                     val name = methodName.substring(3,4).toLowerCase() + methodName.substring(4)
@@ -229,9 +249,37 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
             }
             return accessible
         }
+
+        @JvmStatic
+        fun match(declaredTypes:Array<out Class<*>>, actualTypes: Array<out Class<*>>):Boolean {
+            if (declaredTypes.size != actualTypes.size) {
+                return false
+            }
+
+            for ((index, declared) in declaredTypes.withIndex()) {
+                if (box(declared).isAssignableFrom(box(actualTypes[index]))) {
+                    continue
+                }
+                return false
+            }
+            return true
+        }
+
+        @JvmStatic
+        fun box(source:Class<*>):Class<*> = when(source.name) {
+            "byte" -> Class.forName("java.lang.Byte")
+            "short" -> Class.forName("java.lang.Short")
+            "int" -> Class.forName("java.lang.Integer")
+            "long" -> Class.forName("java.lang.Long")
+            "float" -> Class.forName("java.lang.Float")
+            "double" -> Class.forName("java.lang.Double")
+            "boolean" -> Class.forName("java.lang.Boolean")
+            "char" -> Class.forName("java.lang.Character")
+            else -> source
+        }
     }
 
-    class ConstructorReflect(val constructor: Constructor<*>, val upper:EasyReflect) {
+    class ConstructorReflect(val constructor: Constructor<*>, @Suppress("unused") val upper:EasyReflect) {
         fun newInstance(vararg args:Any?):EasyReflect {
             return create(constructor.newInstance(*args))
         }
@@ -291,6 +339,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
             return this
         }
 
+        @Suppress("unused")
         fun transform():EasyReflect {
             val value = if (isStatic) {
                 field.get(upper.clazz)

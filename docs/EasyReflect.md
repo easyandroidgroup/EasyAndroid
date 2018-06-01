@@ -185,7 +185,10 @@ class Test private constructor(private val name:String){
 interface Proxy {
     fun invoked(name:String)// 托管到Test.invoked方法
     fun print(message:String) // 托管到Test.print方法
-    fun getName():String // 访问成员变量：name
+    fun getName():String // 获取成员变量name的值
+    fun get(name:String):String // 获取成员变量name的值
+    fun setName(value:String) // 为变量name赋值为value
+    fun set(name:String, value:String)// 为变量name赋值为value
 }
 ```
 

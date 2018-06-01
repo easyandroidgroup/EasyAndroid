@@ -167,26 +167,25 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         @Suppress("UNCHECKED_CAST")
         return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {_, method, args ->
             try {
-                return@newProxyInstance this@EasyReflect.call(method.name, *args)
+                // 优先匹配存在的方法
+                return@newProxyInstance this@EasyReflect.callWithReturn(method.name, *args).get()
             } catch (e:Exception) {
-                val methodName = method.name
-                if (methodName.startsWith("get")) {
-                    val name = methodName.substring(3,4).toLowerCase() + methodName.substring(4)
-                    // 当方法名为getter方法，读取成员变量字段或者读取map中对应key值
-                    try {
-                        val result = if (instance is Map<*, *>) {
-                            (instance as Map<String, *>)[name]
-                        } else {
-                            getFieldValue(name)
-                        }
-                        if (method.returnType.isInstance(result)) {
-                            return@newProxyInstance result
-                        }
-                    } catch (e:Exception) {
-                        // ignore, GO ON!
+                try {
+                    val methodName = method.name
+                    if (methodName == "get" && args.size == 1 && args[0] is String) {
+                        return@newProxyInstance getFieldValue(args[0] as String)
+                    } else if (methodName == "set" && args.size == 2 && args[0] is String) {
+                        setField(args[0] as String, args[1])
+                    } else if (methodName.startsWith("get") && method.returnType != Void::class.java) {
+                        val name = methodName.substring(3,4).toLowerCase() + methodName.substring(4)
+                        return@newProxyInstance getFieldValue(name)
+                    } else if (methodName.startsWith("set") && args.size == 1) {
+                        val name = methodName.substring(3,4).toLowerCase() + methodName.substring(4)
+                        setField(name, args[0])
                     }
+                } catch (e:Exception) {
+                    // ignore
                 }
-
                 return@newProxyInstance when (method.returnType.name) {
                     "int", "byte", "char", "long", "double", "float", "short" -> 0
                     "boolean" -> false

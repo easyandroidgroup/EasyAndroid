@@ -1,7 +1,6 @@
 package com.haoge.easyandroid.easy
 
 import android.util.Log
-import com.haoge.easyandroid.tools.CommonUtil
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Modifier
@@ -240,10 +239,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                 field.isAccessible = true
             }
 
-            val value = field.get(any)
-            if (CommonUtil.isEmpty(value)) {
-                continue
-            }
+            val value = field.get(any) ?: continue
 
             container[field.name] = value
         }

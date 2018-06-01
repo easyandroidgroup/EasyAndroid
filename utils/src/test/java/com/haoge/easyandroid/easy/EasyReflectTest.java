@@ -16,8 +16,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(JUnit4.class)
 public class EasyReflectTest {
-
-    EasyReflect reflect;
+    private EasyReflect reflect;
 
     @Before
     public void setUp() {
@@ -107,6 +106,30 @@ public class EasyReflectTest {
         assertEquals(reflect.getFieldValue("name"), "new_name");
     }
 
+    @Test
+    public void proxy() {
+        ReflectProxy proxy = reflect.proxy(ReflectProxy.class);
+        // 通过代理的同名方法进行调用
+        assertEquals("Hello", proxy.getMessage("Hello"));
+        proxy.varargsParams("Hello", "World");
+
+        // 通过getXXX/setXXX对指定字段进行赋值与读取
+        proxy.setName("EasyReflect");
+        assertEquals("EasyReflect", proxy.getName());
+
+        // 通过set/get方法对指定字段进行读取与赋值
+        proxy.set("TAG", "NewValue");
+        assertEquals("NewValue", proxy.get("TAG"));
+    }
+}
+
+interface ReflectProxy {
+    String getMessage(String message);// 代理到TestReflectClass.getMessage方法
+    void varargsParams(String ... args);// 代理到TestReflectClass.varargsParams方法
+    String getName();// 读取TestReflectClass.name字段的实例
+    void setName(String name);// 为TestReflectClass.name进行赋值
+    Object get(String name);// 获取TestReflectClass指定name的字段
+    void set(String name, Object value);// 获取TestReflectClass指定name的字段
 }
 
 class TestReflectClass {

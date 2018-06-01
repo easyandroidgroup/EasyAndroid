@@ -135,6 +135,13 @@ reflect.call("wrap", value)
 val result = reflect.callWithReturn("wrap", value).get<String>()
 ```
 
+### [MVP](./docs/MVP.md)
+
+> 提供的一种简单的MVP分层架构实现。
+
+- 支持单页面绑定多个Presenter进行使用
+- 支持P层进行生命周期派发
+
 ### [APIs](./docs/APIs.md)
 > 提供的一些其他零散的类库APIs
 

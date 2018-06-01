@@ -1,5 +1,6 @@
 package com.haoge.sample.easyandroid.activities.mvp
 
+import android.os.Bundle
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.easyandroid.mvp.MVPPresenter
 import com.haoge.easyandroid.mvp.MVPView
@@ -18,7 +19,7 @@ class MVPDemoActivity:BaseMVPActivity<DemoPresenter>(),DemoView {
         EasyToast.DEFAULT.show(message)
     }
 
-    override fun initPage() {
+    override fun initPage(savedInstanceState: Bundle?) {
         // 发起数据请求任务
         presenter?.requestData()
     }
@@ -26,10 +27,12 @@ class MVPDemoActivity:BaseMVPActivity<DemoPresenter>(),DemoView {
     override fun getLayoutId() = R.layout.activity_mvp_demo
 }
 
+// V层接口，定制界面UI更新的协议方法
 interface DemoView:MVPView {
     fun onQuerySuccess(message:String?)
 }
 
+// P层数据处理：处理与界面无关的、与数据处理相关的逻辑。并用于连接M与V层的中间件
 class DemoPresenter(view:DemoView):MVPPresenter<DemoView>(view) {
     val executor: EasyThread by lazy { EasyThread.Builder.createSingle().build() }
 

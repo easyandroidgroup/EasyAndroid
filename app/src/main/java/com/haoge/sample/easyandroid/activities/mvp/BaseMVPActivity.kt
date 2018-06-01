@@ -42,7 +42,7 @@ abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
             setContentView(layoutId)
             ButterKnife.bind(this)
         }
-        initPage()
+        initPage(savedInstanceState)
 
         if (presenter != null) {
             mvpDispatcher.addPresenter(presenter!!)
@@ -79,9 +79,6 @@ abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
     override fun onDestroy() {
         super.onDestroy()
         mvpDispatcher.dispatchOnDestroy()
-        if (presenter != null) {
-            mvpDispatcher.removePresenter(presenter!!)
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -123,6 +120,6 @@ abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
      * 指定使用的LayoutID，用于进行setContentView操作。当return 0时，则代表不使用
      */
     abstract fun getLayoutId():Int
-    abstract fun initPage()
+    abstract fun initPage(savedInstanceState: Bundle?)
     abstract fun createPresenter():P
 }

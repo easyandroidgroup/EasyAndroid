@@ -38,7 +38,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
     fun getConstructors():List<ConstructorReflect> {
         val list = mutableListOf<ConstructorReflect>()
         for (constructor in clazz.declaredConstructors) {
-            list.add(ConstructorReflect(accessible(constructor), this))
+            list.add(ConstructorReflect(constructor, this))
         }
         return list
     }
@@ -118,19 +118,19 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
      * 获取与此name与参数想匹配的Method实例
      */
     fun getMethod(name: String, vararg types:Class<*>):MethodReflect {
-        var type:Class<*>? = clazz
-        val method = try {
-            accessible(type!!.getDeclaredMethod(name, *types))
-        } catch (e:NoSuchFieldException){
-            do {
-                try {
-                    accessible(type!!.getDeclaredMethod(name, *types))
-                } catch (ignore:NoSuchMethodException) {}
-                type = type!!.superclass
-            } while (type != null)
-            throw ReflectException(e)
+        val method:Method = try {
+            clazz.getDeclaredMethod(name, *types)
+        } catch (e:NoSuchMethodException) {
+            var matched:Method? = null
+            for (method in clazz.declaredMethods) {
+                if (method.name == name && match(method.parameterTypes, types)) {
+                    matched = method
+                    break
+                }
+            }
+            matched?:throw ReflectException("")
         }
-        return MethodReflect(method, this)
+        return MethodReflect(accessible(method), this)
     }
 
     /**
@@ -214,14 +214,21 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
     }
 
     companion object {
+        @JvmStatic
         fun create(clazz: Class<*>, any:Any? = null):EasyReflect {
             return EasyReflect(clazz, any)
         }
 
+        @JvmStatic
         fun create(any:Any):EasyReflect {
-            return create(any.javaClass, any)
+            return when (any) {
+                is Class<*> -> create(any)
+                is String -> create(any)
+                else -> create(any.javaClass, any)
+            }
         }
 
+        @JvmStatic
         fun create(name:String, loader:ClassLoader? = null): EasyReflect {
             return try {
                 if (loader == null) {
@@ -230,7 +237,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
                     create(Class.forName(name, true, loader))
                 }
             } catch (e:Exception) {
-                throw ReflectException(e)
+                EasyReflect(name.javaClass, name)
             }
         }
 
@@ -251,17 +258,19 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         }
 
         @JvmStatic
-        fun match(declaredTypes:Array<out Class<*>>, actualTypes: Array<out Class<*>>):Boolean {
-            if (declaredTypes.size != actualTypes.size) {
-                return false
-            }
-
+        fun match(declaredTypes: Array<out Class<*>>, actualTypes: Array<out Class<*>>):Boolean {
+            if (declaredTypes.size != actualTypes.size) return false
             for ((index, declared) in declaredTypes.withIndex()) {
+                val actualType = actualTypes[index]
+                if (actualType == Void::class.java && !declared.isPrimitive) {
+                    continue
+                }
                 if (box(declared).isAssignableFrom(box(actualTypes[index]))) {
                     continue
                 }
                 return false
             }
+
             return true
         }
 
@@ -280,9 +289,11 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
     }
 
     class ConstructorReflect(val constructor: Constructor<*>, @Suppress("unused") val upper:EasyReflect) {
+        // 参数是否为可变参数
         fun newInstance(vararg args:Any?):EasyReflect {
             return create(constructor.newInstance(*args))
         }
+
     }
 
     // 成员方法反射操作类

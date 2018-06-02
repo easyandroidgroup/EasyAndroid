@@ -1,14 +1,12 @@
 package com.haoge.sample.easyandroid.activities
 
-import android.os.Bundle
 import android.widget.Toast
 import butterknife.OnClick
-import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.easyandroid.easy.EasyToast
+import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * @author haoge on 2018/5/9
@@ -18,9 +16,8 @@ class EasyToastActivity : BaseActivity(){
     val default by lazy { EasyToast.DEFAULT }
     val creator by lazy { EasyToast.create(R.layout.toast_style, R.id.toast_tv, Toast.LENGTH_SHORT) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_easy_toast)
+    override fun getLayoutId(): Int {
+        return R.layout.activity_easy_toast
     }
 
     @OnClick(R.id.showOnMainThreadWithDefault)

@@ -1,10 +1,9 @@
 package com.haoge.sample.easyandroid.activities
 
-import android.os.Bundle
 import butterknife.OnClick
 import com.alibaba.fastjson.JSON
-import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.easyandroid.easy.EasyLog
+import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.BuildConfig
 import com.haoge.sample.easyandroid.R
 
@@ -12,10 +11,8 @@ import com.haoge.sample.easyandroid.R
  * @author haoge on 2018/5/11
  */
 class EasyLogActivity: BaseActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log)
+    override fun getLayoutId(): Int {
+        return R.layout.activity_log
     }
 
     @OnClick(R.id.printSingleLine)

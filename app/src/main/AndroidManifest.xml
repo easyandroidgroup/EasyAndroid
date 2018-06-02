@@ -21,5 +21,6 @@
         <activity android:name=".activities.EasyLogActivity" />
         <activity android:name=".activities.EasyReflectActivity" />
         <activity android:name=".activities.mvp.MVPDemoActivity" />
+        <activity android:name=".activities.EasyResultActivity" />
     </application>
 </manifest>

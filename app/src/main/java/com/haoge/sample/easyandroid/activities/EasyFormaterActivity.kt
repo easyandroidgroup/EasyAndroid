@@ -1,11 +1,10 @@
 package com.haoge.sample.easyandroid.activities
 
-import android.os.Bundle
 import android.widget.TextView
 import butterknife.OnClick
 import com.alibaba.fastjson.JSON
-import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.easyandroid.easy.EasyFormatter
+import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 
 /**
@@ -25,9 +24,8 @@ class EasyFormaterActivity: BaseActivity() {
 
     var mUsedFormatter: EasyFormatter = mDefaultFormatter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_formater)
+    override fun getLayoutId(): Int {
+        return R.layout.activity_formater
     }
 
     @OnClick(R.id.usedCustomFormatter)

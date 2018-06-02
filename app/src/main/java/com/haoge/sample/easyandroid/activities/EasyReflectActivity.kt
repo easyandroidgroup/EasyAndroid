@@ -17,9 +17,8 @@ class EasyReflectActivity:BaseActivity() {
 
     val log = EasyLog.DEFAULT
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_reflect)
+    override fun getLayoutId(): Int {
+        return R.layout.activity_reflect
     }
 
     @OnClick(R.id.createWithInstance)

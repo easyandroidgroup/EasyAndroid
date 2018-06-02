@@ -1,18 +1,22 @@
 package com.haoge.sample.easyandroid.activities
 
-import android.os.Bundle
 import android.util.TypedValue
-import android.widget.*
+import android.widget.EditText
+import android.widget.RadioGroup
+import android.widget.TextView
 import butterknife.OnClick
-import com.haoge.sample.easyandroid.BaseActivity
-import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.easyandroid.easy.EasyDimension
+import com.haoge.easyandroid.easy.EasyToast
+import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 
 /**
  * @author haoge on 2018/5/10
  */
 class EasyDimensionActivity: BaseActivity() {
+    override fun getLayoutId(): Int {
+        return R.layout.activity_dimen_converter
+    }
 
     val mInput:EditText by lazy { findViewById<EditText>(R.id.number_input) }
     val mShown:TextView by lazy { findViewById<TextView>(R.id.shown_tv) }
@@ -21,11 +25,6 @@ class EasyDimensionActivity: BaseActivity() {
     var mEasyDimension: EasyDimension? = null
     var value:Float = 0.0f
     var unitName:String = ""
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dimen_converter)
-    }
 
     @OnClick(R.id.create)
     fun create() {

@@ -25,6 +25,7 @@ class DemosActivity:ListActivity() {
             Item("测试EasyLog", EasyLogActivity::class.java),
             Item("测试EasyDimension", EasyDimensionActivity::class.java),
             Item("测试EasyReflect", EasyReflectActivity::class.java),
+            Item("测试EasyActivityResult", EasyResultActivity::class.java),
             Item("测试MVPDemo", MVPDemoActivity::class.java)
     )
 

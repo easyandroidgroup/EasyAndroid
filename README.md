@@ -135,6 +135,23 @@ reflect.call("wrap", value)
 val result = reflect.callWithReturn("wrap", value).get<String>()
 ```
 
+### [EasyActivityResult](./docs/EasyActivityResult.md)
+
+>用于解决onActivityResult业务逻辑臃肿的问题
+
+- **业务解耦分离**: 各自启动业务线处理各自的回调逻辑
+- **去除requestCode**: 进行启动时自动生成随机的requestCode, 不用再为每个启动任务分别配置请求码了。
+- **防暴击**: 防止快速点击时启动多个重复页面
+
+用法示例：
+
+```
+EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.java),
+        { resultCode:Int, data:Intent? ->
+            // 直接在此进行返回数据处理
+        })
+```
+
 ### [MVP](./docs/MVP.md)
 
 > 提供的一种简单的MVP分层架构实现。

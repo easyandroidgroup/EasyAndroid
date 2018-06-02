@@ -41,6 +41,7 @@ class EasyResultActivity: BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // 进行返回信息过滤派发
         EasyActivityResult.dispatch(this, requestCode, resultCode, data)
     }
 }

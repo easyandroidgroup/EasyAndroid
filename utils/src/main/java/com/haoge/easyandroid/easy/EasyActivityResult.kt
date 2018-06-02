@@ -18,8 +18,12 @@ object EasyActivityResult {
     private var lastTime = 0L
 
     @JvmStatic
-    fun startActivity(context:Context, intent:Intent, callback:((resultCode:Int, data:Intent?) -> Unit)?, options: Bundle? = null) {
+    fun startActivity(context:Context, intent:Intent, callback:((resultCode:Int, data:Intent?) -> Unit)?) {
+        startActivity(context, intent, callback, null)
+    }
 
+    @JvmStatic
+    fun startActivity(context:Context, intent:Intent, callback:((resultCode:Int, data:Intent?) -> Unit)?, options: Bundle?) {
         val current = System.currentTimeMillis()
         val last = lastTime
         lastTime = current
@@ -55,8 +59,8 @@ object EasyActivityResult {
         if (!container.containsKey(activity)) {
             return
         }
-        val map = container[activity]
-        map?.remove(requestCode)?.invoke(resultCode, data)
+
+        container[activity]?.remove(requestCode)?.invoke(resultCode, data)
 
         releaseInvalidItems()
     }

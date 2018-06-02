@@ -1,13 +1,8 @@
 # EasyReflect
 
-EasyReflect对常规的反射操作进行封装。达到更便于使用反射的效果
+EasyReflect对常规的反射操作进行封装。让使用反射操作变得简单。
 
 [Sample Activity](../app/src/main/java/com/haoge/sample/easyandroid/activities/EasyReflectActivity.kt)
-
-## 特性
-
-- 链式调用
-- api友好，逻辑清晰
 
 ## 用法
 

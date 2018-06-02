@@ -94,7 +94,7 @@ EasyLog将对样式中的带#号的数据进行匹配，填充入对应的数据
 
 **#F|#T|#M**为默认格式。分别匹配不同的数据：
 
-- #F => filename+number. 此条数据用于在logcat中提供文件的索引链接
+- #F => filename+number. 此条数据用于在logcat中提供调用处的文件索引链接
 - #T => 调用处所处的线程名
 - #M => 具体打印message数据的地方.
 > 请注意：在一个定制样式中。必须只能有一个#M格式。
@@ -111,7 +111,7 @@ EasyLog.DEFAULT.d("""
 
 ![](https://user-gold-cdn.xitu.io/2018/5/23/1638d70caa59cc25?w=169&h=19&f=png)
 
-处上方的formatStyle以外。EasyLog还提供singleStyle样式定制：
+除上方的formatStyle以外。EasyLog还提供singleStyle样式定制：
 
 ```
 val builder = EasyLog.newBuilder()
@@ -119,7 +119,7 @@ builder.singleStyle = createStyle()
 ```
 
 因为formatStyle主要面向的场景是多行数据排版输出。但是实际上大部分时间我们都是打印的单行数据。
-所以额外提供的singleStyle样式。主要便是用于对单行数据进行输出。避免造成性能浪费
+所以额外提供了singleStyle样式。主要便是用于对单行数据进行输出。避免造成性能浪费
 
 singleStyle配置规则与formatStyle一致。默认的样式为：[EasyLog]#F ==> #M
 
@@ -161,6 +161,7 @@ log.e("这里是单行数据")
 ```
 object MyLog {
     private val log by lazy {
+        // 指定上边界为MyLog类名。表示需要匹配到的栈帧为MyLog类外最近一次的调用处
         val builder = EasyLog.newBuilder(MyLog::class.java.canonicalName)
         builder.debug = BuildConfig.DEBUG
         return@lazy builder.build()

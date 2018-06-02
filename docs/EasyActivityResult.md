@@ -10,7 +10,7 @@ EasyActivityResult主要用于解决onActivityResult业务逻辑臃肿的问题
 > 各自启动业务线处理各自的回调逻辑，不用再在onActivityResult中堆代码
 - **去除requestCode**：
 > 进行启动时自动生成随机的requestCode, 不用再为每个启动任务分别配置请求码了。
-- 防暴击
+- **防暴击**
 > 防止快速点击时启动多个重复页面
 
 ## 用法

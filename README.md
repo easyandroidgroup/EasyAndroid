@@ -42,14 +42,14 @@ EasyAndroid.init(application)
 
 ### 目录索引
 
-- [EasyDimension](#easydimension)
-- [EasyFormatter](#easyformatter)
-- [EasyLog](#easylog)
-- [EasyToast](#easytoast)
-- [EasyReflect](#easyreflect)
-- [EasyActivityResult](#easyactivityresult)
-- [EasyPermissions](#easypermissions)
-- [MVP](#mvp)
+- [EasyDimension](#easydimension): 尺寸转换组件
+- [EasyFormatter](#easyformatter): 数据格式化排版组件
+- [EasyLog](#easylog): 日志打印组件
+- [EasyToast](#easytoast): Toast通知组件
+- [EasyReflect](#easyreflect): 反射操作组件
+- [EasyActivityResult](#easyactivityresult): onActivityResult解耦组件
+- [EasyPermissions](#easypermissions): 动态权限申请组件
+- [MVP](#mvp): 简单MVP架构
 
 ### [EasyDimension](./docs/EasyDimension.md)
 

@@ -206,6 +206,34 @@ EasyPermissions.create(// 指定待申请权限
 - 支持单页面绑定多个Presenter进行使用
 - 支持P层进行生命周期派发
 
+用法示例
+
+```
+// 1. 创建页面通信协议接口：
+interface CustomView:MVPView {
+    // 定义通信协议方法：P层将使用此方法驱动V层进行界面更新
+    fun updateUI()
+}
+
+// 2. 创建Presenter。并与对应的通信协议相绑定：
+class CustomPresenter(view:CustomView):MVPPresenter(view) {
+    // 直接创建对应的启动方法，供V层进行启动调用
+    fun requestData() {
+        // TODO 进行数据业务处理。并在处理完成后，通过view通知到V层
+    }
+}
+
+// 3. 创建具体的V层(Activity or Fragment),并绑定Presenter进行使用：
+class CustomActivity:BaseMVPActivity<CustomPresenter>, CustomView {
+    override fun updateUI() {// TODO 进行界面更新}
+
+    fun initPage() {
+        // 通过绑定的Presenter发起任务
+        presenter?.requestData()
+    }
+}
+```
+
 ### [APIs](./docs/APIs.md)
 > 提供的一些其他零散的类库APIs
 

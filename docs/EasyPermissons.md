@@ -2,6 +2,9 @@
 
 EasyPermissions用于进行版本号6.0+的动态权限申请操作
 
+[Sample Activity](../app/src/main/java/com/haoge/sample/easyandroid/activities/EasyPermissionsActivity.kt)
+
+
 ## 特性
 
 - 链式调用

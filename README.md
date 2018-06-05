@@ -40,7 +40,16 @@ EasyAndroid.init(application)
 
 然后即可直接使用
 
-目前版本已集成以下部分组件库:
+### 目录索引
+
+- [EasyDimension](#easydimension)
+- [EasyFormatter](#easyformatter)
+- [EasyLog](#easylog)
+- [EasyToast](#easytoast)
+- [EasyReflect](#easyreflect)
+- [EasyActivityResult](#easyactivityresult)
+- [EasyPermissions](#easypermissions)
+- [MVP](#mvp)
 
 ### [EasyDimension](./docs/EasyDimension.md)
 
@@ -152,7 +161,7 @@ EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.
         })
 ```
 
-### [EasyPermissons](./docs/EasyPermissons.md)
+### [EasyPermissions](./docs/EasyPermissions.md)
 
 > 进行6.0+的动态权限请求
 

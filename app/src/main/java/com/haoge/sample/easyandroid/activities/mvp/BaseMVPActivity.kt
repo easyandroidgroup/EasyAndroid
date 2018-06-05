@@ -28,6 +28,7 @@ abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
     // 懒加载presenter
     val presenter:P? by lazy { return@lazy createPresenter()}
     // 加载中的提示Dialog
+    @Suppress("DEPRECATION")
     val progressDialog:Dialog by lazy {
         val dialog = ProgressDialog(this)
         dialog.setMessage("加载中...")

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
-import com.haoge.easyandroid.cache.SingleCache
 import java.util.*
 
 /**
@@ -19,7 +18,7 @@ object ActivityStack {
      * 获取顶层Activity实例
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T:Activity> top():T? = if (stack.isEmpty()) null else stack.last as T
+    fun <T:Activity> top():T = if (stack.isEmpty()) throw RuntimeException("There're no AVAILABLE ACTIVITY on stack top.") else stack.last as T
 
     /**
      * 获取一个有效的Context实例。
@@ -37,7 +36,7 @@ object ActivityStack {
 
     fun push(activity: Activity) {
         if (!stack.contains(activity)) {
-            stack.push(activity)
+            stack.addLast(activity)
         }
     }
 

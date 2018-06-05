@@ -10,12 +10,14 @@ import com.haoge.easyandroid.easy.EasyPermissions
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
+import java.util.concurrent.Executors
 
 /**
  * @author haoge on 2018/6/4
  */
 class EasyPermissionsActivity:BaseActivity() {
 
+    private val pool = Executors.newSingleThreadExecutor()
     private val callback:(Boolean) -> Unit = {grant ->
         EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
     }
@@ -29,14 +31,23 @@ class EasyPermissionsActivity:BaseActivity() {
 
     @OnClick(R.id.permissionSingle)
     fun permissionSingle() {
-        EasyPermissions.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .callback(callback)
                 .request()
     }
 
+    @OnClick(R.id.permissionOnSubThread)
+    fun permissionOnSubThread() {
+        pool.execute {
+            EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .callback(callback)
+                    .request()
+        }
+    }
+
     @OnClick(R.id.permissionMultiple)
     fun permissionMultiple() {
-        EasyPermissions.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_CALENDAR,
                         Manifest.permission.WRITE_CONTACTS
                 ).callback(callback).request()
@@ -44,7 +55,7 @@ class EasyPermissionsActivity:BaseActivity() {
 
     @OnClick(R.id.permissionWithRational)
     fun permissionWithRational() {
-        EasyPermissions.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .rational { permission, chain ->
                     AlertDialog.Builder(this)
                             .setTitle("权限申请说明")

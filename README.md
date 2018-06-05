@@ -152,6 +152,44 @@ EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.
         })
 ```
 
+### [EasyPermissons](./docs/EasyPermissons.md)
+
+> 进行6.0+的动态权限请求
+
+- 链式调用
+- 支持定制权限申请说明弹窗
+- 支持同时申请多个权限
+- 多权限申请时进行去重与空过滤
+- 自动使用顶层Activity执行权限请求
+- 支持在任意线程进行权限申请
+
+用法示例：
+
+```
+EasyPermissions.create(// 指定待申请权限
+    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    Manifest.permission.WRITE_CALENDAR,
+    Manifest.permission.WRITE_CONTACTS
+    )
+    // 定制权限申请说明弹窗
+    .rational { permission, chain ->
+        AlertDialog.Builder(this)
+                .setTitle("权限申请说明")
+                .setMessage("应用需要此权限：\n$permission")
+                .setNegativeButton("拒绝", {_, _ -> chain.cancel() })
+                .setPositiveButton("同意", {_, _ -> chain.process() })
+                .show()
+
+        return@rational true
+    }
+    // 设置授权结果回调
+    .callback { grant ->
+        EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
+    }
+    // 发起请求
+    .request()
+```
+
 ### [MVP](./docs/MVP.md)
 
 > 提供的一种简单的MVP分层架构实现。

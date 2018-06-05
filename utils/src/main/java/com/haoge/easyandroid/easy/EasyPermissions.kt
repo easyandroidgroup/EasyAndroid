@@ -82,17 +82,17 @@ class EasyPermissions private constructor(val permissions:Array<out String>){
     companion object {
 
         @JvmStatic
-        fun permissions(vararg permissions:String): EasyPermissions {
+        fun create(vararg permissions:String): EasyPermissions {
             return EasyPermissions(permissions)
         }
     }
 }
 
 @TargetApi(Build.VERSION_CODES.M)
-class RationalChain internal constructor(val denies: MutableIterator<String>,
-                                         val fragment: PermissionFragment,
-                                         val rational: ((String, RationalChain) -> Boolean)?,
-                                         val result: (Boolean) -> Unit) {
+class RationalChain internal constructor(internal val denies: MutableIterator<String>,
+                                         internal val fragment: PermissionFragment,
+                                         internal val rational: ((String, RationalChain) -> Boolean)?,
+                                         internal val result: (Boolean) -> Unit) {
 
     fun process() {
         // 到底了。用户未拦截

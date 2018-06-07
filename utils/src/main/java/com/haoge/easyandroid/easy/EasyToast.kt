@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +20,7 @@ import com.haoge.easyandroid.EasyAndroid
 class EasyToast private constructor(private val layoutId: Int = -1,
                                     private val tvId: Int = -1,
                                     private val duration: Int = Toast.LENGTH_SHORT,
+                                    private val gravity:Gravity? = null,
                                     private val isDefault: Boolean = true) {
 
     var toast:Toast? = null
@@ -68,6 +70,9 @@ class EasyToast private constructor(private val layoutId: Int = -1,
                 toast = Toast(EasyAndroid.getApplicationContext())
                 toast?.view = container
                 toast?.duration = duration
+                if (gravity != null) {
+                    toast?.setGravity(gravity.gravity, gravity.offsetX, gravity.offsetY)
+                }
             }
         }
     }
@@ -85,7 +90,13 @@ class EasyToast private constructor(private val layoutId: Int = -1,
         }
 
         fun create(layoutId: Int, tvId: Int, duration: Int): EasyToast {
-            return EasyToast(layoutId, tvId, duration, false)
+            return EasyToast(layoutId, tvId, duration, isDefault = false)
+        }
+
+        fun createWithGravity(layoutId: Int, tvId: Int, duration: Int, gravity: Int, offsetX: Int, offsetY: Int):EasyToast {
+            return EasyToast(layoutId, tvId, duration, EasyToast.Gravity(gravity, offsetX, offsetY), isDefault = false)
         }
     }
+
+    private class Gravity(val gravity:Int, val offsetX:Int, val offsetY:Int)
 }

@@ -216,11 +216,12 @@ class EasyLog private constructor(
         /**
          * 单行显示日志输出样式：当被排版后的数据为单行时，使用此样式进行输出。
          */
-        var singleStyle = "[EasyLog]#F ==> #M"
+        var singleStyle = "[EasyLog]#f ==> #M"
 
         private val rules:MutableMap<String, (StackTraceElement, Thread)->String> = mutableMapOf(
                 Pair("#T", { _, thread -> "[${thread.name}]"}),
-                Pair("#F", { trace, _ -> "(${trace.fileName}:${trace.lineNumber})"})
+                Pair("#F", { trace, _ -> "${trace.className.substringAfterLast('.')}.${trace.methodName}(${trace.fileName}:${trace.lineNumber})"}),
+                Pair("#f", { trace, _ -> "(${trace.fileName}:${trace.lineNumber})"})
         )
 
         /**

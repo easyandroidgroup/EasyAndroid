@@ -20,11 +20,21 @@ import com.haoge.easyandroid.EasyAndroid
 class EasyToast private constructor(private val layoutId: Int = -1,
                                     private val tvId: Int = -1,
                                     private val duration: Int = Toast.LENGTH_SHORT,
-                                    private val gravity:Gravity? = null,
                                     private val isDefault: Boolean = true) {
 
-    var toast:Toast? = null
-    var tv:TextView? = null
+    private var toast:Toast? = null
+    private var tv:TextView? = null
+    private var gravity:Gravity? = null
+    private var defaultGravity:Gravity? = null
+
+    fun setDefaultGravity(gravity: Int, offsetX: Int, offsetY: Int) {
+        this.defaultGravity = EasyToast.Gravity(gravity, offsetX, offsetY)
+    }
+
+    fun setGravity(gravity: Int, offsetX: Int, offsetY: Int):EasyToast {
+        this.gravity = EasyToast.Gravity(gravity, offsetX, offsetY)
+        return this
+    }
 
     fun show(resId:Int) {
         show(EasyAndroid.getApplicationContext().getString(resId))
@@ -50,6 +60,10 @@ class EasyToast private constructor(private val layoutId: Int = -1,
     private fun showInternal(message: String) {
         createToastIfNeeded()
 
+        val gravity = this.gravity?:this.defaultGravity
+        if (gravity != null) {
+            toast?.setGravity(gravity.gravity, gravity.offsetX, gravity.offsetY)
+        }
         if (isDefault) {
             toast?.setText(message)
             toast?.show()
@@ -70,9 +84,6 @@ class EasyToast private constructor(private val layoutId: Int = -1,
                 toast = Toast(EasyAndroid.getApplicationContext())
                 toast?.view = container
                 toast?.duration = duration
-                if (gravity != null) {
-                    toast?.setGravity(gravity.gravity, gravity.offsetX, gravity.offsetY)
-                }
             }
         }
     }
@@ -91,10 +102,6 @@ class EasyToast private constructor(private val layoutId: Int = -1,
 
         fun create(layoutId: Int, tvId: Int, duration: Int): EasyToast {
             return EasyToast(layoutId, tvId, duration, isDefault = false)
-        }
-
-        fun createWithGravity(layoutId: Int, tvId: Int, duration: Int, gravity: Int, offsetX: Int, offsetY: Int):EasyToast {
-            return EasyToast(layoutId, tvId, duration, EasyToast.Gravity(gravity, offsetX, offsetY), isDefault = false)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.haoge.sample.easyandroid.activities
 
+import android.view.Gravity
 import android.widget.Toast
 import butterknife.OnClick
 import com.haoge.easyandroid.easy.EasyToast
@@ -38,6 +39,16 @@ class EasyToastActivity : BaseActivity(){
     @OnClick(R.id.showOnSubThreadWithCreate)
     fun showOnSubThreadWithCreate() {
         Instance.pool.execute { creator.show("使用自定义样式在子线程中进行展示, Thread: ${Thread.currentThread()}") }
+    }
+
+    @OnClick(R.id.showDefaultCenterWithGravity)
+    fun showDefaultCenterWithGravity() {
+        default.setGravity(Gravity.CENTER, 0, 0).show("使用默认样式在中心展示")
+    }
+
+    @OnClick(R.id.showCustomTopWithGravity)
+    fun showCustomTopWithGravity() {
+        creator.setGravity(Gravity.TOP, 0, 20).show("使用自定义样式在顶部展示")
     }
 
     @OnClick(R.id.showMultiTimeToast)

@@ -28,6 +28,18 @@
         android:layout_height="wrap_content" />
 
     <Button
+        android:id="@+id/showDefaultCenterWithGravity"
+        android:text="使用Gravity配置默认Toast在中心展示"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/showCustomTopWithGravity"
+        android:text="使用Gravity配置新建Toast在顶部展示"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
         android:id="@+id/showMultiTimeToast"
         android:text="短期连续多次展示toast文本"
         android:layout_width="match_parent"

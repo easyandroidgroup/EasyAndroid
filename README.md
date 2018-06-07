@@ -49,6 +49,7 @@ EasyAndroid.init(application)
 - [EasyReflect](#easyreflect): 反射操作组件
 - [EasyActivityResult](#easyactivityresult): onActivityResult解耦组件
 - [EasyPermissions](#easypermissions): 动态权限申请组件
+- [EasyExecutor](#easyexecutor): 线程池封装组件
 - [MVP](#mvp): 简单MVP架构
 
 ### [EasyDimension](./docs/EasyDimension.md)
@@ -197,6 +198,38 @@ EasyPermissions.create(// 指定待申请权限
     }
     // 发起请求
     .request()
+```
+
+### [EasyExecutor](./docs/EasyExecutor.md)
+
+> 用于进行`安全`、`高效`、`便利`的线程池操作功能组件
+
+- **安全**: 直接catch住任务执行期间出现的异常。并通知给用户，避免出现crash
+- **回调通知**: 执行任务期间，有分别的生命周期作为通知。
+- **配置灵活**: 可方便、灵活的对每次所启动的任务，配置线程名、回调等。
+- **任务延迟**: 支持在每次启动任务前。指定延迟时间
+- **异步任务**: 支持直接启动异步任务并回调传递数据
+- **线程切换**: 支持指定回调方法所在的线程。默认为运行于UI线程中
+
+用法示例
+
+```
+// 1. 第一步：创建示例
+val executor =
+    // size为所需创建的线程池的大小。当size <= 0时。
+    // 表示需要使用newCachedThreadPool。
+    EasyExecutor.newBuilder(size)
+            .setName(name)// 默认的线程名
+            .setPriority(priority)// 线程池中创建线程的优先级
+            .onStart {threadName -> } // 默认任务启动时的回调
+            .onSuccess {threadName -> }// 默认任务执行完毕后的回调
+            .onError {threadName, throwable -> }// 默认任务执行出现异常时的回调
+            .setDeliver(deliver)// 默认的回调任务派发器。用于将信息派发到指定线程去。
+            .build()// 最后。执行创建
+
+// 2. 第二步：启动任务
+executor.execute(runnable:Runnable)// 启动普通任务
+executor.async(callable:Callable<T>, result:(T) -> Unit)// 启动异步回调任务
 ```
 
 ### [MVP](./docs/MVP.md)

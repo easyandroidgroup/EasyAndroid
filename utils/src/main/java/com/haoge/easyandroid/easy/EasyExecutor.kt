@@ -15,10 +15,16 @@ class EasyExecutor private constructor(val executor: ExecutorService,
                                        private val builder: Builder) {
 
     private var delay:Long = 0
+    private var name:String? = null
     private var success:SUCCESS? = null
     private var error:ERROR? = null
     private var start:START? = null
     private var deliver:Executor? = null
+
+    fun setName(name:String):EasyExecutor {
+        this.name = name
+        return this
+    }
 
     fun setDelay(delay:Long):EasyExecutor {
         this.delay = Math.max(delay, 0)
@@ -180,9 +186,9 @@ class EasyExecutor private constructor(val executor: ExecutorService,
         private var success:SUCCESS? = executor.success
         private var error:ERROR? = executor.error
         private var start:START? = executor.start
+        private var name:String = executor.name?:builder.name
 
         override fun run() {
-            val name = Thread.currentThread().name
             Thread.currentThread().setUncaughtExceptionHandler {
                 _, e ->
                 deliver.execute {
@@ -190,6 +196,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
                     error?.invoke(name, e)
                 }
             }
+            Thread.currentThread().name = name
             deliver.execute {
                 builder.start?.invoke(name)
                 start?.invoke(name)

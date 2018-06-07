@@ -12,7 +12,8 @@ import java.util.*
  */
 object ActivityStack {
     private var application: Application? = null
-    val stack:LinkedList<Activity> = LinkedList()
+
+    private val stack:LinkedList<Activity> = LinkedList()
 
     /**
      * 获取顶层Activity实例
@@ -34,18 +35,21 @@ object ActivityStack {
         application?.registerActivityLifecycleCallbacks(Callback())
     }
 
+    @Synchronized
     fun push(activity: Activity) {
         if (!stack.contains(activity)) {
             stack.addLast(activity)
         }
     }
 
+    @Synchronized
     fun pop(activity: Activity) {
         if (stack.contains(activity)) {
             stack.remove(activity)
         }
     }
 
+    @Synchronized
     fun pop() {
         if (!stack.isEmpty()) {
             val pop = stack.pop()

@@ -85,9 +85,9 @@ class EasyLog private constructor(
     private fun dispatchToLogPrinterThread(invoke:(Thread, StackTraceElement, String) -> Unit) {
         val trace = findTrace()
         val current = Thread.currentThread()
-        val TAG = if (tag.isEmpty()) trace.fileName else tag
-        tag = ""
-        EXECUTOR.execute { invoke.invoke(current, trace, TAG) }
+        val tag = if (tag.isEmpty()) trace.fileName else tag
+        this.tag = ""
+        EXECUTOR.execute { invoke.invoke(current, trace, tag) }
     }
 
     private fun print(message:String, trace: StackTraceElement, type:String, tag:String, callThread:Thread) {
@@ -186,7 +186,7 @@ class EasyLog private constructor(
                 thread.name = "EasyLog Printer Thread"
                 thread.priority = Thread.MIN_PRIORITY
                 thread.isDaemon = true
-                thread.setUncaughtExceptionHandler { t, e ->
+                thread.setUncaughtExceptionHandler { _, e ->
                     Log.e("EasyLog Printer ERROR", "EasyLog printer task has occurs some uncaught error. see stack traces for details:", e)
                 }
                 return@newSingleThreadExecutor thread

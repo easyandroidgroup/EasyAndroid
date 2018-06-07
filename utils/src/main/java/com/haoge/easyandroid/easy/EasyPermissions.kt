@@ -13,7 +13,7 @@ import com.haoge.easyandroid.tools.ActivityStack
 /**
  * @author haoge on 2018/6/4
  */
-class EasyPermissions private constructor(val permissions:Array<out String>){
+class EasyPermissions private constructor(private val permissions:Array<out String>){
 
     internal var rational:((String, RationalChain) -> Boolean)? = null
     internal var callback:((Boolean) -> Unit)? = null

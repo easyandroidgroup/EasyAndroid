@@ -25,10 +25,11 @@ class EasyToast private constructor(private val layoutId: Int = -1,
     private var toast:Toast? = null
     private var tv:TextView? = null
     private var gravity:Gravity? = null
-    private var defaultGravity:Gravity? = null
 
-    fun setDefaultGravity(gravity: Int, offsetX: Int, offsetY: Int) {
-        this.defaultGravity = EasyToast.Gravity(gravity, offsetX, offsetY)
+    fun reset() {
+        this.toast = null
+        this.tv = null
+        this.gravity = null
     }
 
     fun setGravity(gravity: Int, offsetX: Int, offsetY: Int):EasyToast {
@@ -60,9 +61,10 @@ class EasyToast private constructor(private val layoutId: Int = -1,
     private fun showInternal(message: String) {
         createToastIfNeeded()
 
-        val gravity = this.gravity?:this.defaultGravity
+        val gravity = this.gravity
         if (gravity != null) {
             toast?.setGravity(gravity.gravity, gravity.offsetX, gravity.offsetY)
+            this.gravity = null
         }
         if (isDefault) {
             toast?.setText(message)

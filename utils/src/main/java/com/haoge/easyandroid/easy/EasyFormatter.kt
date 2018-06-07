@@ -14,7 +14,7 @@ import java.util.regex.Pattern
  */
 class EasyFormatter private constructor(private val builder: Builder) {
 
-    val list = mutableListOf<Any>()// 用于临时存放当前已被解析的类。防止出现循环引用导致栈溢出
+    private val list = mutableListOf<Any>()// 用于临时存放当前已被解析的类。防止出现循环引用导致栈溢出
     // 格式化List/Set集合数据
     private fun formatCollection(collection: Collection<*>): StringBuilder {
         val result = StringBuilder("[")

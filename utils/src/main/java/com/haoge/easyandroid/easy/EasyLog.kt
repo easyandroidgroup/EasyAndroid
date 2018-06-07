@@ -180,7 +180,7 @@ class EasyLog private constructor(
 
     companion object {
         val DEFAULT: EasyLog by lazy { Builder(EasyLog::class.java.canonicalName).build() }
-        val EXECUTOR: ExecutorService by lazy {
+        private val EXECUTOR: ExecutorService by lazy {
             return@lazy Executors.newSingleThreadExecutor {
                 val thread = Thread(it)
                 thread.name = "EasyLog Printer Thread"

@@ -2,10 +2,10 @@ package com.haoge.easyandroid.safe
 
 import android.app.Activity
 import android.app.Dialog
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.ContextThemeWrapper
-import com.haoge.easyandroid.cache.SingleCache
 
 /**
  * 对Dialog的show/dismiss操作进行封装，避免出现weakWindowToken问题。
@@ -16,13 +16,15 @@ import com.haoge.easyandroid.cache.SingleCache
  */
 internal object SafeDialogHandle {
 
+    internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+
     fun safeShowDialog(dialog: Dialog?) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             safeShowDialogOnMainThread(dialog)
             return
         }
 
-        SingleCache.mainHandler.post { safeShowDialogOnMainThread(dialog) }
+        mainHandler.post { safeShowDialogOnMainThread(dialog) }
     }
 
     private fun safeShowDialogOnMainThread(dialog: Dialog?) {
@@ -61,7 +63,7 @@ internal object SafeDialogHandle {
             return
         }
 
-        SingleCache.mainHandler.post { safeDismissDialogOnMainThread(dialog) }
+        mainHandler.post { safeDismissDialogOnMainThread(dialog) }
     }
 
     private fun safeDismissDialogOnMainThread(dialog: Dialog?) {

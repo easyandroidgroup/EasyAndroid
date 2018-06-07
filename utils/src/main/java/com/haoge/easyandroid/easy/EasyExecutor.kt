@@ -1,7 +1,7 @@
 package com.haoge.easyandroid.easy
 
+import android.os.Handler
 import android.os.Looper
-import com.haoge.easyandroid.cache.SingleCache
 import java.util.concurrent.*
 
 /**
@@ -86,12 +86,14 @@ class EasyExecutor private constructor(val executor: ExecutorService,
     }
 
     companion object {
+        internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+
         @JvmStatic
         internal val UIDeliver:Executor = Executor {
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 it.run()
             } else {
-                SingleCache.mainHandler.post { it.run() }
+                mainHandler.post { it.run() }
             }
         }
 

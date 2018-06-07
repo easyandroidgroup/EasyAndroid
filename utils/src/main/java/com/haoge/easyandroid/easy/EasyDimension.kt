@@ -2,7 +2,7 @@ package com.haoge.easyandroid.easy
 
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import com.haoge.easyandroid.cache.SingleCache
+import com.haoge.easyandroid.EasyAndroid
 
 /**
  * 尺寸数值转换器。用于方便的在不同的尺寸单位之间进行转换
@@ -25,7 +25,7 @@ class EasyDimension private constructor(private val pixel:Float, private val met
     companion object {
         @JvmStatic
         fun create(value:Float, unit:Int): EasyDimension {
-            val metrics = SingleCache.getApplicationContext().resources.displayMetrics
+            val metrics = EasyAndroid.getApplicationContext().resources.displayMetrics
             return EasyDimension(TypedValue.applyDimension(unit, value, metrics), metrics!!)
         }
 

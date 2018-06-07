@@ -6,8 +6,8 @@ import android.app.Fragment
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
-import com.haoge.easyandroid.cache.SingleCache
 import com.haoge.easyandroid.tools.ActivityStack
 
 /**
@@ -47,7 +47,7 @@ class EasyPermissions private constructor(val permissions:Array<out String>){
         if (Looper.myLooper() == Looper.getMainLooper()) {
             requestInternal(permissions)
         } else {
-            SingleCache.mainHandler.post { requestInternal(permissions) }
+            mainHandler.post { requestInternal(permissions) }
         }
     }
 
@@ -80,6 +80,8 @@ class EasyPermissions private constructor(val permissions:Array<out String>){
     }
 
     companion object {
+
+        internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
 
         @JvmStatic
         fun create(vararg permissions:String): EasyPermissions {

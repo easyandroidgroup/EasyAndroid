@@ -1,12 +1,13 @@
 package com.haoge.easyandroid.easy
 
 import android.annotation.SuppressLint
+import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.Toast
-import com.haoge.easyandroid.cache.SingleCache
+import com.haoge.easyandroid.EasyAndroid
 
 /**
  * 一个简单易用的Toast封装类。用于提供易用的、多样式的Toast组件进行使用
@@ -24,7 +25,7 @@ class EasyToast private constructor(private val layoutId: Int = -1,
     var tv:TextView? = null
 
     fun show(resId:Int) {
-        show(SingleCache.getApplicationContext().getString(resId))
+        show(EasyAndroid.getApplicationContext().getString(resId))
     }
 
     fun show(message:String?, vararg any: Any) {
@@ -40,7 +41,7 @@ class EasyToast private constructor(private val layoutId: Int = -1,
         if (Looper.myLooper() == Looper.getMainLooper()) {
             showInternal(result)
         } else {
-            SingleCache.mainHandler.post { showInternal(result) }
+            mainHandler.post { showInternal(result) }
         }
     }
 
@@ -60,11 +61,11 @@ class EasyToast private constructor(private val layoutId: Int = -1,
     private fun createToastIfNeeded() {
         if (toast == null) {
             if (isDefault) {
-                toast = Toast.makeText(SingleCache.getApplicationContext(), "", Toast.LENGTH_SHORT)
+                toast = Toast.makeText(EasyAndroid.getApplicationContext(), "", Toast.LENGTH_SHORT)
             } else {
-                val container = LayoutInflater.from(SingleCache.getApplicationContext()).inflate(layoutId, null)
+                val container = LayoutInflater.from(EasyAndroid.getApplicationContext()).inflate(layoutId, null)
                 tv = container.findViewById(tvId)
-                toast = Toast(SingleCache.getApplicationContext())
+                toast = Toast(EasyAndroid.getApplicationContext())
                 toast?.view = container
                 toast?.duration = duration
             }
@@ -72,6 +73,8 @@ class EasyToast private constructor(private val layoutId: Int = -1,
     }
 
     companion object {
+
+        internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
         /**
          * 默认提供的Toast实例，在首次使用时进行加载。
          */

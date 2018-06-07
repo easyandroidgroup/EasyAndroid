@@ -230,6 +230,7 @@ val executor =
 // 2. 第二步：启动任务
 executor.execute(runnable:Runnable)// 启动普通任务
 executor.async(callable:Callable<T>, result:(T) -> Unit)// 启动异步回调任务
+executor.setDelay(delay).execute(runnable)// 延时启动任务
 ```
 
 ### [MVP](./docs/MVP.md)

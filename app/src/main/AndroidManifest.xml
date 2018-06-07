@@ -27,5 +27,6 @@
         <activity android:name=".activities.mvp.MVPDemoActivity" />
         <activity android:name=".activities.EasyResultActivity" />
         <activity android:name=".activities.EasyPermissionsActivity" />
+        <activity android:name=".activities.EasyExecutorActivity" />
     </application>
 </manifest>

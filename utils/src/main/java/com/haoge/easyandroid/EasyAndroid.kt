@@ -12,6 +12,8 @@ object EasyAndroid {
 
     /**
      * 提供给框架内部使用的常量。判断是否是debug|release包
+     *
+     * 其为**BuildConfig.DEBUG**的值
      */
     internal val DEBUG by lazy {
         return@lazy try {

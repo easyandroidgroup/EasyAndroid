@@ -33,7 +33,7 @@ class EasyPermissionsActivity:BaseActivity() {
     fun permissionSingle() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .callback(callback)
-                .request(this)
+                .request()
     }
 
     @OnClick(R.id.permissionOnSubThread)
@@ -41,7 +41,7 @@ class EasyPermissionsActivity:BaseActivity() {
         pool.execute {
             EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     .callback(callback)
-                    .request(this)
+                    .request()
         }
     }
 
@@ -50,7 +50,7 @@ class EasyPermissionsActivity:BaseActivity() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_CALENDAR,
                         Manifest.permission.WRITE_CONTACTS
-                ).callback(callback).request(this)
+                ).callback(callback).request()
     }
 
     @OnClick(R.id.permissionWithRational)
@@ -65,7 +65,7 @@ class EasyPermissionsActivity:BaseActivity() {
                             .show()
                     return@rational true
                 }.callback(callback)
-                .request(this)
+                .request()
     }
 
 }

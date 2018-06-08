@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import com.haoge.easyandroid.tools.ActivityStack
 
 /**
  * @author haoge on 2018/6/4
@@ -38,23 +37,22 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
         return this
     }
 
-    fun request() {
+    fun request(activity: Activity) {
         if (Build.VERSION.SDK_INT < 23) {
             callback?.invoke(true)
             return
         }
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            requestInternal(permissions)
+            requestInternal(permissions, activity)
         } else {
-            mainHandler.post { requestInternal(permissions) }
+            mainHandler.post { requestInternal(permissions, activity) }
         }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    internal fun requestInternal(permissions: Array<out String>) {
-        val activity = ActivityStack.top<Activity>()
-        if (activity == null || activity.isFinishing || activity.isDestroyed) {
+    internal fun requestInternal(permissions: Array<out String>, activity: Activity) {
+        if (activity.isFinishing || activity.isDestroyed) {
             callback?.invoke(false)
             return
         }

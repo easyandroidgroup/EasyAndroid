@@ -38,7 +38,7 @@ EasyPermissions
         // 当用户拒绝进行权限请求时：调用chain.cancel()
 
         return@rational true|false // 当需要进行弹窗通知时。需要返回true。否则返回false
-    }.request()// 发起动态权限请求任务
+    }.request(activity)// 发起动态权限请求任务
 ```
 
 ### 示例说明:
@@ -61,7 +61,7 @@ EasyPermissions.create(
     }.callback { grant ->
         EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
     }
-    .request()
+    .request(activity)
 ```
 
 

@@ -3,9 +3,15 @@ package com.haoge.easyandroid.easy
 import android.util.Log
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.StringReader
+import java.io.StringWriter
 import java.lang.reflect.Modifier
 import java.util.*
-import java.util.regex.Pattern
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerException
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.stream.StreamResult
+import javax.xml.transform.stream.StreamSource
 
 /**
  * 对数据进行格式化
@@ -14,6 +20,7 @@ import java.util.regex.Pattern
  */
 class EasyFormatter private constructor(private val builder: Builder) {
 
+    private val indent = "    "
     private val list = mutableListOf<Any>()// 用于临时存放当前已被解析的类。防止出现循环引用导致栈溢出
     // 格式化List/Set集合数据
     private fun formatCollection(collection: Collection<*>): StringBuilder {
@@ -40,71 +47,71 @@ class EasyFormatter private constructor(private val builder: Builder) {
         } else if (data.startsWith("[")
             && data.endsWith("]")) {
             return formatJSONArray(data)
+        } else if (data.startsWith("<")
+            && data.endsWith(">")) {
+            return formatXML(data)
         }
 
         return StringBuilder(data)
     }
 
-    private fun formatJSONArray(data: String): StringBuilder {
-        val result = StringBuilder("[")
-        try {
-            val array = JSONArray(data)
-            val length = array.length()
-            val isFlat = isFlat(builder.maxArraySize, length)
-
-            for (index in 0..(length - 1)) {
-                val sub = StringBuilder()
-                if (!isFlat) {
-                    result.append("\n")
-                }
-
-                sub.append(formatString(array.optString(index)))
-                if (index != length - 1) {
-                    sub.append(",")
-                }
-                appendSubString(result, sub, isFlat)
+    private fun formatXML(data:String):StringBuilder {
+        return try {
+            val xmlInput = StreamSource(StringReader(data))
+            val xmlOutput = StreamResult(StringWriter())
+            val transformer = TransformerFactory.newInstance().newTransformer()
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2")
+            transformer.transform(xmlInput, xmlOutput)
+            val output = xmlOutput.writer.toString().replaceFirst(">".toRegex(), ">\n")
+            val lines = output.lines()
+            val isFlat = isFlat(builder.maxMapSize, lines.size)
+            val result = StringBuilder()
+            if (isFlat.not()) {
+                result.append(output)
+            } else {
+                lines.forEach { result.append(it.trimIndent()) }
             }
-            if (!isFlat) {
-                result.append("\n")
-            }
-        } catch (e:Exception) {
-            return StringBuilder(data)
+            result
+        } catch (e: TransformerException) {
+            StringBuilder(data)
         }
-        result.append("]")
-        return result
+    }
+
+    private fun formatJSONArray(data: String): StringBuilder {
+        return try {
+            val json = JSONArray(data).toString(indent.length)
+
+            val lines = JSONArray(data).toString(indent.length).lines()
+            val isFlat = isFlat(builder.maxMapSize, lines.size)
+            val result = StringBuilder()
+            if (isFlat.not()) {
+                result.append(json)
+            } else {
+                lines.forEach { result.append(it.trimIndent()) }
+            }
+            result
+        } catch (e:Exception) {
+            StringBuilder(data)
+        }
     }
 
     private fun formatJSONObject(data: String): StringBuilder {
-        val result = StringBuilder("{")
-        try {
-            val json = JSONObject(data)
-            val length = json.length()
-            val keys = json.keys()
-            val isFlat = isFlat(builder.maxMapSize, length)
-            var hasNext = keys.hasNext()
-            while (hasNext) {
-                if (!isFlat) {
-                    result.append("\n")
-                }
+        return try {
+            val json = JSONObject(data).toString(indent.length)
 
-                val sub = StringBuilder()
-                val next = keys.next()
-                sub.append(formatString(next)).append(":").append(json.optString(next))
-
-                hasNext = keys.hasNext()
-                if (hasNext) {
-                    sub.append(", ")
-                }
-                appendSubString(result, sub, isFlat)
+            val lines = JSONArray(data).toString(indent.length).lines()
+            val isFlat = isFlat(builder.maxMapSize, lines.size)
+            val result = StringBuilder()
+            if (isFlat.not()) {
+                result.append(json)
+            } else {
+                lines.forEach { result.append(it.trimIndent()) }
             }
-            if (!isFlat) {
-                result.append("\n")
-            }
+            result
         } catch (e:Exception) {
-            return StringBuilder(data)
+            StringBuilder(data)
         }
-        result.append("}")
-        return result
     }
 
     private fun isFlat(maxSize:Int, length:Int):Boolean {
@@ -152,7 +159,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
                     result.append(value)
                     result.append("\n")
                 } else {
-                    result.append(value.replace(Pattern.compile("(\t)").toRegex(), ""))
+                    result.append(value.trimIndent())
                 }
             }
             result.toString()
@@ -208,11 +215,11 @@ class EasyFormatter private constructor(private val builder: Builder) {
         val lines = subString.lines()
         for ((index, value) in lines.withIndex()) {
             if (index == 0) {
-                if (!isFlat) container.append("\t")
+                if (!isFlat) container.append(indent)
                 container.append(value)
                 if (lines.size > 1) container.append("\n")
             } else if (value.isNotEmpty()) {
-                container.append("\t").append(value)
+                container.append(indent).append(value)
                         .append(if (index == lines.size - 1) "" else "\n")
             }
         }

@@ -103,6 +103,12 @@ class EasyFormaterActivity: BaseActivity() {
         mResult.text = result
     }
 
+    @OnClick(R.id.formatXml)
+    fun formatXml() {
+        val xml = "<resources><string name=\"app_name\">utils</string>\n</resources>"
+        mResult.text = mUsedFormatter.format(xml)
+    }
+
     fun escape(source:String):String {
         val chars = source.toCharArray()
         for (value in chars) {

@@ -42,11 +42,8 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     private fun formatString(data: String): StringBuilder {
         if (data.startsWith("{")
-            && data.endsWith("}")) {
-            return formatJSONObject(data)
-        } else if (data.startsWith("[")
-            && data.endsWith("]")) {
-            return formatJSONArray(data)
+            || data.startsWith("[")) {
+            return formatJSON(data)
         } else if (data.startsWith("<")
             && data.endsWith(">")) {
             return formatXML(data)
@@ -78,29 +75,14 @@ class EasyFormatter private constructor(private val builder: Builder) {
         }
     }
 
-    private fun formatJSONArray(data: String): StringBuilder {
+    private fun formatJSON(data: String): StringBuilder {
         return try {
-            val json = JSONArray(data).toString(indent.length)
+            val json = if (data.startsWith("["))
+                JSONArray(data).toString(indent.length)
+            else
+                JSONObject(data).toString(indent.length)
 
-            val lines = JSONArray(data).toString(indent.length).lines()
-            val isFlat = isFlat(builder.maxMapSize, lines.size)
-            val result = StringBuilder()
-            if (isFlat.not()) {
-                result.append(json)
-            } else {
-                lines.forEach { result.append(it.trimIndent()) }
-            }
-            result
-        } catch (e:Exception) {
-            StringBuilder(data)
-        }
-    }
-
-    private fun formatJSONObject(data: String): StringBuilder {
-        return try {
-            val json = JSONObject(data).toString(indent.length)
-
-            val lines = JSONArray(data).toString(indent.length).lines()
+            val lines = json.lines()
             val isFlat = isFlat(builder.maxMapSize, lines.size)
             val result = StringBuilder()
             if (isFlat.not()) {

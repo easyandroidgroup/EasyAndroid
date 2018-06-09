@@ -1,7 +1,6 @@
 package com.haoge.sample.easyandroid.activities
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import butterknife.OnClick
 import com.haoge.easyandroid.easy.EasyLog
 import com.haoge.easyandroid.easy.EasyReflect

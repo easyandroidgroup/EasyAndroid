@@ -7,6 +7,7 @@ import com.haoge.easyandroid.easy.EasyReflect
 import com.haoge.easyandroid.easyFormat
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
+import java.util.*
 
 /**
  * @author haoge on 2018/5/22
@@ -102,6 +103,15 @@ class EasyReflectActivity:BaseActivity() {
         reflect.call("print", "自定义参数")
     }
 
+    @OnClick(R.id.callMethodWithVararg)
+    fun callMethodWithVararg() {
+        val reflect = EasyReflect.create(Test::class.java)
+        // 调用只含有可变参数的方法
+        reflect.call("withVararg", 1, arrayOf("This", "is", "WithVararg"))
+        reflect.call("onlyVararg", arrayOf("Hello", "World", "onlyVararg"))
+        reflect.instance(arrayOf("Hello", "World", "Constructor"))
+    }
+
     @OnClick(R.id.getStaticField)
     fun getStaticField() {
         val reflect = EasyReflect.create(Test::class.java)
@@ -124,6 +134,7 @@ class EasyReflectActivity:BaseActivity() {
 // 用于进行测试的类
 class Test private constructor(private val name:String){
     constructor():this("默认名字")
+    constructor(vararg name:String):this(Arrays.toString(name))
 
     override fun toString(): String {
         return "Test(name='$name')"
@@ -131,6 +142,14 @@ class Test private constructor(private val name:String){
 
     fun invoked(name:String){
         EasyLog.DEFAULT.e("Test的invoked方法被执行。参数为$name")
+    }
+
+    fun onlyVararg(vararg name:String) {
+        EasyLog.DEFAULT.d(name)
+    }
+
+    fun withVararg(perfix:Int, vararg name:String) {
+        EasyLog.DEFAULT.d("perfix = $perfix + name = $name")
     }
 
     companion object {

@@ -63,6 +63,12 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/callMethodWithVararg"
+            android:text="指定可变参数方法"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
             android:id="@+id/callMethodWithReturnReflect"
             android:text="调用方法并根据返回值创建新EasyReflect对象返回"
             android:layout_width="match_parent"

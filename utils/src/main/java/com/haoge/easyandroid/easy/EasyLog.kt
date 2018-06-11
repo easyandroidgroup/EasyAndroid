@@ -17,6 +17,7 @@ class EasyLog private constructor(
         private val singleStyle: Format?,// 单行显示时的样式
         private val formatter: EasyFormatter){
     private var tag:String = ""
+    private var immediate:Boolean = false
     /**
      * 设置一个临时的tag值。在下次调用d/i/v/w/e/wtf方法进行日志输出时。进行使用。
      *
@@ -26,6 +27,17 @@ class EasyLog private constructor(
         this.tag = tag
         return this
     }
+
+    /**
+     * 指定是否使日志进行即时输出：即不讲打印任务派发到专属任务线程中，而是直接在当前线程进行打印。
+     *
+     * 使用后将自动置空。所以此immediate的作用域[只在下一次打印]
+     */
+    fun immediate(immediate:Boolean): EasyLog {
+        this.immediate = immediate
+        return this
+    }
+
     /**
      * 格式化数据any并进行Log.d()打印
      */
@@ -87,7 +99,13 @@ class EasyLog private constructor(
         val current = Thread.currentThread()
         val tag = if (tag.isEmpty()) trace.fileName else tag
         this.tag = ""
-        EXECUTOR.execute { invoke.invoke(current, trace, tag) }
+        if (immediate) {
+            invoke.invoke(current, trace, tag)
+            immediate = false
+        } else {
+            EXECUTOR.execute { invoke.invoke(current, trace, tag) }
+        }
+
     }
 
     private fun print(message:String, trace: StackTraceElement, type:String, tag:String, callThread:Thread) {

@@ -149,7 +149,7 @@ class Test private constructor(private val name:String){
     }
 
     fun withVararg(perfix:Int, vararg name:String) {
-        EasyLog.DEFAULT.d("perfix = $perfix + name = $name")
+        EasyLog.DEFAULT.d("perfix = $perfix + name = ${name.easyFormat()}")
     }
 
     companion object {

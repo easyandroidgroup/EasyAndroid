@@ -42,10 +42,13 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     private fun formatString(data: String): StringBuilder {
         if (data.startsWith("{")
-            || data.startsWith("[")) {
-            return formatJSON(data)
+                && data.endsWith("}")) {
+            return formatJSONObject(data)
+        } else if (data.startsWith("[")
+                && data.endsWith("]")) {
+            return formatJSONArray(data)
         } else if (data.startsWith("<")
-            && data.endsWith(">")) {
+                && data.endsWith(">")) {
             return formatXML(data)
         }
 
@@ -75,25 +78,65 @@ class EasyFormatter private constructor(private val builder: Builder) {
         }
     }
 
-    private fun formatJSON(data: String): StringBuilder {
-        return try {
-            val json = if (data.startsWith("["))
-                JSONArray(data).toString(indent.length)
-            else
-                JSONObject(data).toString(indent.length)
+    private fun formatJSONArray(data: String): StringBuilder {
+        val result = StringBuilder("[")
+        try {
+            val array = JSONArray(data)
+            val length = array.length()
+            val isFlat = isFlat(builder.maxArraySize, length)
 
-            val lines = json.lines()
-            val isFlat = isFlat(builder.maxMapSize, lines.size)
-            val result = StringBuilder()
-            if (isFlat.not()) {
-                result.append(json)
-            } else {
-                lines.forEach { result.append(it.trimIndent()) }
+            for (index in 0..(length - 1)) {
+                val sub = StringBuilder()
+                if (!isFlat) {
+                    result.append("\n")
+                }
+                sub.append(formatString(array.optString(index)))
+                if (index != length - 1) {
+                    sub.append(",")
+                }
+                appendSubString(result, sub, isFlat)
             }
-            result
+            if (!isFlat) {
+                result.append("\n")
+            }
         } catch (e:Exception) {
-            StringBuilder(data)
+            return StringBuilder(data)
         }
+        result.append("]")
+        return result
+    }
+
+    private fun formatJSONObject(data: String): StringBuilder {
+        val result = StringBuilder("{")
+        try {
+            val json = JSONObject(data)
+            val length = json.length()
+            val keys = json.keys()
+            val isFlat = isFlat(builder.maxMapSize, length)
+            var hasNext = keys.hasNext()
+            while (hasNext) {
+                if (!isFlat) {
+                    result.append("\n")
+                }
+
+                val sub = StringBuilder()
+                val next = keys.next()
+                sub.append(formatString(next)).append(":").append(json.optString(next))
+
+                hasNext = keys.hasNext()
+                if (hasNext) {
+                    sub.append(", ")
+                }
+                appendSubString(result, sub, isFlat)
+            }
+            if (!isFlat) {
+                result.append("\n")
+            }
+        } catch (e:Exception) {
+            return StringBuilder(data)
+        }
+        result.append("}")
+        return result
     }
 
     private fun isFlat(maxSize:Int, length:Int):Boolean {

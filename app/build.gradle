@@ -33,6 +33,6 @@ dependencies {
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
 
-//    implementation project(':utils')
-    implementation 'com.github.yjfnypeu:EasyAndroid:1.0.9'
+    implementation project(':utils')
+//    implementation 'com.github.yjfnypeu:EasyAndroid:1.0.9'
 }

@@ -1,7 +1,6 @@
 package com.haoge.sample.easyandroid.activities
 
 import android.view.Gravity
-import android.widget.Toast
 import butterknife.OnClick
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.BaseActivity
@@ -15,7 +14,11 @@ import java.util.concurrent.Executors
 class EasyToastActivity : BaseActivity(){
 
     val default by lazy { EasyToast.DEFAULT }
-    val creator by lazy { EasyToast.create(R.layout.toast_style, R.id.toast_tv, Toast.LENGTH_SHORT) }
+    val creator by lazy {
+        EasyToast.newBuilder(R.layout.toast_style, R.id.toast_tv)
+            .setGravity(Gravity.CENTER, 0, 0)
+            .build()
+    }
 
     override fun getLayoutId(): Int {
         return R.layout.activity_easy_toast
@@ -39,16 +42,6 @@ class EasyToastActivity : BaseActivity(){
     @OnClick(R.id.showOnSubThreadWithCreate)
     fun showOnSubThreadWithCreate() {
         Instance.pool.execute { creator.show("使用自定义样式在子线程中进行展示, Thread: ${Thread.currentThread()}") }
-    }
-
-    @OnClick(R.id.showDefaultCenterWithGravity)
-    fun showDefaultCenterWithGravity() {
-        default.setGravity(Gravity.CENTER, 0, 0).show("使用默认样式在中心展示")
-    }
-
-    @OnClick(R.id.showCustomTopWithGravity)
-    fun showCustomTopWithGravity() {
-        creator.setGravity(Gravity.TOP, 0, 20).show("使用自定义样式在顶部展示")
     }
 
     @OnClick(R.id.showMultiTimeToast)

@@ -6,29 +6,63 @@
 
 ## 特性
 
-1. 支持在任意线程下进行toast提示
-2. 非常方便的进行任意样式的定制
-3. 不管当前是否正在展示之前的数据。有新消息通知时，直接展示新消息，无需等待
+1. 非常方便的进行Toast样式定制
+2. 可直接在任意线程中进行使用
+3. 当有新消息需要展示时。进行即时刷新。无需等待
 
 ## 用法
 
-### 直接使用默认Toast样式(系统默认样式)
+### 1. 创建EasyToast的两种方式：
+
+- 创建使用默认样式的EasyToast实例：
 
 ```
-EasyToast.Default.show(message, args)
-// 或者
-EasyToast.Default.show(R.string.toast_message)
+使用无参方法创建默认样式Toast。
+val toast = EasyToast.newBuilder().build()
 ```
 
-### 创建自定义样式并进行使用
+- 指定布局文件与文本id。创建自定义样式
 
-```kotlin
-// 1. 进行实例创建
-EasyToast custom = EasyToast.create(
-    R.layout.toast_style, // 自定义样式的布局
-    R.id.toast_tv, // 布局中用于展示文字信息的TextView的ID
-    Toast.LENGTH_SHORT)
+```
+// 指定toast的布局文件layoutId与文本控件tvId. 创建自定义样式Toast
+val toast = EasyToast.newBuilder(layoutId:Int, tvId:Int).build()
+```
 
-// 2. 进行界面展示
-custom.show(message, args)
+### 2. 在任意位置进行toast展示
+
+EasyToast实例生成好之后。即可在`任意线程`中进行展示：
+
+```
+// 1. 展示指定资源ID内容
+toast.show(R.string.message)
+// 2. 展示指定展示文本
+toast.show("展示文本")
+```
+
+### 3. 配置gravity
+
+为了避免使用混乱。EasyToast只支持在进行`EasyToast实例创建过程中`进行位置调整
+
+```
+val toast = EasyToast.newBuilder()
+		.setGravate(gravity:Int, offsetX:Int, offsetY:Int)// 指定gravity位置与偏移量
+		.build()
+```
+
+### 4. 配置duration
+
+与`gravity`配置一样, 对`duration`的配置也`只允许`在创建过程中进行配置：
+
+```
+val toast = EasyToast.newBuilder()
+		.setDuration(Toast.LENGTH_SHORT|Toast.LENGTH_LONG)
+		.build()
+```
+
+### 5. 使用EasyToast.Default
+
+因为很多时候。其实我们需要使用的就是默认的Toast样式。所以在这里，EasyToast内部直接提供了`EasyToast.Default`实例。让你可以直接使用它进行Toast展示：
+
+```
+EasyToast.Default.show("Hello EasyToast!")
 ```

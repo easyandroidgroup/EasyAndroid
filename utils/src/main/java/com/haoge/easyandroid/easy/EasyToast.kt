@@ -60,7 +60,7 @@ class EasyToast private constructor(private val builder:Builder) {
     private fun createToastIfNeeded() {
         if (toast == null) {
             if (builder.isDefault) {
-                toast = Toast.makeText(context, "", Toast.LENGTH_SHORT)
+                toast = Toast.makeText(context, "", builder.duration)
             } else {
                 val container = LayoutInflater.from(context).inflate(builder.layoutId, null)
                 tv = container.findViewById(builder.tvId)
@@ -89,10 +89,6 @@ class EasyToast private constructor(private val builder:Builder) {
 
         fun newBuilder(layoutId: Int, tvId: Int):Builder {
             return Builder(false, layoutId, tvId)
-        }
-
-        fun create(layoutId: Int, tvId: Int, duration: Int): EasyToast {
-            return newBuilder(layoutId, tvId).setDuration(duration).build()
         }
     }
 

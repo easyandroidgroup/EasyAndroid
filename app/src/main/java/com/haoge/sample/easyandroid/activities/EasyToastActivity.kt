@@ -1,6 +1,7 @@
 package com.haoge.sample.easyandroid.activities
 
 import android.view.Gravity
+import android.widget.Toast
 import butterknife.OnClick
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.BaseActivity
@@ -15,9 +16,11 @@ class EasyToastActivity : BaseActivity(){
 
     val default by lazy { EasyToast.DEFAULT }
     val creator by lazy {
+        // 创建自定义的Toast.
         EasyToast.newBuilder(R.layout.toast_style, R.id.toast_tv)
-            .setGravity(Gravity.CENTER, 0, 0)
-            .build()
+                .setDuration(Toast.LENGTH_LONG)
+                .setGravity(Gravity.CENTER, 0, 0)
+                .build()
     }
 
     override fun getLayoutId(): Int {

@@ -1,6 +1,7 @@
 package com.haoge.easyandroid.easy
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
@@ -18,8 +19,12 @@ import com.haoge.easyandroid.EasyAndroid
  */
 class EasyToast private constructor(private val builder:Builder) {
 
+    private val context: Context = EasyAndroid.getApplicationContext()
+    private var toast:Toast? = null
+    private var tv:TextView? = null
+
     fun show(resId:Int) {
-        show(EasyAndroid.getApplicationContext().getString(resId))
+        show(context.getString(resId))
     }
 
     fun show(message:String?, vararg any: Any) {
@@ -43,29 +48,29 @@ class EasyToast private constructor(private val builder:Builder) {
         createToastIfNeeded()
 
         if (builder.isDefault) {
-            builder.toast?.setText(message)
-            builder.toast?.show()
+            toast?.setText(message)
+            toast?.show()
         } else {
-            builder.tv?.text = message
-            builder.toast?.show()
+            tv?.text = message
+            toast?.show()
         }
     }
 
     @SuppressLint("ShowToast")
     private fun createToastIfNeeded() {
-        if (builder.toast == null) {
+        if (toast == null) {
             if (builder.isDefault) {
-                builder.toast = Toast.makeText(EasyAndroid.getApplicationContext(), "", Toast.LENGTH_SHORT)
+                toast = Toast.makeText(context, "", Toast.LENGTH_SHORT)
             } else {
-                val container = LayoutInflater.from(EasyAndroid.getApplicationContext()).inflate(builder.layoutId, null)
-                builder.tv = container.findViewById(builder.tvId)
-                builder.toast = Toast(EasyAndroid.getApplicationContext())
-                builder.toast?.view = container
-                builder.toast?.duration = builder.duration
+                val container = LayoutInflater.from(context).inflate(builder.layoutId, null)
+                tv = container.findViewById(builder.tvId)
+                toast = Toast(context)
+                toast?.view = container
+                toast?.duration = builder.duration
             }
 
             if (builder.gravity != 0) {
-                builder.toast?.setGravity(builder.gravity, builder.offsetX, builder.offsetY)
+                toast?.setGravity(builder.gravity, builder.offsetX, builder.offsetY)
             }
         }
     }
@@ -94,8 +99,6 @@ class EasyToast private constructor(private val builder:Builder) {
     class Builder(internal var isDefault: Boolean,
                   internal var layoutId: Int,
                   internal var tvId: Int) {
-        internal var toast:Toast? = null
-        internal var tv:TextView? = null
 
         internal var duration:Int = Toast.LENGTH_SHORT
         internal var gravity:Int = 0

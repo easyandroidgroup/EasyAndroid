@@ -9,21 +9,6 @@ import android.content.Context
 @SuppressLint("StaticFieldLeak")
 object EasyAndroid {
 
-    /**
-     * 提供给框架内部使用的常量。判断是否是debug|release包
-     *
-     * 其为**BuildConfig.DEBUG**的值
-     */
-    internal val DEBUG by lazy {
-        return@lazy try {
-            val clazz = Class.forName(context!!.packageName + ".BuildConfig")
-            val field = clazz.getDeclaredField("DEBUG")
-            field.get(clazz) as Boolean
-        } catch (e:Exception) {
-            false
-        }
-    }
-
     private var context:Context? = null
 
     fun getApplicationContext():Context {

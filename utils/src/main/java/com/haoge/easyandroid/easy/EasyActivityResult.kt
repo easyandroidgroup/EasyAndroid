@@ -32,7 +32,7 @@ object EasyActivityResult {
             return
         }
 
-        if (context !is Activity) {
+        if (context !is Activity || callback == null) {
             context.startActivity(intent)
         } else {
             val requestCode = codeGenerator.nextInt(0x0000FFFF)
@@ -40,10 +40,6 @@ object EasyActivityResult {
                 context.startActivityForResult(intent, requestCode)
             } else {
                 context.startActivityForResult(intent, requestCode, options)
-            }
-
-            if (callback == null) {
-                return
             }
 
             if (container.containsKey(context)) {

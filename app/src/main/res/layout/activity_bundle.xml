@@ -45,12 +45,16 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/restoreWithJSON"
-            android:text="读取json数据并自动转换测试"
+            android:id="@+id/testForConverter"
+            android:text="自动转换功能测试"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-
+        <Button
+            android:id="@+id/testForInjector"
+            android:text="自动注入功能测试"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

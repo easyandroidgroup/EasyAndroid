@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import butterknife.OnClick
 import com.google.gson.Gson
+import com.haoge.easyandroid.easy.BundleField
 import com.haoge.easyandroid.easy.EasyBundle
 import com.haoge.easyandroid.easy.EasyLog
 import com.haoge.sample.easyandroid.BaseActivity
@@ -84,13 +85,38 @@ class EasyBundleActivity:BaseActivity() {
         EasyLog.DEFAULT.e("读取空Boolean数据：${easyBundle.get("key", Boolean::class.java)}")
     }
 
-    @OnClick(R.id.restoreWithJSON)
-    fun restoreWithJSON() {
-        val json = Gson().toJson(Info("不可序列化的类"))
-        val easyBundle = EasyBundle.create(null).put("jsonOfInfo", json)// 先将json保存进去
-        val info = easyBundle.get<Info>("jsonOfInfo")
-        EasyLog.DEFAULT.e("从json反序列化回来后的info数据：$info")
+    @OnClick(R.id.testForConverter)
+    fun testForConverter() {
+        val easyBundle = EasyBundle.create(null)
+                .put("int", 10)// 测试自动基本数据类型转换
+                // 测试json自动转换
+                .put("jsonOfInfo", Gson().toJson(Info("不可序列化的类, 将转换为json存储")))
+
+        EasyLog.DEFAULT.e("从json反序列化回来后的info数据：${easyBundle.get<Info>("jsonOfInfo")} \n bundle中保存的info原始数据为：${easyBundle.bundle["jsonOfInfo"]}")
+        EasyLog.DEFAULT.e("从json反序列化回来后的int数据：${easyBundle.get<Int>("int")}")
     }
+
+    @OnClick(R.id.testForInjector)
+    fun testForInjector() {
+        val entity = TestInjector("this is name of Injector",
+                100,
+                ParcelableSubclass("Hello parcelable"),
+                SerializableSubclass("Hello Serializable!"),
+                Info())
+
+        val bundle = EasyBundle.toBundle(entity, null)
+        EasyLog.DEFAULT.e("注入后的bundle数据：\n$bundle")
+
+        // 对bundle数据部分数据进行重置：
+        EasyBundle.create(bundle).put("name", "重置的name属性")
+                .put("age", 18)
+
+        // 再次将数据反注入回实体类中：
+        EasyBundle.toEntity(entity, bundle)
+        EasyLog.DEFAULT.e("反注入回后的entity实例：\n$entity")
+    }
+
+
 }
 
 data class ParcelableSubclass(val name: String = "this is a subclass of  Parcelable"):Parcelable {
@@ -124,4 +150,14 @@ class Info(val name:String?) {
         return "Info(name=$name)"
     }
 
+}
+
+class TestInjector(@BundleField var name:String,
+                   @BundleField var age:Int,
+                   @BundleField var parcelable:ParcelableSubclass,
+                   @BundleField var serializable: SerializableSubclass,
+                   @BundleField var unserial:Info) {
+    override fun toString(): String {
+        return "TestInjector(name='$name', age=$age, parcelable=$parcelable, serializable=$serializable, unserial=$unserial)"
+    }
 }

@@ -142,14 +142,14 @@ class EasyBundle private constructor(val bundle: Bundle){
             return EasyBundle(source?: Bundle())
         }
 
-        fun toEntity(entity:Any?, bundle: Bundle?) {
-            if (entity == null || bundle == null) return
-            injector.toEntity(entity, bundle)
+        fun toEntity(entity:Any?, bundle: Bundle?):Any? {
+            if (entity == null) return null
+            return injector.toEntity(entity, bundle?: Bundle())
         }
 
-        fun toBundle(entity:Any?, bundle: Bundle?) {
-            if (entity == null || bundle == null) return
-            injector.toBundle(entity, bundle)
+        fun toBundle(entity:Any?, bundle: Bundle?):Bundle {
+            if (entity == null) return bundle?:Bundle()
+            return injector.toBundle(entity, bundle?: Bundle())
         }
 
         @JvmStatic
@@ -162,7 +162,9 @@ class EasyBundle private constructor(val bundle: Bundle){
     }
 }
 
-annotation class BundleField(val value:String, val throwable:Boolean = true)
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FIELD)
+annotation class BundleField(val value:String = "", val throwable:Boolean = true)
 
 private class BundleInjector {
     // 缓存注解与字段的匹配信息。进行加速
@@ -203,7 +205,7 @@ private class BundleInjector {
     }
 
     // 将bundle中的数据注入到entity的对应字段中去。
-    fun toEntity(entity:Any, bundle: Bundle) {
+    fun toEntity(entity:Any, bundle: Bundle):Any {
         val map = parseFields(entity.javaClass)
         val easyBundle = EasyBundle.create(bundle)
         for ((name, pair) in map) {
@@ -219,10 +221,11 @@ private class BundleInjector {
                 }
             }
         }
+        return entity
     }
 
     // 将entity中的指定数据注入到bundle中去
-    fun toBundle(entity:Any, bundle: Bundle) {
+    fun toBundle(entity:Any, bundle: Bundle):Bundle {
         val map = parseFields(entity.javaClass)
         val easyBundle = EasyBundle.create(bundle)
         for ((name, pair) in map) {
@@ -235,5 +238,6 @@ private class BundleInjector {
                 }
             }
         }
+        return bundle
     }
 }

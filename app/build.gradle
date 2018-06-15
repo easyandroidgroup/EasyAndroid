@@ -27,7 +27,10 @@ dependencies {
     implementation 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:27.1.1'
 
-    implementation 'com.alibaba:fastjson:1.2.46'
+    implementation 'com.alibaba:fastjson:1.1.68.android'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+    implementation 'org.jetbrains.anko:anko-commons:0.10.5'
 
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"

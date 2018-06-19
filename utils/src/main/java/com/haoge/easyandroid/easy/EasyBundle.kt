@@ -10,9 +10,17 @@ import java.lang.StringBuilder
 import java.lang.reflect.Field
 
 /**
+ * 用于方便的进行Bundle数据存取
  * @author haoge on 2018/6/14
  */
 class EasyBundle private constructor(val bundle: Bundle){
+
+    fun put(map:Map<String, Any?>):EasyBundle {
+        for ((key, value) in map) {
+            put(key, value)
+        }
+        return this
+    }
 
     fun put(vararg items:Pair<String, Any?>):EasyBundle {
         for ((name, value) in items) {
@@ -143,13 +151,13 @@ class EasyBundle private constructor(val bundle: Bundle){
         }
 
         fun toEntity(entity:Any?, bundle: Bundle?):Any? {
-            if (entity == null) return null
-            return injector.toEntity(entity, bundle?: Bundle())
+            if (entity == null || bundle == null) return null
+            return injector.toEntity(entity, bundle)
         }
 
-        fun toBundle(entity:Any?, bundle: Bundle?):Bundle {
-            if (entity == null) return bundle?:Bundle()
-            return injector.toBundle(entity, bundle?: Bundle())
+        fun toBundle(entity:Any?, bundle: Bundle?):Bundle? {
+            if (entity == null || bundle == null) return bundle
+            return injector.toBundle(entity, bundle)
         }
 
         @JvmStatic
@@ -219,6 +227,7 @@ private class BundleInjector {
                 if (pair.second.throwable) {
                     throw e
                 }
+                e.printStackTrace()
             }
         }
         return entity

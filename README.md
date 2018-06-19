@@ -233,6 +233,32 @@ executor.async(callable:Callable<T>, result:(T) -> Unit)// 启动异步回调任
 executor.setDelay(delay).execute(runnable)// 延时启动任务
 ```
 
+### [EasyBundle](./docs/EasyBundle.md)
+
+> 用于使Bundle数据存取操作变得`简单`、`方便`、`灵活`、`强大`
+
+1. 简化Bundle数据存取api：
+2. 打破Bundle数据格式限制。支持对非可序列化对象进行存取。
+3. 支持注入操作。在进行页面跳转传值时。将会非常好用。
+
+用法示例：
+
+```
+// 1. 存储任意数据对象到bundle中去
+EasyBundle.create(bundle)// 绑定bundle容器
+    .put(key, value)// 指定任意数据进行存储。包括非可序列化对象
+
+// 2. 从bundle中读取并自动转换为具体对象数据
+EasyBundle.create(bundle).get<User>("user")
+
+// 3. 支持数据自动注入
+class ExampleActivity:BaseActivity() {
+    // 从intent中读取name数据并注入到name字段中去
+    @BundleField
+    var name:String? = null
+}
+```
+
 ### [MVP](./docs/MVP.md)
 
 > 提供的一种简单的MVP分层架构实现。

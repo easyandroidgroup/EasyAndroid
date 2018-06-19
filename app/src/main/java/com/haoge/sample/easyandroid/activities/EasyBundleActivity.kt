@@ -143,6 +143,7 @@ data class ParcelableSubclass(val name: String = "this is a subclass of  Parcela
 
 data class SerializableSubclass(val name: String = "this is a subclass of Serializable"):Serializable
 
+// 非可序列化测试类
 class Info(val name:String?) {
     constructor():this("默认名字")// JSON反序列化时需要空构造
 
@@ -152,6 +153,7 @@ class Info(val name:String?) {
 
 }
 
+// Bundle数据注入测试类。
 class TestInjector(@BundleField var name:String,
                    @BundleField var age:Int,
                    @BundleField var parcelable:ParcelableSubclass,

@@ -50,7 +50,7 @@ EasyAndroid.init(application)
 - [EasyActivityResult](#easyactivityresult): onActivityResult解耦组件
 - [EasyPermissions](#easypermissions): 动态权限申请组件
 - [EasyExecutor](#easyexecutor): 线程池封装组件
-- [EasyBundle](#easybundle): 线程池封装组件
+- [EasyBundle](#easybundle): Bundle数据存取组件
 - [MVP](#mvp): 简单MVP架构
 
 ### [EasyDimension](./docs/EasyDimension.md)

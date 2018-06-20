@@ -35,6 +35,9 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return ConstructorReflect(accessible(constructor), this)
     }
 
+    /**
+     * 获取此类的所有构造函数
+     */
     fun getConstructors():List<ConstructorReflect> {
         val list = mutableListOf<ConstructorReflect>()
         for (constructor in clazz.declaredConstructors) {
@@ -52,6 +55,9 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return this
     }
 
+    /**
+     * 获取指定字段name的具体值(包括父类中的字段)
+     */
     fun <T> getFieldValue(name: String):T?{
         return getField(name).getValue()
     }
@@ -186,10 +192,16 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
                 } catch (e:Exception) {
                     // ignore
                 }
-                return@newProxyInstance when (method.returnType.name) {
-                    "int", "byte", "char", "long", "double", "float", "short" -> 0
+                return@newProxyInstance when (method.returnType.canonicalName) {
+                    "byte" -> 0.toByte()
+                    "short" -> 0.toShort()
+                    "int" -> 0
+                    "long" -> 0.toLong()
+                    "float" -> 0.toFloat()
+                    "double" -> 0.toDouble()
+                    "char" -> '0'
                     "boolean" -> false
-                    else -> method.defaultValue
+                    else -> null
                 }
             }
         }) as T

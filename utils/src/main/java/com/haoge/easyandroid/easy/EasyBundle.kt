@@ -10,7 +10,7 @@ import java.lang.StringBuilder
 import java.lang.reflect.Field
 
 /**
- * 用于方便的进行Bundle数据存取
+ * 用于方便的进行Bundle数据存取。
  * @author haoge on 2018/6/14
  */
 class EasyBundle private constructor(val bundle: Bundle){
@@ -108,7 +108,7 @@ class EasyBundle private constructor(val bundle: Bundle){
         return result as T
     }
 
-    // 兼容java环境使用，对返回数据进行二次处理。避免对基本数据类型返回null
+    // 兼容java环境使用，对返回数据进行二次处理。避免对基本数据类型返回null导致crash
     private fun returnsValue(value:Any?, type:Class<*>):Any? {
         if (value != null) return value
 
@@ -138,6 +138,7 @@ class EasyBundle private constructor(val bundle: Bundle){
     }
     
     companion object {
+        // 标识符：当前运行环境是否依赖了fastjson
         @JvmStatic
         private val FASTJSON by lazy { return@lazy exist("com.alibaba.fastjson.JSON") }
         @JvmStatic

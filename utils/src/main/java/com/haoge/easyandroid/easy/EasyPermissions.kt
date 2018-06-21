@@ -19,8 +19,6 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
 
     /**
      * 设置权限申请说明文案。向用户展示为什么需要申请此权限
-     *
-     * 闭包参数为待申请的权限名。需要返回说明文案。或者返回null:代表不进行文案说明提示
      */
     fun rational(rational:((String, RationalChain) -> Boolean)):EasyPermissions {
         this.rational = rational
@@ -29,8 +27,6 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
 
     /**
      * 设置授权结果回调，
-     *
-     * 闭包参数为是否授权成功。boolean类型
      */
     fun callback(callback:((Boolean) -> Unit)): EasyPermissions {
         this.callback = callback

@@ -22,6 +22,37 @@ class EasyFormatter private constructor(private val builder: Builder) {
 
     private val indent = "    "
     private val list = mutableListOf<Any>()// 用于临时存放当前已被解析的类。防止出现循环引用导致栈溢出
+
+    fun formatWithArgs(message: String, vararg args:Any):String {
+        val array = arrayOfNulls<String>(args.size)
+        args.forEachIndexed { index, any -> array[index] = format(any) }
+        return String.format(message, *array)
+    }
+
+    /**
+     * 格式化入口
+     */
+    fun format(any: Any?): String {
+        val format = formatAny(any)
+        list.clear()
+        val lines = format.lines()
+        return if (isFlat(builder.maxLines, lines.size)) {
+            // 总长度大于受限长度。需要进行平铺处理
+            val result = StringBuilder()
+            for ((index, value) in lines.withIndex()) {
+                if (index < builder.maxLines - 1) {
+                    result.append(value)
+                    result.append("\n")
+                } else {
+                    result.append(value.trimIndent())
+                }
+            }
+            result.toString()
+        } else {
+            format.toString()
+        }
+    }
+
     // 格式化List/Set集合数据
     private fun formatCollection(collection: Collection<*>): StringBuilder {
         val result = StringBuilder("[")
@@ -172,26 +203,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
         return result
     }
 
-    fun format(any: Any?): String {
-        val format = formatAny(any)
-        list.clear()
-        val lines = format.lines()
-        return if (isFlat(builder.maxLines, lines.size)) {
-            // 总长度大于受限长度。需要进行平铺处理
-            val result = StringBuilder()
-            for ((index, value) in lines.withIndex()) {
-                if (index < builder.maxLines - 1) {
-                    result.append(value)
-                    result.append("\n")
-                } else {
-                    result.append(value.trimIndent())
-                }
-            }
-            result.toString()
-        } else {
-            format.toString()
-        }
-    }
+
 
     private fun formatAny(any:Any?):StringBuilder =
         when(any) {

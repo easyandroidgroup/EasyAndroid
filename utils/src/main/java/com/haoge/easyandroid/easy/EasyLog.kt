@@ -38,6 +38,10 @@ class EasyLog private constructor(
         return this
     }
 
+    fun d(message:String, vararg args:Any) {
+        d(StringCombine(message, *args))
+    }
+
     /**
      * 格式化数据any并进行Log.d()打印
      */
@@ -45,8 +49,13 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "d", TAG, thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(format(any), trace, "d", TAG, thread) }
     }
+
+    fun i(message:String, vararg args:Any) {
+        i(StringCombine(message, *args))
+    }
+
     /**
      * 格式化数据any并进行Log.i()打印
      */
@@ -54,8 +63,13 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "i",TAG, thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(format(any), trace, "i",TAG, thread) }
     }
+
+    fun v(message:String, vararg args:Any) {
+        v(StringCombine(message, *args))
+    }
+
     /**
      * 格式化数据any并进行Log.v()打印
      */
@@ -63,8 +77,13 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "v",TAG, thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(format(any), trace, "v",TAG, thread) }
     }
+
+    fun w(message:String, vararg args:Any) {
+        w(StringCombine(message, *args))
+    }
+
     /**
      * 格式化数据any并进行Log.w()打印
      */
@@ -72,8 +91,13 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "w",TAG, thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(format(any), trace, "w",TAG, thread) }
     }
+
+    fun e(message:String, vararg args:Any) {
+        e(StringCombine(message, *args))
+    }
+
     /**
      * 格式化数据any并进行Log.e()打印
      */
@@ -81,8 +105,13 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace, TAG-> print(formatter.format(any), trace, "e",TAG, thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG-> print(format(any), trace, "e",TAG, thread) }
     }
+
+    fun wtf(message:String, vararg args:Any) {
+        wtf(StringCombine(message, *args))
+    }
+
     /**
      * 格式化数据any并进行Log.wtf()打印
      */
@@ -90,7 +119,7 @@ class EasyLog private constructor(
         if (!enable) {
             return
         }
-        dispatchToLogPrinterThread { thread, trace, TAG -> print(formatter.format(any), trace, "wtf",TAG, thread) }
+        dispatchToLogPrinterThread { thread, trace, TAG -> print(format(any), trace, "wtf",TAG, thread) }
     }
 
     // 将待打印数据传递到指定任务线程中去进行打印，避免出现阻塞UI线程的情况
@@ -105,7 +134,14 @@ class EasyLog private constructor(
         } else {
             EXECUTOR.execute { invoke.invoke(current, trace, tag) }
         }
+    }
 
+    private fun format(any:Any?):String {
+        return when(any) {
+            null ->  ""
+            is StringCombine -> formatter.formatWithArgs(any.message, *any.args)
+            else -> formatter.format(any)
+        }
     }
 
     private fun print(message:String, trace: StackTraceElement, type:String, tag:String, callThread:Thread) {
@@ -139,7 +175,6 @@ class EasyLog private constructor(
             }
             result.append(parseLine(lineMessage, lineRule, trace, cacheRules, callThread)).append("\n")
         }
-
 
         when(type) {
             "d" -> Log.d(tag, result.toString())
@@ -311,6 +346,7 @@ class EasyLog private constructor(
         }
     }
 
+    private class StringCombine(val message:String, vararg val args:Any)
     private class LineRules(val origin:String, val names:Set<Pair<Int, String>>, val isMessage:Boolean)
 }
 

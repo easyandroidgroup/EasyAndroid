@@ -173,7 +173,7 @@ class EasyBundle private constructor(val bundle: Bundle){
 
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
-annotation class BundleField(val value:String = "", val throwable:Boolean = true)
+annotation class BundleField(val value:String = "", val throwable:Boolean = false)
 
 private class BundleInjector {
     // 缓存注解与字段的匹配信息。进行加速

@@ -74,7 +74,6 @@ EasyDimension.withSP(30).toMM()
 - 支持对`Set/List/Map/JSON/POJO`数据进行格式化排版
 - 支持最高长度过滤：避免打印超长数据时造成版面浪费
 
-
 用法示例：
 
 ```
@@ -113,6 +112,8 @@ any.easyLogE()// 使用扩展函数直接进行数据打印，以Log.e()的方�
 2. 非常方便的进行任意样式的定制
 3. 不管当前是否正在展示之前的数据。有新消息通知时，直接展示新消息，无需等待
 
+博客地址：https://juejin.im/post/5b0638336fb9a07aa9261ce6
+
 用法示例：
 
 ```
@@ -123,6 +124,8 @@ EasyToast.create(layoutID:Int, tvID:Int, duration:Int).show(message)// 使用自
 
 ### [EasyReflect](./docs/EasyReflect.md)
 > 对常规的反射操作进行封装。达到更便于使用反射的效果
+
+博客地址：https://juejin.im/post/5b1de20c6fb9a01e701000cb
 
 用法示例：
 
@@ -154,6 +157,8 @@ val result = reflect.callWithReturn("wrap", value).get<String>()
 - **去除requestCode**: 进行启动时自动生成随机的requestCode, 不用再为每个启动任务分别配置请求码了。
 - **防暴击**: 防止快速点击时启动多个重复页面
 
+博客地址：https://juejin.im/post/5b21d019e51d4506d93701ba
+
 用法示例：
 
 ```
@@ -173,6 +178,8 @@ EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.
 - 多权限申请时进行去重与空过滤
 - 自动使用顶层Activity执行权限请求
 - 支持在任意线程进行权限申请
+
+博客地址：https://juejin.im/post/5b1a2a326fb9a01e5d32f208
 
 用法示例：
 
@@ -241,6 +248,8 @@ executor.setDelay(delay).execute(runnable)// 延时启动任务
 1. 简化Bundle数据存取api：
 2. 打破Bundle数据格式限制。支持对非可序列化对象进行存取。
 3. 支持注入操作。在进行页面跳转传值时。将会非常好用。
+
+博客地址：https://juejin.im/post/5b2c65bde51d45587d2dd86f
 
 用法示例：
 

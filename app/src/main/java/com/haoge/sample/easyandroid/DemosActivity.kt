@@ -29,6 +29,7 @@ class DemosActivity:ListActivity() {
             Item("测试EasyPermissions", EasyPermissionsActivity::class.java),
             Item("测试EasyExecutor", EasyExecutorActivity::class.java),
             Item("测试EasyBundle", EasyBundleActivity::class.java),
+            Item("测试EasySharedPreferences", EasySharedPreferencesActivity::class.java),
             Item("测试MVPDemo", MVPDemoActivity::class.java)
     )
 

@@ -29,5 +29,6 @@
         <activity android:name=".activities.EasyPermissionsActivity" />
         <activity android:name=".activities.EasyExecutorActivity" />
         <activity android:name=".activities.EasyBundleActivity" />
+        <activity android:name=".activities.EasySharedPreferencesActivity" />
     </application>
 </manifest>

@@ -12,7 +12,7 @@ import com.haoge.sample.easyandroid.R
  */
 class EasyFormaterActivity: BaseActivity() {
 
-    val mResult by lazy { findViewById<TextView>(R.id.result) }
+    val mResult: TextView by lazy { findViewById<TextView>(R.id.result) }
     val mDefaultFormatter: EasyFormatter = EasyFormatter.DEFAULT
     val mCustomformatter by lazy {
         val builder = EasyFormatter.newBuilder()

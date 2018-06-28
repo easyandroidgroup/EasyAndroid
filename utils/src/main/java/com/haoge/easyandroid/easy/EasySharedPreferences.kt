@@ -15,9 +15,13 @@ import java.lang.reflect.Field
  */
 class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPreferenceChangeListener {
 
+    // 绑定的具体实体类。
     internal val entity:PreferenceSupport
-    internal val fields = mutableMapOf<String, Field>()
-    internal val preferences:SharedPreferences
+    // 所有的可操作变量
+    private val fields = mutableMapOf<String, Field>()
+    // 绑定的SharedPreference实例
+    private val preferences:SharedPreferences
+    // 存储待同步的数据的key值
     private val modifierKeys = mutableListOf<String>()
 
     init {
@@ -26,7 +30,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
         }
 
         entity = clazz.newInstance() as PreferenceSupport
-        val name:String = clazz.getAnnotation(PreferenceAnnotation::class.java)?.value?:clazz.simpleName
+        val name:String = getValid(clazz.getAnnotation(PreferenceRename::class.java)?.value, clazz.simpleName)
         preferences = EasyAndroid.getApplicationContext().getSharedPreferences(name, Context.MODE_PRIVATE)
         // 注册内容变动监听器
         preferences.registerOnSharedPreferenceChangeListener(this)
@@ -40,9 +44,11 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
                     continue
                 }
 
-                if (!fields.containsKey(field.name)) {
+                val key = getValid(field.getAnnotation(PreferenceRename::class.java)?.value, field.name)
+
+                if (!fields.containsKey(key)) {
                     // 对于父类、子类均存在的字段。使用子类的数据进行存储
-                    fields[field.name] = field
+                    fields[key] = field
                     if (!field.isAccessible) {
                         field.isAccessible = true
                     }
@@ -82,7 +88,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
     })
 
     // 从SP中读取数据。注入到实体类中。
-    internal fun read() {
+    private fun read() {
         synchronized(this) {
             val map = preferences.all
             for ((name, field) in fields) {
@@ -118,8 +124,9 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
             // ignore 只过滤此类异常。其他异常正常抛出
         }
     }
+
     // 将实体类中的数据。注入到SP容器中。
-    internal fun write() {
+    private fun write() {
         synchronized(this) {
             preferences.unregisterOnSharedPreferenceChangeListener(this)
             val editor = preferences.edit()
@@ -127,11 +134,11 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
                 val value = field.get(entity)
                 val type = field.type
                 when {
-                    type == Int::class.java -> editor.putInt(name, value as Int)
-                    type == Long::class.java -> editor.putLong(name, value as Long)
-                    type == Boolean::class.java -> editor.putBoolean(name, value as Boolean)
-                    type == Float::class.java -> editor.putFloat(name, value as Float)
-                    type == String::class.java -> editor.putString(name, value as String)
+                    type == Int::class.java -> editor.putInt(name, value as? Int?:0)
+                    type == Long::class.java -> editor.putLong(name, value as? Long?:0L)
+                    type == Boolean::class.java -> editor.putBoolean(name, value as? Boolean?:false)
+                    type == Float::class.java -> editor.putFloat(name, value as? Float?:0f)
+                    type == String::class.java -> editor.putString(name, value as? String?:"")
                     type == Byte::class.java
                         || type == Char::class.java
                         || type == Double::class.java
@@ -139,8 +146,8 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
                         || type == StringBuilder::class.java
                         || type == StringBuffer::class.java
                         -> editor.putString(name, (value as Byte).toString())
-                    GSON -> editor.putString(name, Gson().toJson(value))
-                    FASTJSON -> editor.putString(name, JSON.toJSONString(value))
+                    GSON -> value?.let { editor.putString(name, Gson().toJson(it)) }
+                    FASTJSON -> value?.let { editor.putString(name, JSON.toJSONString(value)) }
                 }
             }
             editor.apply()
@@ -165,7 +172,11 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
     fun apply() {
         if (handler.hasMessages(WRITE)) return
         handler.sendEmptyMessageDelayed(WRITE, 100)
+        handler.apply {  }
     }
+
+    private fun getValid(value:String?, default:String):String =
+            if (value.isNullOrEmpty()) default else value as String
 
     companion object {
 
@@ -194,15 +205,17 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
         @Suppress("UNCHECKED_CAST")
         @JvmStatic
         fun <T> load(clazz: Class<T>):T {
-            container[clazz]?.let { return it.entity as T}
+            synchronized(container) {
+                container[clazz]?.let { return it.entity as T}
 
-            val instance = EasySharedPreferences(clazz)
-            container[clazz] = instance
-            return instance.entity as T
+                val instance = EasySharedPreferences(clazz)
+                container[clazz] = instance
+                return instance.entity as T
+            }
         }
 
         internal fun find(clazz: Class<*>):EasySharedPreferences {
-            return container[clazz]?:throw RuntimeException("")
+            return container[clazz]?:throw RuntimeException("Could not find EasySharedPreferences by this clazz:[${clazz.canonicalName}]")
         }
     }
 }
@@ -216,6 +229,9 @@ abstract class PreferenceSupport {
 }
 
 @Retention(AnnotationRetention.RUNTIME)
-annotation class PreferenceAnnotation(val value:String = "")
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+annotation class PreferenceRename(val value:String = "")
+
 @Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FIELD)
 annotation class PreferenceIgnore

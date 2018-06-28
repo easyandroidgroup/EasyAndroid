@@ -18,11 +18,16 @@ class EasySharedPreferencesActivity:BaseActivity() {
                 .edit()
                 .putBoolean("mBool", true)
                 .putFloat("mFloat", 4f)
-                .putInt("mInt", 100)
+                .putInt("age", 18)
                 .putLong("mLong", 24L)
-                .putString("mStr", "Hello")
+                .putString("mStr", "modified by Editor")
                 .putStringSet("mStrSet", setOf("Hello", "World", "123"))
                 .apply()
+
+        val value = null
+        var number = value as? Int?:0
+        println("number = ${number}")
+
     }
 
     @OnClick(R.id.createByEasy)
@@ -35,12 +40,13 @@ class EasySharedPreferencesActivity:BaseActivity() {
     }
 }
 
-@PreferenceAnnotation("example_shared_data")
+@PreferenceRename("example_shared_data")
 class Entity:PreferenceSupport() {
     var mBool:Boolean = true
     var mFloat:Float = 0f
     var mInt:Int = 0
     var mLong:Long = 0L
-    @PreferenceIgnore
     var mStr:String = ""
+    @PreferenceIgnore
+    var ignore:String = "This is ignore text"
 }

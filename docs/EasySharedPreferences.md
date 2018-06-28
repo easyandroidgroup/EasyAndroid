@@ -1,8 +1,8 @@
 # EasySharedPreferences
 
-EasySharedPreferences对`SharedPreferences`的操作进行封装，将SP的操作
+EasySharedPreferences对`SharedPreferences`的操作进行封装，简化存取操作
 
-其做法为：将SP的数据映射到指定的实体类中去。避免到处去指定key。进行硬编码存储
+其做法为：将SharedPreferences的数据映射到指定的实体类中去。避免到处去指定key。进行硬编码存储
 
 [Sample Activity](../app/src/main/java/com/haoge/sample/easyandroid/activities/EasySharedPreferencesActivity.kt)
 

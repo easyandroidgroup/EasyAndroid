@@ -45,6 +45,7 @@ EasyAndroid.init(application)
 
 ### 目录索引
 
+- [EasySharedPreferences](#easysharedpreferences): 尺寸转换组件
 - [EasyDimension](#easydimension): 尺寸转换组件
 - [EasyFormatter](#easyformatter): 数据格式化排版组件
 - [EasyLog](#easylog): 日志打印组件
@@ -55,6 +56,40 @@ EasyAndroid.init(application)
 - [EasyExecutor](#easyexecutor): 线程池封装组件
 - [EasyBundle](#easybundle): Bundle数据存取组件
 - [MVP](#mvp): 简单MVP架构
+
+### [EasySharedPreferences](./docs/EasySharedPreferences.md)
+
+> 使用一个具体的实体类，进行SharedPreferences数据存取
+
+- 通过具体的实体类进行SP数据存储操作。避免`key值硬编码`
+- 自动同步，即使别的地方是`直接使用SharedPreferences进行赋值`，也能自动同步相关数据。
+- 打破SharedPreferences限制。支持几乎任意类型数据存取
+
+用法示例：
+
+```
+// 以SharedPreferences文件名为user_info，存储数据为username, age, address为例
+
+// 1. 创建映射实体类
+@PreferenceRename("user_info")
+class User:PreferenceSupport() {
+    var username:String
+    var age:Int
+    var address:String
+}
+
+// 2. 进行读取
+val user = EasySharedPreferences.load(User::class.java)
+
+// 3. 进行修改
+
+// 直接使用load出来的user实例进行数值修改
+user.age = 16
+user.username = "haoge"
+
+// 修改完毕后，apply更新修改到SharedPreferences文件。
+user.apply()
+```
 
 ### [EasyDimension](./docs/EasyDimension.md)
 

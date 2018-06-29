@@ -45,7 +45,7 @@ EasyAndroid.init(application)
 
 ### 目录索引
 
-- [EasySharedPreferences](#easysharedpreferences): 尺寸转换组件
+- [EasySharedPreferences](#easysharedpreferences): SharedPreferences存取组件
 - [EasyDimension](#easydimension): 尺寸转换组件
 - [EasyFormatter](#easyformatter): 数据格式化排版组件
 - [EasyLog](#easylog): 日志打印组件

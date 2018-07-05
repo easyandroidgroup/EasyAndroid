@@ -87,6 +87,10 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return FieldReflect(field, this)
     }
 
+    fun transform(name:String):EasyReflect {
+        return getField(name).transform()
+    }
+
     /**
      * 获取所有的字段。包括父类的
      */

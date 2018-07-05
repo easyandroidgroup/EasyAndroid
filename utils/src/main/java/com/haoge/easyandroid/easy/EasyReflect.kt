@@ -178,7 +178,7 @@ class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
         return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {_, method, args ->
             try {
                 // 优先匹配存在的方法
-                return@newProxyInstance this@EasyReflect.callWithReturn(method.name, *args).get()
+                return@newProxyInstance this@EasyReflect.callWithReturn(method.name, *args?:arrayOf()).get()
             } catch (e:Exception) {
                 try {
                     val methodName = method.name

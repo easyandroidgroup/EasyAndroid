@@ -6,7 +6,7 @@ import java.lang.reflect.*
  * 一个简单的反射封装库。
  * @author haoge on 2018/5/21
  */
-class EasyReflect private constructor(val clazz: Class<*>, var instance:Any?){
+class EasyReflect private constructor(val clazz: Class<*>, private var instance:Any?){
 
     // 构造方法操作区
     /**

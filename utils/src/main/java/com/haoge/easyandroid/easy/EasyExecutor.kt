@@ -290,7 +290,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
     }
 }
 
-class Notifier(val deliver: Executor, val progress: PROGRESS?) {
+class Notifier(private val deliver: Executor, private val progress: PROGRESS?) {
     /**
      * 通知任务处理进度有改变：
      */

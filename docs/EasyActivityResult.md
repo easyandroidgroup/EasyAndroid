@@ -36,7 +36,7 @@ EasyActivityResult.startActivity(
 		})
 ```
 
-使用方式就是这么简单！而且细心点的可以发现：**根本不用再配置requestCode了！**又省了一步操作。美滋滋~~
+使用方式就是这么简单！而且细心点的可以发现： **根本不用再配置requestCode了！** 又省了一步操作。美滋滋~~
 
 不用配置requestCode的原因是: 在组件内部。当你配置有数据回调接口，那么就会自动生成一个随机的requestCode提供使用：
 

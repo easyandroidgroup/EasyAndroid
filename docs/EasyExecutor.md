@@ -12,6 +12,7 @@
 - **任务延迟**: 支持在每次启动任务前。指定延迟时间
 - **异步任务**: 支持直接启动异步任务并回调传递数据
 - **线程切换**: 支持指定回调方法所在的线程。默认为运行于UI线程中
+- **进度通知**: 支持进行任务处理进度通知
 
 ## 用法
 
@@ -48,6 +49,18 @@ executor.async(task:Callable<T>, result:(T)->Unit)
 ```
 executor.setDelay(time)// 单位为毫秒，在启动任务前调用即可
     .execute(runnable:Runnable)
+```
+
+### 进行进度通知
+
+```
+executor.onProgressChanged { current, total ->
+            // 接收进度变化通知。current为当前进度。total为总量
+        }
+        .execute { notifier ->
+            // 通过notifier.progressChanged()自行指定进度状态
+            notifier.progressChanged(current, total)
+        }
 ```
 
 ### 设置当前执行任务名

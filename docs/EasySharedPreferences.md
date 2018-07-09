@@ -8,11 +8,13 @@ EasySharedPreferences对`SharedPreferences`的操作进行封装，简化存取�
 
 ## 特性
 
-1. 通过具体的实体类进行SP数据存储操作。避免`key值硬编码`
+1. 通过具体的实体类进行SharedPreferences数据存取操作。避免`key值硬编码`
 2. 自动同步，即使别的地方是`直接使用SharedPreferences进行赋值`，也能自动同步相关数据。
 3. 打破SharedPreferences限制。支持几乎任意类型数据存取
 
-## 用法
+## 用法与原理
+
+### 用法概览
 
 这里先来通过一个例子来先进行一下大致的了解：
 
@@ -69,34 +71,27 @@ user.username = "haoge"
 user.apply()
 ```
 
-### 实体类的定义说明
+可以看到。不管是进行`读取数据`。还是`修改数据`。`EasySharedPreferences`的操作方式都是比原生的方式方便很多的。
 
-在上面的示例中。我们已经定义了一个对应的映射实体类了：
+下面开始对`EasySharedPreferences`组件的用法做更详细的说明：
 
-```
-@PreferenceRename("user_info")
-class User:PreferenceSupport() {
-    var username:String
-    var age:Int
-    var address:String
-}
-```
+### 映射实体类的定义
 
-下方的配置说明，可结合此具体的映射实体类进行理解：
+`映射实体类`即是上方示例中的`User`类：通过将SP中需要的关键数据映射到具体的实体类中，可以有效的避免`key值硬编码`的问题。
 
-1. 映射实体类，必须继承自`PreferenceSupport`类。且提供`无参构造器`。
+`映射实体类`的定义，需要遵循以下一些规则：
+
+1. 实体类`必须继承PreferenceSupport`, 且提供`无参构造`。
 
 ```
-class User:PreferenceSupport()
+class Entity:PreferenceSupport()
 ```
 
-2. 当需要指定使用的SP的文件名时。使用`PreferenceRename`注解进行指定。否则将使用类名作为文件名：
-
-比如这里需要使用的SP文件名为user_info:
+2. 默认采用实体类的类名作为`SP的缓存文件名`，当需要指定特殊的缓存文件名时。需要使用`PreferenceRename`注解进行指定
 
 ```
-@PreferenceRename("user_info")
-class User:PreferenceSupport()
+@PreferenceRename("rename_shared_name")
+class Entity:PreferenceSupport()
 ```
 
 3. 通过直接在实体类中添加不同的成员变量，进行SP的属性配置：
@@ -105,7 +100,7 @@ class User:PreferenceSupport()
 var name:String // 代表此SP文件中。新增key值为name, 类型为String的属性
 ```
 
-4. 也可以指定属性的key值：同样使用`PreferenceRename`注解
+4. 也可以指定属性的key值：同样使用`PreferenceRename`注解进行指定
 
 ```
 @PreferenceRename("rename_key")
@@ -119,77 +114,214 @@ var name:String
 val ignore:Address
 ```
 
-### 打破存储类型限制
+### 支持存储任意数据
 
-我们都知道。原生的`SharedPreferences`只支持很少量的数据类型进行存储：`Int`, `Float`, `Boolean`, `Long`, `String`,`Set<String>`
+都知道，原生的SP只支持几种特定的数据进行存储：`Int`, `Float`, `Boolean`, `Long`, `String`, `Set<String>`.
 
-而有时候我们会需要存储一些其他类型的数据进行缓存。比如`Array`,`List`,`Bean`对象。这个时候`SharedPreferences`的存储功能就捉襟见肘了。
+而`EasySharedPreferences`组件，通过提供`中间类型`的方式。打破了此数据限制:
 
-所以，这时就会需要：不然`重选存储方式(数据库存储)`， 不然`将数据转为SP支持的数据格式`来进行存储。
+1. 存储时：将不支持的数据类型，转换为String格式。再进行存储：
 
-`EasySharedPreferences`组件即是采用的`第二种方式`来进行的存储：
-
-所以。当我们需要指定存储的其他类型数据时。直接添加即可：(比如存储一个列表数据)
+**核心源码**
 
 ```
-var list:List<String>
-```
-
-对此数据进行存储时。将会自动将其转换为`JSON`数据再进行存储；同样在进行读取时，也会进行`JSON反序列化`后再进行赋值。
-
-### 缓存加速
-
-在上面的例子中可以看到。加载`SharedPreferences`数据并读取到实体类中去。只需要调用一行代码即可：
-
-```
-// 直接加载即可
-val user = EasySharedPreferences.load(User::class.java)
-```
-
-看到这里的时候。肯定会有很多人担心使用时的性能问题。所以我先贴一个`load`的源码进行说明：
-
-```
-fun <T> load(clazz: Class<T>):T {
-    synchronized(container) {
-        container[clazz]?.let { return it.entity as T}
-
-        val instance = EasySharedPreferences(clazz)
-        container[clazz] = instance
-        return instance.entity as T
-    }
+// type为接收者类型
+// value为从SP中读取出的数据
+when {
+	type == Int::class.java -> editor.putInt(name, value as? Int?:0)
+	type == Long::class.java -> editor.putLong(name, value as? Long?:0L)
+	type == Boolean::class.java -> editor.putBoolean(name, value as? Boolean?:false)
+	type == Float::class.java -> editor.putFloat(name, value as? Float?:0f)
+	type == String::class.java -> editor.putString(name, value as? String?:"")
+	// 不支持的类型。统统转换为String进行存储
+	type == Byte::class.java
+	    || type == Char::class.java
+	    || type == Double::class.java
+	    || type == Short::class.java
+	    || type == StringBuilder::class.java
+	    || type == StringBuffer::class.java
+	    -> editor.putString(name, value.toString())
+	GSON -> value?.let { editor.putString(name, Gson().toJson(it)) }
+	FASTJSON -> value?.let { editor.putString(name, JSON.toJSONString(value)) }
 }
 ```
 
-可以看到：只有当`第一次使用此clazz`进行加载时。才会走加载流程。后面的都是直接读取的缓存。所以请放心使用
+2. 读取时：接收者类型与取出数据格式不匹配(此种场景取出的数据格式均为String)。进行自动转换后再赋值：
+
+**核心源码**
+
+```
+// type为接收者类型
+// value为从SP中读取出的数据
+val result:Any? = when {
+    type == Int::class.java -> value as Int
+    type == Long::class.java -> value as Long
+    type == Boolean::class.java -> value as Boolean
+    type == Float::class.java -> value as Float
+    type == String::class.java -> value as String
+    // 不支持的类型。读取出的都是String，直接进行转换兼容
+    type == Byte::class.java -> (value as String).toByte()
+    type == Short::class.java -> (value as String).toShort()
+    type == Char::class.java -> (value as String).toCharArray()[0]
+    type == Double::class.java -> (value as String).toDouble()
+    type == StringBuilder::class.java -> StringBuilder(value as String)
+    type == StringBuffer::class.java -> StringBuffer(value as String)
+    GSON -> Gson().fromJson(value as String, type)
+    FASTJSON -> JSON.parseObject(value as String, type)
+    else -> null
+}
+```
+
+有细心的可以看到。这里有对GSON与FASTJSON进行兼容。
+
+`EasySharedPreference`组件。会在运行时判断当前运行环境是否存在具体的JSON解析库。然后选择存在的解析库进行`中间类型数据`的生成器与解析器：而组件本身是没有直接强制依赖此两种解析库的：
+
+```
+private val FASTJSON by lazy { return@lazy exist("com.alibaba.fastjson.JSON") }
+private val GSON by lazy { return@lazy exist("com.google.gson.Gson") }
+```
+
+所以。如果你需要存储一个原生不支持的类型。直接添加即可，比如需要存储一个address_detail:
+
+```
+@PerferenceRename("address_detail")
+var detail:Address
+```
+
+### 缓存加速
+
+在上面的例子中。我们是直接通过`load`方法进行的数据加载读取：
+
+```
+val user = EasySharedPreferences.load(User::class.java)
+```
+
+这样一行代码，起到的效果即是：
+
+> 1. 加载User类所对应的SharedPreferences文件数据
+> 2. 创建User实例，并将SP文件中的数据。注入到User类中的对应变量中去。
+
+所以相对来说。load方法其实是会有一定的耗时。毕竟注入操作都离不开反射，当然，如果你不在同一个SP文件中去`存储大量的数据内容`的话，其实对于现在的机型来说。影响还是可以忽略不计的。
+
+但是毕竟如果每次去读取都去读取注入的话。总归是一种性能影响，也不便于体验。
+
+所以组件提供了对应的缓存控制处理：只在首次加载时进行读取与注入：
+
+```
+fun <T> load(clazz: Class<T>):T {
+	container[clazz]?.let { return it.entity as T}
+
+	val instance = EasySharedPreferences(clazz)
+	container[clazz] = instance
+	return instance.entity as T
+}
+```
+
+所以。**通过同一个clazz加载读取出来的实例，都是同一个实例！**
 
 ### 自动同步
 
-`EasySharedPreferences`组件，其本质是对`SharedPreferences`的存取操作进行封装。
+因为`缓存加速`的原因，我们通过`load`方法加载出来的实例都是一样的，所以应该会有人担心：当在使用`EasySharedPreferences`组件的同时。如果在别的业务线上，有人对此SP文件`直接使用原生的方式进行了修改`，会不会导致数据出现不同步？即`数据污染`现象？
 
-但是很难避免的是：会有部分朋友在写的时候，还是在上层使用`SharedPreferences`直接数据存储。
+讲道理。这是不会的！因为`EasySharedPreferences`组件，专门针对此种场景进行了兼容：
 
-而在上面的也展示了。其实我们在load的时候并没有每次都去重新加载。而是读取的`已存在的缓存`。
+#### 原理说明
 
-`EasySharedPreferences`组件则对此场景做了兼容。并不会导致数据不同步的问题。
-
-#### 自动同步原理说明
-
-首先需要了解的一点是。在系统层面，同一个文件名的`SharedPreferences`实例。其实都是一样的。因为系统本身就是对SP进行了缓存处理：
-
-所以我们就可以直接使用`SharedPreferences`本身提供的`OnSharedPreferenceChangeListener`去进行数据改变时的监听操作：
+原生的`SharedPreferences`提供了`OnSharedPreferenceChangeListener`监听器。此监听器的作用为：**对当前的SharedPreferences容器中的数据做监听。当容器中有数据改变了。则通过此接口对外通知。便于进行刷新**
 
 ```
-public interface SharedPreferences {
-    // 提供的数据改变时的监听器。当此SharedPreferences对应的某个属性被改变时。将会被触发进行回调
-    public interface OnSharedPreferenceChangeListener {
-
-        void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key);
-    }
-    // 注册监听器。
-    void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener);
-
-    void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener);
+public interface OnSharedPreferenceChangeListener {
+    void onSharedPreferenceChanged(
+    			SharedPreferences sharedPreferences, // 被监听的容器实例
+    			String key);// 被修改的数据的key。
+}
 ```
 
-所以。自动同步其实很简单：直接接入此监听器。同步回调中指定的key的数据即可
+然后，需要指出的是：其实系统本身也有对SharedPreferences容器实例做缓存。所以：**通过同样的文件名获取到的SharedPreferences实例，其实都是同一个对象实例**
 
+所以，同步的流程即是：**只要对组件中自身绑定的`SharedPreferences`容器，注册此监听器，即可在外部进行修改时。同步获取到被修改的key值。再相对的进行指定key的数据同步即可：**
+
+所以，最终的自动同步逻辑核心逻辑代码即是：
+
+```
+class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPreferenceChangeListener {
+
+	// 绑定的SharedPreference实例
+	private val preferences:SharedPreferences
+	init {
+		// 创建时，注册内容变动监听器
+		preferences.registerOnSharedPreferenceChangeListener(this)
+		...
+	}
+
+	override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+		// 回调中进行数据同步处理
+	}
+
+	fun write() {
+		synchronized(this) {
+			// 自身的修改需要更新到文件中去时，暂时注销掉监听器。不对自身的数据处理做监听
+			preferences.unregisterOnSharedPreferenceChangeListener(this)
+			...
+			preferences.registerOnSharedPreferenceChangeListener(this)
+		}
+	}
+}
+```
+
+### PreferenceIgnore的使用场景
+
+在[映射实体类的定义](https://juejin.im/post/5b34a970f265da59567953a3#heading-4)这一节的最后。我们有提到使用`PreferenceIgnore`注解配置中间存储变量。当时只是简单提了一句，所以可能会有部分朋友对此注解的使用场景存在疑惑
+
+这里我将通过举一个具体的例子进行使用场景说明：
+
+比如说需要存储登录用户的信息，比如登录时的`密码`(当然只是举例，对于密码类型的数据。推荐的存储容器还是使用sql)。我们想把它存储到`SharedPreferences`中去:
+
+```
+@PreferenceRename("login_info")
+class Login:PreferenceSupport() {
+    var password:String
+}
+```
+
+但是我们又不能直接对密码进行明文存储。所以我们需要在每次进行使用的时候，主动的去再进行`加密`、`解密`：
+
+```
+// 读取时进行解密：
+var password = EncryptTool.decode(user.password)
+
+// 存储时进行加密：
+user.password = EncryptTool.encode(password)
+```
+
+但是这样的用法相当不优雅。所以我们推荐使用`PreferenceRename`创建一个中间存储数据出来：
+
+```
+@PreferenceRename("login_info")
+class Login:PreferenceSupport() {
+    // 将实际存储的密码使用private修饰，避免外部直接修改
+    private var password:String
+    @PreferenceIgnore
+    var passwordWithEncrypt:String
+        get() { return EncryptTool.decode(password) }
+        set(value:String) { this.password = EncryptTool.encode(value)}
+}
+```
+
+通过配置一个中间的存储变量，自动去进行存取时的加解密操作。对上层隐藏具体的加解密逻辑。这样上层使用起来就相当优雅了：
+
+```
+// 读取
+var password = user.passwordWithEncrypty
+
+// 存储
+user.passwordWithEncrypty = password
+```
+
+### 混淆配置
+
+最后，为了避免混淆后导致使用异常，请添加以下混淆配置：
+
+```
+-keep class * implements com.haoge.easyandroid.easy.PreferenceSupport
+```

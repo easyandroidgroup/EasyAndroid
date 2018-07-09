@@ -6,137 +6,288 @@ EasyBundle顾名思义，主要是对Bundle的封装。作用在于使Bundle的�
 
 ## 特性
 
-1. 简化Bundle数据存取api：
-> 不需要再根据待存取的数据类型。进行`putXXX/getXXX`的方法选择了。统一为`put/get`
-2. 打破Bundle数据格式限制。支持对非可序列化对象进行存取。
-> 非可序列化对象将会转换为json后进行存储
-3. 支持注入操作。在进行页面跳转传值时。将会非常好用。
+1. 统一存取api
+2. 支持存储任意类型数据，打破Bundle数据限制
+3. 自动类型转换。读取随心
+4. Bundle与实体类之间的双向数据注入
 
 ## 用法
 
-### 创建EasyBundle实例
+### 用法概览
+
+我们先来与`原生`使用方式进行一下`对比`。以便让大家能对`EasyBundle`的用法有个大概的概念
+
+假设我们有以下一批数据，需要进行存储
+
+| 类型 | 值 |
+| :-----| :------|
+| Int | age|
+| String| name|
+
+- **原生存储**:需要根据存储类型不同选择不同的api
 
 ```
-// 传入具体的Bundle实例进行处理。当传入为null时，将默认创建一个空的Bundle实例提供使用
-val easyBundle = EasyBundle.create(bundle)
+val bundle = getBundle()
+bundle.putInt("age", age)
+bundle.putString("name", name)
+```
 
-... // 具体操作区
+- **使用EasyBundle进行存储**:统一存储api。直接存储
 
-// 操作完成后，获取操作后的bundle实例进行使用
-val bundle = easyBundle.bundle
+```
+val bundle:Bundle = EasyBundle.create(getBundle())
+	.put("age", age)
+	.put("name", name)
+	.getBundle()
+```
+
+- **原生读取**:需要根据容器中的`不同类型`, 选择`不同api`进行读取
+
+```
+val bundle = getBundle()
+val age:Int = bundle.getInt("age")
+val name:String = bundle.getString("name")
+```
+
+- **使用EasyBundle进行读取**：统一读取api。直接读取
+
+```
+val easyBundle = EasyBundle.create(getBundle())
+val age = easyBundle.get<Int>("age")
+val name = easyBundle.get<String>("name")
+```
+
+- **原生方式页面取值**
+
+```
+class ExampleActivity:Activity() {
+	var age:Int = 0
+	var name:String = ""
+
+	override fun onCreate(saveInstanceState:Bundle?) {
+		super.onCreate(saveInstanceState)
+		intent?.let{
+			age = it.getIntExtra("age", 0)
+			name = it.getStringExtra("name")
+		}
+	}
+}
+```
+
+- **使用EasyBundle进行页面取值**
+
+```
+class BaseActivity() {
+	override fun onCreate(saveInstanceState:Bundle?) {
+		super.onCreate(saveInstanceState)
+		// 在基类中直接配置注入入口，将intent中的数据注入到配置了BundleField注解的变量中去
+		EasyBundle.toEntity(this, intent?.extras)
+	}
+}
+
+class ExampleActivity:BaseActivity() {
+	// 在对应的字段上添加BundleField即可
+	@BundleField
+	var age:Int = 0
+	@BundleField
+	var name:String = ""
+	...
+}
+```
+
+- **原生方式进行现场保护**
+
+```
+class ExampleActivity:Activity() {
+	var age:Int = 0
+	var name:String = ""
+
+	// 原生方式。需要手动一个个的进行数据存储
+	override fun onSaveInstanceState(outState: Bundle?) {
+		super.onSaveInstanceState(outState)
+		outState?.let{
+			it.putInt("age", age)
+			it.putString("name", name)
+		}
+	}
+
+	override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+		super.onRestoreInstanceState(savedInstanceState)
+		saveInstanceState?.let {
+			age = it.getIntExtra("age", 0)
+			name = it.getStringExtra("name")
+		}
+	}
+}
+```
+
+- **使用EasyBundle进行现场保护配置**
+
+```
+// 直接在基类中进行基础注入配置即可
+class BaseActivity() {
+	override fun onSaveInstanceState(outState: Bundle?) {
+		super.onSaveInstanceState(outState)
+		EasyBundle.toBundle(this, outState)
+	}
+
+	override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+		super.onRestoreInstanceState(savedInstanceState)
+		EasyBundle.toEntity(this, savedInstanceState)
+	}
+}
+```
+
+以上即是EasyBundle的各种主要使用方式。希望能让大家对EasyBundle的主要功能先有个大致了解。
+
+### EasyBundle实例创建说明
+
+EasyBundle是对Bundle的存取操作进行封装的，那么肯定我们会需要绑定一个Bundle对应进行操作
+
+```
+val easyBundle:EasyBundle = EasyBundle.create(bundle)
+```
+
+然后，通过easyBundle操作完数据后，取出操作后的bundle数据进行使用：
+
+```
+val bundle:Bundle = easyBundle.bundle
+```
+
+若创建时传递进入的bundle为`null`。则将新建一个`空的bundle容器`进行数据存储
+
+```
+fun create(source:Bundle? = null): EasyBundle {
+    return EasyBundle(source?: Bundle())
+}
+```
+
+所以。我们再返回去看上面的存储示例代码，就很清晰了：
+
+```
+val bundle:Bundle = EasyBundle.create(getBundle())
+	.put("age", age)
+	.put("name", name)
+	.getBundle()
 ```
 
 ### 统一存取api
 
-EasyBundle简化了存取api。 **不用像原生Bundle一样，需要根据指定数据类型选择使用不同的api进行使用:**
+从上面的示例中我们可以看得出来：相比于原生方式(需要针对`不同类型数据`使用`不同的api`进行数据存取), `EasyBundle`统一了存取的api：
 
-以存取`String、Parcelable、Serializable`实例为例：
+#### 统一存储的三种方式
 
-```
-val string = "Hello world"
-val parcelable = ParcelableSubclass()
-val serializable = SerializableSubclass()
-```
-
-#### 统一存储
-
-EasyBundle提供了三种重载方法进行数据存储
-
-1. 统一使用put方法进行存储, 且支持链式调用
+1. 直接使用`put(key:String, value:Any)`方法一个个进行存储：
 
 ```
-easybundle.put(key1, string)
-    .put(key2, parcelable)
-    .put(key3, serializable)
+easyBundle.put(key1, value1)
+	.put(key2, value2)// 支持链式调用
 ```
 
-2. 或者，你也可以使用提供的带可变参数的方法进行多数据存储
+2. 通过提供的带可变参数的方法`put(vararg params:Pair<String, Any>)`进行多数据同时存储
 
 ```
-easyBundle.put(key1 to String,
-    key2 to parcelable,
-    key3 to serializable)
+easyBundle.put(
+	key1 to value1,
+	key2 to value2
+	...
+)
 ```
 
-3. 当然，你也可以传入一个存在的map实例
+3. 直接存储别人传过来的map数据`put(params:Map<String, Any>)`
 
 ```
-easyBundle.put(mapOf<String, Any>(
-            key1 to string,
-            key2 to parcelable,
-            key3 to serializable))
+val map:Map<String, Any> = getMap()
+easyBundle.put(map)
 ```
 
 #### 统一读取
 
-1. 通过内联函数指定`数据泛型`进行读取
+统一了数据的存储入口。理所当然的，`EasyBundle`也统一了数据的读取入口：
+
+需要进行读取时。可以通过内联函数`get<T>(key:String)`读取指定数据.
+
+比如读取`实现了Parcelable接口的User`实例:
 
 ```
-val string = easyBundle.get<String>(key1)
-val parcelable = easyBundle.get<ParcelableSubclass>(key2)
-val serializable = easyBundle.get<SerializableSubclass>(key3)
+val user = easyBundle.get<User>("user")
 ```
 
-2. 或者。直接通过`指定class`进行读取
+而在java环境下。因为没有内联函数可用，所以你也可以使用`get(key:String, type:Class<*>)`方法进行读取
 
 ```
-val String = easyBundle.get(key1, String::class.java)
-val parcelable = easyBundle.get(key2, ParcelableSubclass::class.java)
-val serializable = easyBundle.get(key3, SerializableSubclass::class.java)
+User user = easyBundle.get("user", User.class)
 ```
 
-### 打破bundle数据存储限制
+### 打破Bundle存储数据限制
 
-EasyBundle破除了存储的入口限制，所以也理所应当的，**破除了Bundle的数据存储限制**
+都知道，Bundle的存取api那么复杂，主要是需要过滤掉`不被系统允许的非序列化数据`。
 
-意思即是：**EasyBundle允许你向Bundle内部存储任意的数据类型实例**
+所以经常性的。有时候我们在开发中，突然会需要将一个`普通的实体类`传递到下一个页面。这个时候就会需要对这个类进行序列化修改。
 
-以下方的`非可序列化类`为例：
+虽然实际上对类进行实现序列化接口还是很简单的。但是经常需要去实现，也是让人神烦的。
+
+解决办法其实很简单，参考经典的网络通信模型即可：**使用JSON作为中转类型进行通信**
+
+以下方的User为例：
 
 ```
-class Info {
-    val name:String? = "Info's name"
+class User() {
+	val name:String? = null
 }
 ```
 
-- 进行存储：
+**进行存储**
 
 ```
-val info = Info()
-easyBundle.put("info", info)
+easyBundle.put("user", user)
 ```
 
-- 进行读取
+存储时，自动对user进行`类型检查`，发现此类型`不被bundle所支持存储`，所以会将user通过`fastjson`或者`gson`进行`json序列化转码`后，再进行存储.
+
+**核心源码展示**
 
 ```
-val info = easyBundle.get<Info>("info")
-```
-
-可以看到:Info本身并未实现序列化接口。但是也是可以通过EasyBundle直接进行存取操作的。
-
-这是因为`EasyBundle`采用的是`JSON`作为数据中转格式：
-- 在进行存储时：将不能被Bundle直接存储的`(非可序列化对象)`转为`JSON`数据，再进行存储
-- 在进行读取时：取出的数据与实际要求的类型不匹配。通过'JSON'数据作为中转，并解析出要求的数据对象返回
-
-我们来通过部分`核心代码`来进行说明：
-
-- 存储时：
-
-```
-fun put(name:String, value:Any?):EasyBundle {
-    when (value) {
-        // 对于bundle支持的数据格式，直接使用对应的api进行存储
-        is Int -> bundle.putInt(name, value)
-        ...
-        // 对于不满足条件的，进行json转码后再进行存放
-        else -> bundle.putString(name, toJSON(value))
-    }
-
-    return this
+fun put(name:String, value:Any?) {
+	...
+	when (value) {
+		// 首先，对于Bundle支持的数据类型。自动选择正确的api进行存储
+		is Int -> bundle.putInt(name, value)
+		is Long -> bundle.putLong(name, value)
+		...
+		// 对于Bundle不支持的数据类型。转换为临时中间JSON数据再进行存储
+		else -> bundle.putString(name, toJSON(value))
+	}
 }
 ```
 
-- 读取时：
+**进行读取**
+
+```
+val user:User = easyBundle.get<User>("user")
+```
+
+读取时，从bundle中取出的是`json字串`。与指定类型`User`不匹配。则将通过`fastjson`或者`gson`进行`json反序列化解析`后。再进行返回：
+
+除了此处所举例的`JSON数据自动转换兼容`方案。还有一种是`基本数据类型转换兼容`:
+
+比如当前bundle中放入了数字的字符串:
+
+```
+easyBundle.put("number", "10086")
+```
+
+虽然我们存入的时候是String类型数据。但是内容实际上是可以转为int的。那么我们也可以直接`指定接受者类型为int`来进行读取：
+
+```
+val number:Int = easyBundle.get<Int>("number")
+```
+
+`基本类型兼容`的方式。在使用路由的项目下进行使用。非常好用：
+
+**因为路由框架中，url的参数部分，大部分都是直接以String的格式进行解析、传递的**
+
+**核心源码展示：**
 
 ```
 fun <T> get(key:String, type:Class<T>):T? {
@@ -147,139 +298,294 @@ fun <T> get(key:String, type:Class<T>):T? {
     }
 
     if (value !is String) {
-        // 不匹配类型，使用json作为数据中转站
+        // 对于数据类型不为String的，先行转换为json。
         value = toJSON(value)
     }
-    value = value as String
 
     // 处理两种情况下的数据自动转换：
     val result = when(type.canonicalName) {
-        // 兼容基本数据类型
-        "byte", "java.lang.Byte" -> value.toByte()
-        ...
-        // 对不匹配类型数据。使用json进行反序列化解析。
-        else -> parseJSON(value, type)
+    	// 第一种：基本数据类型数据自动转换兼容
+		"byte", "java.lang.Byte" -> value.toByte()
+		"short", "java.lang.Short" -> value.toShort()
+		...
+		// 第二种：JSON数据自动解析兼容
+		else -> parseJSON(value, type)
     }
     return result as T
 }
 ```
 
-源码很简单。相信很容易看懂。
+**关于EasyBundle中，json中转数据的说明**
 
-而在读取时，也对基本数据类型做判断兼容的好处是：可以做到很好的兼容市面上的路由框架。
-
-#### 路由传参的兼容方案
-
-我们都知道。路由的传参，有相当一部分的数据是通过`url`自带的`params`进行的数据传递。
-而这些`params`解析后放入intent的数据。基本上都是`String`类型。所以在数据接收页，
-普遍的还会需要自己去进行数据解析，这样很容易导致可维护性降低。
-
-所以EasyBundle自带的读取时解析数据。在这种场景下就能得到很好的应用：
-
-以下方所示的链接为例：
+在EasyBundle中。并没有直接依赖`fastjson`与`gson`解析库。而是通过在运行时进行`json库匹配`。使用当前的运行环境所支持的`json解析库`：
 
 ```
-val uri = Uri.parse("haoge://page/example").buildUpon()
-    .appendQueryParameter("int", "12")
-    .appendQueryParameter("user", JSON.toJSONString(User("Haoge")))
-    .appendQueryParameter("name", "Haoge")
-    .build()
-```
+// 当前运行环境下。是否存在fastjson
+private val FASTJSON by lazy { return@lazy exist("com.alibaba.fastjson.JSON") }
+// 当前运行环境下，是否存在gson
+private val GSON by lazy { return@lazy exist("com.google.gson.Gson") }
 
-为了便于展示说明。这里采用builder的方式进行了url的创建。传递一个`基本数据类型`一个`JSON`数据，
+// 进行json库判断。优先使用gson
+private fun toJSON(value:Any) = when {
+    GSON -> Gson().toJson(value)
+    FASTJSON -> JSON.toJSONString(value)
+    else -> throw RuntimeException("Please make sure your project support [FASTJSON] or [GSON] to be used")
+}
 
-所以。在解析url时，这部分的参数将会被解析后存入intent中进行传递：
-
-```
-val intent = getIntent()
-intent.putExtra("int", uri.getQueryParameter("int"))
-intent.putExtra("user", uri.getQueryParameter("user"))
-intent.putExtra("name", uri.getQueryParameter("name"))
-```
-
-然后在参数接收页。按照常规做法。我们应该是要先自己从intent中读取数据。然后自己转换成对应数据后再进行使用：
-
-但是使用EasyBundle即可以不用那么麻烦：
-
-```
-val easyBundle = EasyBundle.create(intent.extras)
-val int = easyBundle.get<Int>("int")
-val user = easyBundle.get<User>("user")
-val name = easyBundle.get<String>("name")
-```
-
-### 使用BundleField做自动数据注入
-
-`EasyBundle`提供`BundleField`注解作自动数据注入
-
-类似于ButterKnife。EasyBundle可以很方便的，从`bundle`容器中，将数据自动注入到实体类中的`对应成员变量`中去。
-
-最经典的用法是进行页面传参时进行使用：仍以上方路由传参的几个参数作为说明：
-
-```
-class InjectorActivity:Activity() {
-    // 配置可注入的参数. 添加BundleField注解即可
-    @BundleField("name")
-    var name:String? = null
-    @BundleField("int")
-    var int:Int = 0
-    @BundleField("user")
-    var user:User? = null
-
-    override fun onCreate(saveInstanceState:Bundle?) {
-        super.onCreate(saveInstanceState)
-        // 执行注入操作
-        EasyBundle.toEntity(this, intent?.extras)
-    }
+private fun parseJSON(json:String, clazz: Class<*>) = when {
+    GSON -> Gson().fromJson(json, clazz)
+    FASTJSON -> JSON.parseObject(json, clazz)
+    else -> throw RuntimeException("Please make sure your project support [FASTJSON] or [GSON] to be used")
 }
 ```
 
-这样的操作可以大大的提高代码的可读性。不用再去自己单独手动进行读取了。
+所以，完全不用担心会引入新的不需要的库进来。而且，相信大部分的项目中也肯定有`fastjson`与`gson`至少其中一种解析库。
 
-当然，每个类都去手动调用`toEntity`方法，也是很蛋疼的。所以`EasyBundle`也支持将注入api入口配置到基类中去。
+### 双向数据注入
 
-而且，结合`EasyBundle`的另一个`反向注入`api：`toBundle`。能够达到很方便的`现场数据保存`的效果
+`EasyBundle`提供了`BundleField`注解。用于提供`双向数据注入`功能。
+
+双向注入的意思即是：即可以将数据`从实体类中`注入到`bundle容器中`，也可以`从bundle容器中`注入到`实体类中`:
+
+举个栗子,这是个普通bean类，存储着用户信息：
 
 ```
-abstract class BaseActivity:Activity() {
+class User(var name:String, var arg:Int, var address:String)
+```
 
-    final override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // 自动触发注入操作
-        EasyBundle.toEntity(this, intent?.extras)
-    }
+然后。正常模式下。当我们需要将这些数据存储到bundle中去时：
 
-    // ==== 自动进行现场保护. 可选配置
-    override fun onSaveInstanceState(outState: Bundle?) {
+```
+val user = getUser()
+bundle.putString("name", user.name)
+bundle.putInt("age", user.age)
+bundle.putString("address", user.address)
+```
+
+或者，需要从bundle中将对应的数据取出来并赋值给user:
+
+```
+user.name = bundle.getString("name")
+user.age = bundle.getInt("age")
+user.address = bundle.getString("address")
+```
+
+但是，如果你使用`EasyBundle`提供的`双向数据注入`功能，就很简单了：
+
+**1. 为需要进行注入的字段。添加注解：**
+
+```
+class User(@BundleField var name:String,
+	@BundleField var arg:Int,
+	@BundleField var address:String)
+```
+
+**2. 将数据从User中注入到bundle中进行保存**
+
+```
+EasyBundle.toBundle(user, bundle)
+```
+
+**3. 将数据从bundle中，读取并注入到User实例中去：**
+
+```
+EasyBundle.toEntity(user, bundle)
+```
+
+效果与上方的原始写法一致。且`更加方便、更加简洁、更加强大`。
+
+#### 重新指定key值
+
+一般来说。直接使用`@BundleField`时。默认使用的key值是`字段名`。
+
+但是有时候，我们会需要对key值进行重设：
+
+```
+class Entity(@BundleField("reset_name") var name:String)
+```
+
+#### 防crash开关
+
+在进行数据存取的过程中，很难避免不会出现存取异常。比如说。你存的是`"Hello,World"`, 但是取的时候你却取成了`Int`。或者存的是json。但是读取的时候，进行json解析错误时。这些情况下都会导致抛出不可期的异常
+
+所以`BundleField`提供了`throwable`参数:
+
+```
+@BundleField(throwable = false)
+var user:User
+```
+
+`throwable`类型为Boolean。代表当存取时发生异常时。是否将此异常向上抛出。(默认为false)
+
+### 数据注入的使用场景
+
+上面虽然说了那么长一截，但是如果没有具体的使用场景示例的支撑。可能会有部分朋友不太理解: **你说了那么多，然而又有什么卵用？**
+
+下面我就举例一些使用场景。进行一些具体的说明：
+
+#### 1. 页面跳转Intent传值
+
+这其实可以说是主要的使用场景。在Activity中进行使用，获取启动时传递的数据：
+
+```
+class UserActivity:Activity() {
+	@BundleField
+	lateinit var name:String
+	@BundleField
+	lateinit var uid:String
+
+	override fun onCreate(saveInstanceState:Bundle?) {
+		// 将intent中的数据。注入到当前类中
+		EasyBundle.toEntity(this, intent?.extras)
+	}
+}
+```
+
+当然。其实每次有个新页面。都去写一次`EasyBundle.toEntity`也是挺蛋疼的
+
+其实注入方法是可以放入基类的。做到`一次基类配置，所有子类共用`
+
+```
+class BaseActivity:Activity() {
+	override fun onCreate(saveInstanceState:Bundle?) {
+		// 将intent中的数据。注入到当前类中
+		EasyBundle.toEntity(this, intent?.extras)
+		...
+	}
+}
+```
+
+而且。使用此种方式，有个很显著的优点：比如对于上方所示的`UserActivity`页面来说。此页面需要的数据就是`name`与`uid`，一目了然~
+
+#### 2. 现场状态保护
+
+照原生的方式。我们在进行现场保护时，会需要自己去将`关键状态数据`一个个的`手动存入saveInstanceState`中去，需要恢复数据时，又需要一个个的去`手动读取数据`.
+
+比如像下方的页面：
+
+```
+class PersonalActivity:Activity() {
+	// 此类中含有部分的关键状态变量
+	lateinit var name:String
+	var isSelf:Boolean = false
+	...
+
+	// 然后需要进行现场状态保护。存储关键数据：
+	override fun onSaveInstanceState(outState: Bundle?) {
+	    super.onSaveInstanceState(outState)
+	    outState.putString("name", name)
+	    outState.putBoolean("isSelf", isSelf)
+	}
+	// 页面待恢复时，将数据读取出来进行恢复
+	override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+	    super.onRestoreInstanceState(savedInstanceState)
+	    if (saveInstanceState == null) return
+	    name = saveInstanceState.getString("name")
+	    isSelf = saveInstanceState.getBoolean("isSelf")
+	}
+}
+```
+
+这只是两个变量需要保存。如果数据量较多的环境下。这块就得把人写疯。。。
+
+而`EasyBundle`的双向数据注入功能，在此处就能得到非常良好的表现：
+
+```
+class PersonalActivity:Activity() {
+	// 此类中含有部分的关键状态变量
+	@BundleField
+	lateinit var name:String
+	@BundleField
+	var isSelf:Boolean = false
+	...
+
+	// 然后需要进行现场状态保护。存储关键数据：
+	override fun onSaveInstanceState(outState: Bundle?) {
+	    super.onSaveInstanceState(outState)
+	    EasyBundle.toBundle(this, outState)
+	}
+	// 页面待恢复时，将数据读取出来进行恢复
+	override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+	    super.onRestoreInstanceState(savedInstanceState)
+	    EasyBundle.toEntity(this, savedInstanceState)
+	}
+}
+```
+
+当然，推荐的做法还是将此`配置到基类`. 使上层的代码更加简洁：
+
+```
+class BaseActivity:Activity() {
+	override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        // 将当前类中的被BundleField注解的变量。注入到outState中进行保存
         EasyBundle.toBundle(this, outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        // 将savedInstanceState中的数据注入到当前类中被BundleField注解的成员变量中
         EasyBundle.toEntity(this, savedInstanceState)
     }
 }
 ```
 
-#### BundleField参数说明
+当然，你也可以拓展到任意你需要使用到的地方。
 
-BundleField提供两个参数：
+#### 3. 兼容路由跳转参数传递
+
+上面说了，`EasyBundle`支持了`基本类型`的兼容逻辑。此兼容逻辑，主要其实就是用来出来路由参数传递的问题
+
+比如我们有以下一个路由跳转链接：
 
 ```
-annotation class BundleField(val value:String = "", val throwable:Boolean = true)
+val url = "Haoge://page/user?name=Haoge&age=18"
 ```
 
-**1. value**: 参数的key值，当为空时，代表使用成员变量的变量名作为key值使用
-**2. throwable**: 在进行数据注入时，当出现异常时，是否允许抛出异常。
+从链接可以看出来，其实我们需要传递的参数有两个：`String`类型的`name`, `Int`类型的`age`
 
-#### 指定参数默认值
+但是路由框架可没此目测功能，所以基本来说。解析后放入intent中传递的数据，都是`String`类型的`name`与`age`
 
-很多时候我们会需要为某个参数指定默认值。可以通过`直接为变量配置默认值`的方式进行配置：
+所以照正常逻辑：我们在目标页面。对`age`的取值。会需要将数据先读取出来再`进行一次转码`后方可使用
+
+```
+class UserActivity:BaseActivity() {
+	lateinit var name:String
+	lateinit var age:Int
+
+	override fun onCreate(saveInstanceState:Bundle?) {
+		// 从intent中进行读取
+		name = intent.getStringExtra("name")
+		age = intent.getStringExtra("age").toInt()// 需要再进行一次转码
+	}
+}
+```
+
+而使用注入功能，则不用考虑那么多，直接怼啊！！！
+
+```
+class UserActivity:BaseActivity() {
+	@BundleField
+	lateinit var name:String
+	@BundleField // 读取时，会进行自动转码
+	lateinit var age:Int
+}
+```
+
+#### 4. 指定默认值
 
 ```
 @BundleField
-var name:String = "this is default name"
+var age:Int = 18 // 直接对变量指定默认数据即可
 ```
+
+### 混淆配置
+
+因为自动注入操作使用了反射进行操作。所以如果需要对项目进行混淆的。记得添加上以下混淆规则：
+
+```
+-keep class com.haoge.easyandroid.easy.BundleField
+-keepclasseswithmembernames class * {
+    @com.haoge.easyandroid.easy.BundleField <fields>;
+}
+```
+
+更多使用场景。期待你的发掘~~~

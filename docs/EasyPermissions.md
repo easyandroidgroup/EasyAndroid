@@ -7,62 +7,78 @@ EasyPermissions用于进行版本号6.0+的动态权限申请操作
 
 ## 特性
 
-- 链式调用
+- api链式调用，调用链更丝滑~
 - 支持定制权限申请说明弹窗
 - 支持同时申请多个权限
-- 多权限申请时进行去重与空过滤
+- 多权限申请时进行去重
 - 自动使用顶层Activity执行权限请求
 - 支持在任意线程进行权限申请
 
-## 用法示例
+## 流程图
 
-### 权限申请
+下面的图为通用的动态权限申请流程图。EasyPermissions的执行流程也是与此一致的
 
-```
-EasyPermissions
-    // 直接指定任意多个待申请权限
-    .permissions(permission1, permission2...)
-    // 指定授权结果回调
-    .callback{grant:Boolean ->
-        if (grant) {
-            // grant为true，表示所有权限均申请成功
-        } else {
-            // grant为false,表示至少有一条权限申请失败
-        }
-    }
-    // 定制权限申请说明:
-    // permission:
-    .rational { permission:String, chain:RationalChain ->
-        // TODO 在此进行此权限的说明弹窗创建。并使用chain链接后续操作
-        // 当用户同意进行权限请求时：调用chain.process()
-        // 当用户拒绝进行权限请求时：调用chain.cancel()
+![](https://user-gold-cdn.xitu.io/2018/6/8/163de22dd83e89d4?w=1738&h=1552&f=png&s=320955)
 
-        return@rational true|false // 当需要进行弹窗通知时。需要返回true。否则返回false
-    }.request(activity)// 发起动态权限请求任务
-```
+## 用法举例
 
-### 示例说明:
+### 1. 申请写入联系人权限：(单一权限申请)
 
 ```
-EasyPermissions.create(
-    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    Manifest.permission.WRITE_CALENDAR,
-    Manifest.permission.WRITE_CONTACTS
-)
+EasyPermissions.create(Manifest.permissions.WRITE_CONTACTS)
+	.request(activity)
+```
+
+**PS: 请注意此处的request方法传入的Activity，需要为当前顶层的Activity实例，否则将可能导致无法接收权限返回信息的问题**
+
+### 2. 同时申请多个权限
+
+```
+EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_CALENDAR,
+                        Manifest.permission.WRITE_CONTACTS
+                ).request(this)
+```
+
+### 3. 接收权限申请结果
+
+```
+EasyPermissions.create(permission1, permission2 ... permissionN)
+		.callback {grant:Boolean -> // grant为true表示所有权限均申请成功}
+		.request(activity)
+```
+
+### 4. 定制权限申请说明弹窗
+
+`权限申请说明`部分的流程为上方流程图中的Rational部分。这部分流程系统只提供了`shouldShowRequestPermissionRationale`方法提示开发者：**这里需要向用户展示申请此权限的原因，以达到更好的用户体验**。
+
+所以，EasyPermissions也对应提供了rational方法，进行方便的创建说明提醒：
+
+```
+EasyPermissions.create(permissions)
+	.retional {
+		permission:String, // 需要进行用户提示的权限
+		chain: RationalChain -> // 内部API。若需要提示时，则需要使用此链表在用户操作后接入后续流程
+		// 返回true。表示此permission权限将会进行提醒说明,
+		// 先暂时对权限申请流程进行阻塞，待后续用户操作后，通过chain实例进行流程唤醒
+		return@rational true|false
+	}
+	.request(activity)
+```
+
+举个具体例子
+
+```
+EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     .rational { permission, chain ->
         AlertDialog.Builder(this)
                 .setTitle("权限申请说明")
                 .setMessage("应用需要此权限：\n$permission")
-                .setNegativeButton("拒绝", {_, _ -> chain.cancel() })
-                .setPositiveButton("同意", {_, _ -> chain.process() })
+                .setNegativeButton("拒绝", {_, _ -> chain.cancel()// 通知用户拒绝 })
+                .setPositiveButton("同意", {_, _ -> chain.process()// 用户同意，继续流程 })
                 .show()
-
         return@rational true
-    }.callback { grant ->
-        EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
-    }
-    .request(activity)
+    }.callback(callback)
+    .request(this)
 ```
-
-
 

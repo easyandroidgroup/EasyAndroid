@@ -1,6 +1,5 @@
 package com.haoge.sample.easyandroid.activities
 
-import android.util.Log
 import butterknife.OnClick
 import com.haoge.easyandroid.easy.EasyExecutor
 import com.haoge.easyandroid.easy.EasyLog
@@ -39,6 +38,18 @@ class EasyExecutorActivity:BaseActivity() {
         }, {
             EasyLog.DEFAULT.d("异步任务数据返回：$it")
         })
+    }
+
+    @OnClick(R.id.progressTask)
+    fun progressTask() {
+        executor.onProgressChanged { current, total ->
+            EasyToast.DEFAULT.show("接收到进度通知消息, 当前进度：$current & 总量为：$total")
+        }.execute { notifier ->
+            for (index in 0..10) {
+                notifier.progressChanged(index.toLong(), 10)
+                Thread.sleep(500)
+            }
+        }
     }
 
     @OnClick(R.id.delayTask)

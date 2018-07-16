@@ -28,13 +28,13 @@ public class EasyReflectTest {
         // 只使用class进行创建时。只有clazz数据，没有instance数据
         EasyReflect reflect = EasyReflect.create(TestReflectClass.class);
         assertEquals(TestReflectClass.class, reflect.getClazz());
-        assertNull(reflect.getInstance());
+        assertNull(reflect.get());
 
         // 使用具体类实例创建，具备clazz与instance实例
         TestReflectClass instance = new TestReflectClass();
         reflect = EasyReflect.create(instance);
         assertEquals(TestReflectClass.class, reflect.getClazz());
-        assertEquals(instance, reflect.getInstance());
+        assertEquals(instance, reflect.get());
 
         // 使用指定的类全名进行创建
         reflect = EasyReflect.create(TestReflectClass.class.getCanonicalName());

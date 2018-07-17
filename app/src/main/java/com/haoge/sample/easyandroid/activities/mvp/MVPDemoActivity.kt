@@ -11,8 +11,10 @@ import java.util.concurrent.Callable
 /**
  * @author haoge on 2018/5/30
  */
-class MVPDemoActivity:BaseMVPActivity<DemoPresenter>(),DemoView {
-    override fun createPresenter() = DemoPresenter(this)
+class MVPDemoActivity:BaseMVPActivity(),DemoView {
+
+    val presenter = DemoPresenter(this)
+    override fun createPresenters() = arrayOf(presenter)
 
     override fun onQuerySuccess(message: String?) {
         // 接收数据请求任务的返回数据并展示
@@ -21,7 +23,7 @@ class MVPDemoActivity:BaseMVPActivity<DemoPresenter>(),DemoView {
 
     override fun initPage(savedInstanceState: Bundle?) {
         // 发起数据请求任务
-        presenter?.requestData()
+        presenter.requestData()
     }
 
     override fun getLayoutId() = R.layout.activity_mvp_demo
@@ -45,9 +47,9 @@ class DemoPresenter(view:DemoView):MVPPresenter<DemoView>(view) {
         view?.showLoadingDialog()
 
         // 使用线程池模拟网络请求环境。
-        executor.async(Callable {
+        executor.async({
             Thread.sleep(3000)
-            return@Callable "Hello world!"
+            "Hello world!"
         }) {
             // 对于异步网络操作，回调时尽量先判断一下是否处于View绑定状态。
             if (!isViewAttached()) return@async

@@ -21,12 +21,10 @@ import com.haoge.easyandroid.safeShow
  * @author haoge on 2018/5/30
  */
 @SuppressLint("Registered")
-abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
+abstract class BaseMVPActivity:Activity(), MVPView{
 
     // 一个Activity持有一个唯一的Dispatcher派发器。
     val mvpDispatcher by lazy { MVPDispatcher.create() }
-    // 懒加载presenter
-    val presenter:P? by lazy { return@lazy createPresenter()}
     // 加载中的提示Dialog
     @Suppress("DEPRECATION")
     val progressDialog:Dialog by lazy {
@@ -45,11 +43,9 @@ abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
         }
         initPage(savedInstanceState)
 
-        if (presenter != null) {
-            mvpDispatcher.addPresenter(presenter!!)
-        }
-        mvpDispatcher.dispatchOnCreate(intent?.extras)
+        createPresenters()?.forEach { mvpDispatcher.addPresenter(it) }
 
+        mvpDispatcher.dispatchOnCreate(intent?.extras)
     }
 
     override fun onStart() {
@@ -122,5 +118,5 @@ abstract class BaseMVPActivity<out P:MVPPresenter<*>>:Activity(), MVPView{
      */
     abstract fun getLayoutId():Int
     abstract fun initPage(savedInstanceState: Bundle?)
-    abstract fun createPresenter():P
+    open fun createPresenters():Array<out MVPPresenter<*>>? = null
 }

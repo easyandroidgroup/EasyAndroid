@@ -309,6 +309,8 @@ class ExampleActivity:BaseActivity() {
 
 ### [MVP](./docs/MVP.md)
 
+博客地址：https://juejin.im/post/5b4ee27ff265da0f98314f01
+
 > 提供的一种简单的MVP分层架构实现。
 
 - 支持单页面绑定多个Presenter进行使用

@@ -1,6 +1,5 @@
 package com.haoge.sample.easyandroid.activities.mvp
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.app.ProgressDialog
@@ -20,11 +19,10 @@ import com.haoge.easyandroid.safeShow
  *
  * @author haoge on 2018/5/30
  */
-@SuppressLint("Registered")
 abstract class BaseMVPActivity:Activity(), MVPView{
 
     // 一个Activity持有一个唯一的Dispatcher派发器。
-    val mvpDispatcher by lazy { MVPDispatcher.create() }
+    val mvpDispatcher = MVPDispatcher()
     // 加载中的提示Dialog
     @Suppress("DEPRECATION")
     val progressDialog:Dialog by lazy {
@@ -93,7 +91,7 @@ abstract class BaseMVPActivity:Activity(), MVPView{
         mvpDispatcher.dispatchOnRestoreInstanceState(savedInstanceState)
     }
 
-    final override fun getActivity(): Activity {
+    override fun getHostActivity(): Activity {
         return this
     }
 
@@ -118,5 +116,8 @@ abstract class BaseMVPActivity:Activity(), MVPView{
      */
     abstract fun getLayoutId():Int
     abstract fun initPage(savedInstanceState: Bundle?)
+    /**
+     * 继承此方法，提供需要与此页面相绑定的Presenter, 可绑定多个Presenter
+     */
     open fun createPresenters():Array<out MVPPresenter<*>>? = null
 }

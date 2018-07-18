@@ -6,7 +6,6 @@ import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.easyandroid.mvp.MVPPresenter
 import com.haoge.easyandroid.mvp.MVPView
 import com.haoge.sample.easyandroid.R
-import java.util.concurrent.Callable
 
 /**
  * @author haoge on 2018/5/30
@@ -39,12 +38,12 @@ class DemoPresenter(view:DemoView):MVPPresenter<DemoView>(view) {
     val executor: EasyExecutor by lazy { EasyExecutor.newBuilder(1)
             .onError { _, _ ->
                 if (!isViewAttached()) return@onError
-                view.hideLoadingDialog()
+                getView().hideLoadingDialog()
             }
             .build() }
 
     fun requestData() {
-        view?.showLoadingDialog()
+        getView().showLoadingDialog()
 
         // 使用线程池模拟网络请求环境。
         executor.async({
@@ -54,8 +53,8 @@ class DemoPresenter(view:DemoView):MVPPresenter<DemoView>(view) {
             // 对于异步网络操作，回调时尽量先判断一下是否处于View绑定状态。
             if (!isViewAttached()) return@async
 
-            view?.hideLoadingDialog()
-            view?.onQuerySuccess(it)
+            getView().hideLoadingDialog()
+            getView().onQuerySuccess(it)
         }
     }
 

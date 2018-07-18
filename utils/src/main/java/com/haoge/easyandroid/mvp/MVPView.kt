@@ -3,11 +3,11 @@ package com.haoge.easyandroid.mvp
 import android.app.Activity
 
 /**
- * View层：定义
+ * View层：基础通信协议接口
  * @author haoge on 2018/5/29
  */
 interface MVPView {
-    fun getActivity():Activity
+    fun getHostActivity():Activity
     fun showLoadingDialog()
     fun hideLoadingDialog()
     fun toastMessage(message:String)

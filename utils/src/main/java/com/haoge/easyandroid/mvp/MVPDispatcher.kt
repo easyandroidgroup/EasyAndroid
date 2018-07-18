@@ -7,7 +7,7 @@ import android.os.Bundle
  * MVP - 用于对页面绑定的Presenter进行生命周期的派发
  * @author haoge on 2018/5/29
  */
-class MVPDispatcher private constructor(){
+class MVPDispatcher{
 
     private val presenters:MutableList<MVPPresenter<*>> = mutableListOf()
 
@@ -112,10 +112,5 @@ class MVPDispatcher private constructor(){
                 it.onRestoreInstanceState(savedInstanceState)
             }
         }
-    }
-
-    companion object {
-        @JvmStatic
-        fun create() = MVPDispatcher()
     }
 }

@@ -7,7 +7,7 @@ import android.os.Bundle
  * Presenter层：连接View与Model的中间件桥梁，处理一些Model相关逻辑。比如API访问等
  * @author haoge on 2018/5/29
  */
-open class MVPPresenter<T:MVPView>(var view:T?){
+open class MVPPresenter<T:MVPView>(private var view:T?){
 
     fun attach(t:T) {
         this.view = t
@@ -15,8 +15,9 @@ open class MVPPresenter<T:MVPView>(var view:T?){
     fun detach() {
         this.view = null
     }
+    fun getView() = view as T
     fun isViewAttached() = view != null
-    fun getActivity() = view?.getActivity()?:throw RuntimeException("Could not call getActivity if the View is not attached")
+    fun getActivity() = view?.getHostActivity()?:throw RuntimeException("Could not call getActivity if the View is not attached")
 
     // Lifecycle delegate
     open fun onCreate(bundle: Bundle?) {}

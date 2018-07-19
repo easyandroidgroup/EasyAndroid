@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.haoge.easyandroid.EasyAndroid
@@ -62,7 +63,7 @@ class EasyToast private constructor(private val builder:Builder) {
             if (builder.isDefault) {
                 toast = Toast.makeText(context, "", builder.duration)
             } else {
-                val container = LayoutInflater.from(context).inflate(builder.layoutId, null)
+                val container = builder.layout?:LayoutInflater.from(context).inflate(builder.layoutId, null)
                 tv = container.findViewById(builder.tvId)
                 toast = Toast(context)
                 toast?.view = container
@@ -83,18 +84,25 @@ class EasyToast private constructor(private val builder:Builder) {
          */
         val DEFAULT: EasyToast by lazy { return@lazy newBuilder().build() }
 
+        @JvmStatic
         fun newBuilder():Builder {
-            return Builder(true, 0, 0)
+            return Builder(isDefault = true)
         }
-
+        @JvmStatic
         fun newBuilder(layoutId: Int, tvId: Int):Builder {
-            return Builder(false, layoutId, tvId)
+            return Builder(isDefault = false, layoutId = layoutId, tvId = tvId)
+        }
+        @JvmStatic
+        fun newBuilder(layout:View, tvId: Int):Builder {
+            assert(layout.parent == null)
+            return Builder(isDefault = false, layout = layout, tvId = tvId)
         }
     }
 
-    class Builder(internal var isDefault: Boolean,
-                  internal var layoutId: Int,
-                  internal var tvId: Int) {
+    class Builder internal constructor(internal var isDefault: Boolean,
+                           internal var layout:View? = null,
+                           internal var layoutId: Int = 0,
+                           internal var tvId: Int = 0) {
 
         internal var duration:Int = Toast.LENGTH_SHORT
         internal var gravity:Int = 0

@@ -145,7 +145,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
                         || type == Short::class.java
                         || type == StringBuilder::class.java
                         || type == StringBuffer::class.java
-                        -> editor.putString(name, (value as Byte).toString())
+                        -> editor.putString(name, value.toString())
                     GSON -> value?.let { editor.putString(name, Gson().toJson(it)) }
                     FASTJSON -> value?.let { editor.putString(name, JSON.toJSONString(value)) }
                 }

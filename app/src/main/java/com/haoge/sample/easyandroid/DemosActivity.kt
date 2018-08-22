@@ -17,7 +17,7 @@ import com.haoge.sample.easyandroid.activities.mvp.MVPDemoActivity
 /**
  * @author haoge on 2018/5/9
  */
-class DemosActivity:ListActivity() {
+class DemosActivity : ListActivity() {
 
     private val mContainer = arrayListOf<Item<*>>(
             Item("测试EasyToast", EasyToastActivity::class.java),
@@ -30,7 +30,8 @@ class DemosActivity:ListActivity() {
             Item("测试EasyExecutor", EasyExecutorActivity::class.java),
             Item("测试EasyBundle", EasyBundleActivity::class.java),
             Item("测试EasySharedPreferences", EasySharedPreferencesActivity::class.java),
-            Item("测试MVPDemo", MVPDemoActivity::class.java)
+            Item("测试MVPDemo", MVPDemoActivity::class.java),
+            Item("测试EasyPhotoDemo", EasyPhotoActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,17 +41,17 @@ class DemosActivity:ListActivity() {
     }
 }
 
-data class Item<T:Activity>(val text:String, val clazz:Class<T>)
+data class Item<T : Activity>(val text: String, val clazz: Class<T>)
 
-class DemosAdapter(var context:Context, var mContainer: ArrayList<Item<*>>) : BaseAdapter() {
+class DemosAdapter(var context: Context, var mContainer: ArrayList<Item<*>>) : BaseAdapter() {
 
     val mInflater = LayoutInflater.from(context)
 
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val button:Button = mInflater.inflate(R.layout.item_demo_list, parent, false) as Button
+        val button: Button = mInflater.inflate(R.layout.item_demo_list, parent, false) as Button
         button.text = getItem(position).text
-        button.setOnClickListener { context.startActivity(Intent(context, getItem(position).clazz) ) }
+        button.setOnClickListener { context.startActivity(Intent(context, getItem(position).clazz)) }
         return button
     }
 

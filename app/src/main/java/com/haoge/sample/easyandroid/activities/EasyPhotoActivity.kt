@@ -1,26 +1,16 @@
 package com.haoge.sample.easyandroid.activities
 
 import android.Manifest
-import android.content.res.Resources
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
-import android.widget.ImageView
-import butterknife.BindView
 import butterknife.OnClick
+import com.bumptech.glide.Glide
+import com.haoge.easyandroid.easy.EasyPermissions
 import com.haoge.easyandroid.easy.EasyPhoto
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 import kotlinx.android.synthetic.main.activity_easy_photo.*
 import java.io.File
-import android.graphics.Bitmap
-import android.os.Build
-import android.support.annotation.RequiresApi
-import com.bumptech.glide.Glide
-import com.haoge.easyandroid.easy.EasyPermissions
-import com.haoge.easyandroid.easy.EasyToast
 
 
 /**
@@ -35,29 +25,27 @@ class EasyPhotoActivity : BaseActivity() {
         return R.layout.activity_easy_photo
     }
 
+    override fun initPage(savedInstanceState: Bundle?) {
+        //拒绝权限将无法使用
+       EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA).callback { grant ->
+           //拒绝直接关闭
+           if(!grant){
+               finish()
+           } }.request(this)
 
+    }
 
     @OnClick(R.id.takePhoto)
     fun takePhoto() {
-        //申请权限，否则打开相机
-        EasyPermissions.create(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .callback { grant ->
-                    if(grant){
-                        //拍照
-                        EasyPhoto.create(false).callback { outputFile: File?, outputUri: Uri? ->
-                            showImg(outputFile, outputUri)
-                        }.takePhoto(this)
-                    }else{
-                        EasyToast.DEFAULT.show("权限申请失败")
-                    }
-                }
-                .request(this)
+        EasyPhoto(false).setCallback { outputFile: File?, outputUri: Uri? ->
+            showImg(outputFile, outputUri)
+        }.takePhoto(this)
 
     }
 
     @OnClick(R.id.selectPhoto)
     fun selectPhoto() {
-        EasyPhoto.create(false).callback { outputFile: File?, outputUri: Uri? ->
+        EasyPhoto(false).setCallback { outputFile: File?, outputUri: Uri? ->
             showImg(outputFile, outputUri)
         }.selectPhoto(this)
 
@@ -65,26 +53,16 @@ class EasyPhotoActivity : BaseActivity() {
 
     @OnClick(R.id.takePhoto_zoom)
     fun takePhotoZoom() {
-        //申请权限，否则打开相机
-        EasyPermissions.create(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .callback { grant ->
-                    if(grant){
-                        //拍照且自定义裁剪尺寸
-                        EasyPhoto.create(true).callback { outputFile: File?, outputUri: Uri? ->
-                            showImg(outputFile, outputUri)
-                        }.demisn(800, 400, 2, 1)
-                                .takePhoto(this)
-                    }else{
-                        EasyToast.DEFAULT.show("权限申请失败")
-                    }
-                }
-                .request(this)
+        EasyPhoto(true).setCallback { outputFile: File?, outputUri: Uri? ->
+            showImg(outputFile, outputUri)
+        }.setDimens(800, 400, 2, 1)
+                .takePhoto(this)
 
     }
 
     @OnClick(R.id.selectPhoto_zoom)
-    fun selecePhotoZoom() {
-        EasyPhoto.create(true).callback { outputFile: File?, outputUri: Uri? ->
+    fun selectPhotoZoom() {
+        EasyPhoto(true).setCallback { outputFile: File?, outputUri: Uri? ->
             showImg(outputFile, outputUri)
         }.selectPhoto(this)
     }
@@ -94,17 +72,8 @@ class EasyPhotoActivity : BaseActivity() {
      */
 
     private fun showImg(outputFile: File?, outputUri: Uri?) {
-        //申请权限，否则无法加载相册图片
-        EasyPermissions.create(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .callback { grant ->
-                    if(grant){
-                        //加载图片
-                        Glide.with(showImg).load(outputFile ?: outputUri!!).into(showImg)
-                    }else{
-                        EasyToast.DEFAULT.show("权限申请失败")
-                    }
-                }
-                .request(this)
+        //加载图片
+        Glide.with(showImg).load(outputFile ?: outputUri!!).into(showImg)
 
 
     }

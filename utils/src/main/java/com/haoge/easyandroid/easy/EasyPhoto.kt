@@ -30,16 +30,9 @@ class EasyPhoto (private val isCrop:Boolean) {
      */
     private var imgPath = Environment.getExternalStorageDirectory().absolutePath + File.separator + System.currentTimeMillis().toString() + ".jpg"
 
-    /**
-     * FileProvider的主机名：一般是包名+".fileprovider"，严格上是build.gradle中defaultConfig{}中applicationId对应的值+".fileprovider"
-     */
-    private var AUTHORITIES = "packageName.fileprovider"
-
     private var mOutputUri: Uri? = null
     private var mInputFile: File? = null
     private var mOutputFile: File? = null
-
-
 
     /**
      * 剪裁图片宽高比
@@ -53,7 +46,7 @@ class EasyPhoto (private val isCrop:Boolean) {
     private var mOutputX:Int = 800
     private var mOutputY:Int = 400
 
-    private val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     /**
      * 图片结果返回
@@ -86,25 +79,13 @@ class EasyPhoto (private val isCrop:Boolean) {
     }
 
     /**
-     * 设置FileProvider的主机名：一般是包名+".fileprovider"，严格上是build.gradle中defaultConfig{}中applicationId对应的值+".fileprovider"
-     * <p>
-     * 该工具默认是应用的包名+".fileprovider"，如项目build.gradle中defaultConfig{}中applicationId不是包名，则必须调用此方法对FileProvider的主机名进行设置，否则Android7.0以上使用异常
-     *
-     * @param authorities FileProvider的主机名
-     */
-    fun setAuthorities(authorities:String):EasyPhoto{
-        this.AUTHORITIES = authorities
-        return this
-    }
-
-    /**
      * 从图库获取
      */
      fun selectPhoto(activity: Activity){
         val intent = Intent(Intent.ACTION_PICK, null)
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
-        if (Looper.myLooper() == Looper.getMainLooper()) {
 
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             selectPhotoInternal(intent,activity)
         } else {
             mainHandler.post { selectPhotoInternal(intent,activity)}
@@ -114,24 +95,25 @@ class EasyPhoto (private val isCrop:Boolean) {
     private fun selectPhotoInternal(intent: Intent,activity: Activity){
         PhotoFragment.findOrCreate(activity).start(intent,PhotoFragment.REQ_SELECT_PHOTO) { requestCode: Int, data: Intent? ->
             if(requestCode ==PhotoFragment.REQ_SELECT_PHOTO ){
-                data?.let {
-                    val sourceUri = data.data
-                    val projection = arrayOf(MediaStore.Images.Media.DATA)
-                    val cursor = activity.managedQuery(sourceUri, projection, null, null, null)
+                data?:return@start
 
-                    val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                    cursor.moveToFirst()
-                    val imgPath = cursor.getString(columnIndex)
-                    mInputFile = File(imgPath)
+                val sourceUri = data.data
+                val projection = arrayOf(MediaStore.Images.Media.DATA)
+                @Suppress("DEPRECATION")
+                val cursor = activity.managedQuery(sourceUri, projection, null, null, null)
 
-                    if (isCrop) {//裁剪
-                        mOutputFile = File(generateImagePath(activity))
-                        mOutputUri = Uri.fromFile(mOutputFile)
-                        zoomPhoto(mInputFile, mOutputFile,activity)
-                    } else {//不裁剪
-                        mOutputUri = Uri.fromFile(mInputFile)
-                       callback?.invoke(mOutputFile,mOutputUri)
-                    }
+                val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                cursor.moveToFirst()
+                val imgPath = cursor.getString(columnIndex)
+                mInputFile = File(imgPath)
+
+                if (isCrop) {//裁剪
+                    mOutputFile = File(generateImagePath(activity))
+                    mOutputUri = Uri.fromFile(mOutputFile)
+                    zoomPhoto(mInputFile, mOutputFile,activity)
+                } else {//不裁剪
+                    mOutputUri = Uri.fromFile(mInputFile)
+                   callback?.invoke(mOutputFile,mOutputUri)
                 }
             }
 
@@ -142,7 +124,6 @@ class EasyPhoto (private val isCrop:Boolean) {
      * 拍照获取
      */
     fun takePhoto(activity: Activity){
-        this.AUTHORITIES = activity.packageName + ".fileprovider"
         this.imgPath = generateImagePath(activity)
         val imgFile = File(imgPath)
         if(!imgFile.parentFile.exists()){
@@ -156,13 +137,11 @@ class EasyPhoto (private val isCrop:Boolean) {
             val contentValues = ContentValues(1)
             contentValues.put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
             activity.application.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-
         }
+
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imgUri)
         if (Looper.myLooper() == Looper.getMainLooper()) {
-
             takePhotoInternal(intent,activity)
         } else {
             mainHandler.post { takePhotoInternal(intent,activity)}
@@ -201,7 +180,6 @@ class EasyPhoto (private val isCrop:Boolean) {
         val intent = Intent("com.android.camera.action.CROP")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setDataAndType(getImageContentUri(activity, inputFile), "image/*")
-
         } else {
             intent.setDataAndType(Uri.fromFile(inputFile), "image/*")
         }
@@ -220,31 +198,24 @@ class EasyPhoto (private val isCrop:Boolean) {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile))
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
 
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-
-            zoomPhotoInternal(intent,activity)
-        } else {
-            mainHandler.post { zoomPhotoInternal(intent,activity)}
-        }
-
+        zoomPhotoInternal(intent,activity)
     }
 
     private fun zoomPhotoInternal(intent: Intent,activity: Activity){
         PhotoFragment.findOrCreate(activity).start(intent,PhotoFragment.REQ_ZOOM_PHOTO) { requestCode: Int, data: Intent? ->
             if(requestCode ==PhotoFragment.REQ_ZOOM_PHOTO ){
-                data?.let {
-                    if (mOutputUri != null) {
-                        //删除拍照的临时照片
-                        val tmpFile = File(imgPath)
-                        if (tmpFile.exists()) {
-                            tmpFile.delete()
-                        }
+                data?:return@start
 
-                        callback?.invoke(mOutputFile,mOutputUri)
+                if (mOutputUri != null) {
+                    //删除拍照的临时照片
+                    val tmpFile = File(imgPath)
+                    if (tmpFile.exists()) {
+                        tmpFile.delete()
                     }
+
+                    callback?.invoke(mOutputFile,mOutputUri)
                 }
             }
-
         }
     }
 
@@ -264,8 +235,7 @@ class EasyPhoto (private val isCrop:Boolean) {
         val sb = StringBuilder()
         sb.append(Environment.getExternalStorageDirectory().absolutePath)
         sb.append(File.separator)
-        val ROOT_DIR = "Android/data/" + activity.packageName
-        sb.append(ROOT_DIR)
+        sb.append("Android/data/" + activity.packageName)
         sb.append(File.separator)
         return sb.toString()
     }
@@ -273,7 +243,6 @@ class EasyPhoto (private val isCrop:Boolean) {
     /**
      * 安卓7.0裁剪根据文件路径获取uri
      */
-
     private fun getImageContentUri(context: Context, imageFile: File?): Uri? {
         val filePath = imageFile?.absolutePath
         val cursor = context.contentResolver.query(
@@ -282,24 +251,19 @@ class EasyPhoto (private val isCrop:Boolean) {
                 MediaStore.Images.Media.DATA + "=? ",
                 arrayOf(filePath), null)
 
-        cursor.use { cursor ->
+        cursor.use { _ ->
             return if (cursor != null && cursor.moveToFirst()) {
                 val id = cursor.getInt(cursor
                         .getColumnIndex(MediaStore.MediaColumns._ID))
                 val baseUri = Uri.parse("content://media/external/images/media")
                 Uri.withAppendedPath(baseUri, "" + id)
+            } else if (imageFile?.exists() == true){
+                val values = ContentValues()
+                values.put(MediaStore.Images.Media.DATA, filePath)
+                context.contentResolver.insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
             } else {
-                imageFile?.let {
-                    if(it.exists()){
-                        val values = ContentValues()
-                        values.put(MediaStore.Images.Media.DATA, filePath)
-                        context.contentResolver.insert(
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                    } else {
-                        null
-                    }
-                }
-
+                null
             }
         }
     }

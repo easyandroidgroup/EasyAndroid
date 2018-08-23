@@ -191,9 +191,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
             return@lazy thread
         }
 
-        @JvmStatic
-        internal val FASTJSON by lazy { return@lazy exist("com.alibaba.fastjson.JSON") }
-        @JvmStatic
+        private val FASTJSON by lazy { return@lazy exist("com.alibaba.fastjson.JSON") }
         private val GSON by lazy { return@lazy exist("com.google.gson.Gson") }
         private fun exist(name:String):Boolean = try{
             Class.forName(name)

@@ -300,7 +300,10 @@ class EasyFormatter private constructor(private val builder: Builder) {
     }
 
     companion object {
+        @JvmStatic
         val DEFAULT by lazy { return@lazy Builder().build() }
+
+        @JvmStatic
         fun newBuilder(): Builder {
             return Builder()
         }

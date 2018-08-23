@@ -146,10 +146,9 @@ class EasyExecutor private constructor(val executor: ExecutorService,
     }
 
     companion object {
-        internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+        private val mainHandler = Handler(Looper.getMainLooper())
 
-        @JvmStatic
-        internal val UIDeliver:Executor = Executor {
+        private val UIDeliver:Executor = Executor {
             if (Looper.myLooper() == Looper.getMainLooper()) {
                 it.run()
             } else {
@@ -157,26 +156,34 @@ class EasyExecutor private constructor(val executor: ExecutorService,
             }
         }
 
-        @JvmStatic
-        internal val dispatcher:ScheduledExecutorService = Executors.newScheduledThreadPool(1, {
+        private val dispatcher:ScheduledExecutorService = Executors.newScheduledThreadPool(1, {
             val thread = Thread(it)
             thread.name = "Easy-task-Dispatcher"
             thread.priority = Thread.MAX_PRIORITY
              thread
         })
 
+        @JvmStatic
         fun newBuilder(size:Int):Builder {
             return Builder(size)
         }
     }
 
     class Builder internal constructor(private var size:Int) {
-        internal var name:String = "EasyExecutor"
-        internal var priority:Int = Thread.NORM_PRIORITY
-        internal var success:SUCCESS? = null
-        internal var error:ERROR? = null
-        internal var start:START? = null
-        internal var deliver:Executor = UIDeliver
+        private var name:String = "EasyExecutor"
+        private var priority:Int = Thread.NORM_PRIORITY
+        private var success:SUCCESS? = null
+        private var error:ERROR? = null
+        private var start:START? = null
+        private var deliver:Executor = UIDeliver
+
+        // getter
+        fun getName() = name
+        fun getPriority() = priority
+        fun getSuccess() = success
+        fun getError() = error
+        fun getStart() = start
+        fun getDeliver() = deliver
 
         /**
          * 设置默认任务名[线程名]
@@ -255,24 +262,24 @@ class EasyExecutor private constructor(val executor: ExecutorService,
                                   executor:EasyExecutor             // 从此容易中读取一些临时配置进行使用
                                     ) :Runnable {
 
-        private var deliver:Executor = executor.deliver?:builder.deliver
+        private var deliver:Executor = executor.deliver?:builder.getDeliver()
         private var success:SUCCESS? = executor.success
         private var error:ERROR? = executor.error
         private var start:START? = executor.start
-        private var name:String = executor.name?:builder.name
+        private var name:String = executor.name?:builder.getName()
         private val notifier = Notifier(deliver, executor.progress)
 
         override fun run() {
             Thread.currentThread().setUncaughtExceptionHandler {
                 _, e ->
                 deliver.execute {
-                    builder.error?.invoke(name, e)
+                    builder.getError()?.invoke(name, e)
                     error?.invoke(name, e)
                 }
             }
             Thread.currentThread().name = name
             deliver.execute {
-                builder.start?.invoke(name)
+                builder.getStart()?.invoke(name)
                 start?.invoke(name)
             }
             if (task != null) {
@@ -283,7 +290,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
                 deliver.execute { this.result?.invoke(result) }
             }
             deliver.execute {
-                builder.success?.invoke(name)
+                builder.getSuccess()?.invoke(name)
                 success?.invoke(name)
             }
         }

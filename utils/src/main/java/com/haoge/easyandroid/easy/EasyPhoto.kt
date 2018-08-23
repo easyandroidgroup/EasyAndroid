@@ -18,12 +18,12 @@ import java.io.File
  * 加工：3332168769
  * 备注：参考自 CSDN_LQR 的 LQRPhotoSelectUtils
  */
-class EasyPhoto (private val isCrop:Boolean) {
+class EasyPhoto(private val isCrop: Boolean) {
 
     /**
      * 设置图片选择结果回调
      */
-    private var callback:((outputFile: File?, outputUri: Uri?) -> Unit)? = null
+    private var callback: ((outputFile: File?, outputUri: Uri?) -> Unit)? = null
 
     /**
      * 拍照或剪切后图片的存放位置(参考file_provider_paths.xml中的路径)
@@ -37,21 +37,21 @@ class EasyPhoto (private val isCrop:Boolean) {
     /**
      * 剪裁图片宽高比
      */
-    private var mAspectX:Int = 1
-    private var mAspectY:Int = 1
+    private var mAspectX: Int = 1
+    private var mAspectY: Int = 1
 
     /**
      * 剪裁图片大小
      */
-    private var mOutputX:Int = 800
-    private var mOutputY:Int = 400
+    private var mOutputX: Int = 800
+    private var mOutputY: Int = 400
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
     /**
      * 图片结果返回
      */
-    fun setCallback(callback:((outputFile: File?, outputUri: Uri?) -> Unit)):EasyPhoto{
+    fun setCallback(callback: ((outputFile: File?, outputUri: Uri?) -> Unit)): EasyPhoto {
         this.callback = callback
         return this
     }
@@ -60,7 +60,7 @@ class EasyPhoto (private val isCrop:Boolean) {
      * 设置图片宽高比及裁剪图片大小
      *      （只有在裁剪图片时该参数才生效）
      */
-    fun setDimens(aspectX:Int,aspectY:Int,outputX:Int,outputY:Int):EasyPhoto{
+    fun setDimens(aspectX: Int, aspectY: Int, outputX: Int, outputY: Int): EasyPhoto {
         this.mAspectX = aspectX
         this.mAspectY = aspectY
         this.mOutputX = outputX
@@ -73,7 +73,7 @@ class EasyPhoto (private val isCrop:Boolean) {
      *
      * @param imgPath 图片的存储路径（包括文件名和后缀）
      */
-    fun setImgPath(imgPath:String):EasyPhoto{
+    fun setImgPath(imgPath: String): EasyPhoto {
         this.imgPath = imgPath
         return this
     }
@@ -81,21 +81,21 @@ class EasyPhoto (private val isCrop:Boolean) {
     /**
      * 从图库获取
      */
-     fun selectPhoto(activity: Activity){
+    fun selectPhoto(activity: Activity) {
         val intent = Intent(Intent.ACTION_PICK, null)
         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            selectPhotoInternal(intent,activity)
+            selectPhotoInternal(intent, activity)
         } else {
-            mainHandler.post { selectPhotoInternal(intent,activity)}
+            mainHandler.post { selectPhotoInternal(intent, activity) }
         }
     }
 
-    private fun selectPhotoInternal(intent: Intent,activity: Activity){
-        PhotoFragment.findOrCreate(activity).start(intent,PhotoFragment.REQ_SELECT_PHOTO) { requestCode: Int, data: Intent? ->
-            if(requestCode ==PhotoFragment.REQ_SELECT_PHOTO ){
-                data?:return@start
+    private fun selectPhotoInternal(intent: Intent, activity: Activity) {
+        PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_SELECT_PHOTO) { requestCode: Int, data: Intent? ->
+            if (requestCode == PhotoFragment.REQ_SELECT_PHOTO) {
+                data ?: return@start
 
                 val sourceUri = data.data
                 val projection = arrayOf(MediaStore.Images.Media.DATA)
@@ -110,10 +110,10 @@ class EasyPhoto (private val isCrop:Boolean) {
                 if (isCrop) {//裁剪
                     mOutputFile = File(generateImagePath(activity))
                     mOutputUri = Uri.fromFile(mOutputFile)
-                    zoomPhoto(mInputFile, mOutputFile,activity)
+                    zoomPhoto(mInputFile, mOutputFile, activity)
                 } else {//不裁剪
                     mOutputUri = Uri.fromFile(mInputFile)
-                   callback?.invoke(mOutputFile,mOutputUri)
+                    callback?.invoke(mOutputFile, mOutputUri)
                 }
             }
 
@@ -123,16 +123,16 @@ class EasyPhoto (private val isCrop:Boolean) {
     /**
      * 拍照获取
      */
-    fun takePhoto(activity: Activity){
+    fun takePhoto(activity: Activity) {
         this.imgPath = generateImagePath(activity)
         val imgFile = File(imgPath)
-        if(!imgFile.parentFile.exists()){
+        if (!imgFile.parentFile.exists()) {
             imgFile.parentFile.mkdirs()
         }
 
-        val imgUri = if(Build.VERSION.SDK_INT < Build.VERSION_CODES.N){
+        val imgUri = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             Uri.fromFile(imgFile)
-        }else{
+        } else {
             //兼容android7.0 使用共享文件的形式
             val contentValues = ContentValues(1)
             contentValues.put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
@@ -142,24 +142,24 @@ class EasyPhoto (private val isCrop:Boolean) {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imgUri)
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            takePhotoInternal(intent,activity)
+            takePhotoInternal(intent, activity)
         } else {
-            mainHandler.post { takePhotoInternal(intent,activity)}
+            mainHandler.post { takePhotoInternal(intent, activity) }
         }
     }
 
-    private fun takePhotoInternal(intent: Intent,activity: Activity) {
+    private fun takePhotoInternal(intent: Intent, activity: Activity) {
         val fragment = PhotoFragment.findOrCreate(activity)
-        fragment.start(intent,PhotoFragment.REQ_TAKE_PHOTO) { requestCode: Int, _: Intent? ->
-            if(requestCode ==PhotoFragment.REQ_TAKE_PHOTO ){
+        fragment.start(intent, PhotoFragment.REQ_TAKE_PHOTO) { requestCode: Int, _: Intent? ->
+            if (requestCode == PhotoFragment.REQ_TAKE_PHOTO) {
                 mInputFile = File(imgPath)
-                if(isCrop){
+                if (isCrop) {
                     mOutputFile = File(generateImagePath(activity))
                     mOutputUri = Uri.fromFile(mOutputFile)
-                    zoomPhoto(mInputFile,mOutputFile,activity)
-                }else{
+                    zoomPhoto(mInputFile, mOutputFile, activity)
+                } else {
                     mOutputUri = Uri.fromFile(mInputFile)
-                    callback?.invoke(mOutputFile,mOutputUri)
+                    callback?.invoke(mOutputFile, mOutputUri)
                 }
             }
 
@@ -169,10 +169,10 @@ class EasyPhoto (private val isCrop:Boolean) {
     /***
      * 图片裁剪
      */
-    private fun zoomPhoto(inputFile: File?, outputFile: File?,activity: Activity) {
+    private fun zoomPhoto(inputFile: File?, outputFile: File?, activity: Activity) {
         val parentFile = outputFile?.parentFile
         parentFile?.let {
-            if(!parentFile.exists()){
+            if (!parentFile.exists()) {
                 parentFile.mkdirs()
             }
         }
@@ -198,13 +198,13 @@ class EasyPhoto (private val isCrop:Boolean) {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile))
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
 
-        zoomPhotoInternal(intent,activity)
+        zoomPhotoInternal(intent, activity)
     }
 
-    private fun zoomPhotoInternal(intent: Intent,activity: Activity){
-        PhotoFragment.findOrCreate(activity).start(intent,PhotoFragment.REQ_ZOOM_PHOTO) { requestCode: Int, data: Intent? ->
-            if(requestCode ==PhotoFragment.REQ_ZOOM_PHOTO ){
-                data?:return@start
+    private fun zoomPhotoInternal(intent: Intent, activity: Activity) {
+        PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_ZOOM_PHOTO) { requestCode: Int, data: Intent? ->
+            if (requestCode == PhotoFragment.REQ_ZOOM_PHOTO) {
+                data ?: return@start
 
                 if (mOutputUri != null) {
                     //删除拍照的临时照片
@@ -213,7 +213,7 @@ class EasyPhoto (private val isCrop:Boolean) {
                         tmpFile.delete()
                     }
 
-                    callback?.invoke(mOutputFile,mOutputUri)
+                    callback?.invoke(mOutputFile, mOutputUri)
                 }
             }
         }
@@ -257,7 +257,7 @@ class EasyPhoto (private val isCrop:Boolean) {
                         .getColumnIndex(MediaStore.MediaColumns._ID))
                 val baseUri = Uri.parse("content://media/external/images/media")
                 Uri.withAppendedPath(baseUri, "" + id)
-            } else if (imageFile?.exists() == true){
+            } else if (imageFile?.exists() == true) {
                 val values = ContentValues()
                 values.put(MediaStore.Images.Media.DATA, filePath)
                 context.contentResolver.insert(
@@ -271,37 +271,38 @@ class EasyPhoto (private val isCrop:Boolean) {
     /**
      * 用于获取图片的Fragment
      */
-     class PhotoFragment: Fragment(){
+    class PhotoFragment : Fragment() {
         /**
          * Fragment处理照片后返回接口
          */
-        private var callback:((requestCode: Int, intent: Intent?) -> Unit)? = null
+        private var callback: ((requestCode: Int, intent: Intent?) -> Unit)? = null
 
         /**
          * 开启系统相册
          *      裁剪图片、打开相册选择单张图片、拍照
          */
-        fun start(intent: Intent,requestCode:Int,callback:((requestCode: Int, intent: Intent?) -> Unit)){
+        fun start(intent: Intent, requestCode: Int, callback: ((requestCode: Int, intent: Intent?) -> Unit)) {
             this.callback = callback
-            startActivityForResult(intent,requestCode)
+            startActivityForResult(intent, requestCode)
         }
 
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             super.onActivityResult(requestCode, resultCode, data)
-            if(resultCode == Activity.RESULT_OK){
-                callback?.invoke(requestCode,data)
+            if (resultCode == Activity.RESULT_OK) {
+                callback?.invoke(requestCode, data)
             }
         }
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             retainInstance = true
         }
 
         companion object {
-             const val REQ_TAKE_PHOTO = 10001
-             const val REQ_SELECT_PHOTO = 10002
-             const val REQ_ZOOM_PHOTO = 10003
-             private const val TAG = "EasyPhoto:PhotoFragment"
+            const val REQ_TAKE_PHOTO = 10001
+            const val REQ_SELECT_PHOTO = 10002
+            const val REQ_ZOOM_PHOTO = 10003
+            private const val TAG = "EasyPhoto:PhotoFragment"
 
             @JvmStatic
             fun findOrCreate(activity: Activity): PhotoFragment {

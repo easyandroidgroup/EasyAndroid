@@ -78,10 +78,11 @@ class EasyToast private constructor(private val builder:Builder) {
 
     companion object {
 
-        internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+        private val mainHandler = Handler(Looper.getMainLooper())
         /**
          * 默认提供的Toast实例，在首次使用时进行加载。
          */
+        @JvmStatic
         val DEFAULT: EasyToast by lazy { return@lazy newBuilder().build() }
 
         @JvmStatic

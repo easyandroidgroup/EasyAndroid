@@ -139,11 +139,8 @@ class EasyBundle private constructor(val bundle: Bundle){
     
     companion object {
         // 标识符：当前运行环境是否依赖了fastjson
-        @JvmStatic
         private val FASTJSON by lazy { return@lazy exist("com.alibaba.fastjson.JSON") }
-        @JvmStatic
         private val GSON by lazy { return@lazy exist("com.google.gson.Gson") }
-        @JvmStatic
         private val injector = BundleInjector()
 
         @JvmStatic
@@ -151,17 +148,18 @@ class EasyBundle private constructor(val bundle: Bundle){
             return EasyBundle(source?: Bundle())
         }
 
+        @JvmStatic
         fun toEntity(entity:Any?, bundle: Bundle?):Any? {
             if (entity == null || bundle == null) return null
             return injector.toEntity(entity, bundle)
         }
 
+        @JvmStatic
         fun toBundle(entity:Any?, bundle: Bundle?):Bundle? {
             if (entity == null || bundle == null) return bundle
             return injector.toBundle(entity, bundle)
         }
 
-        @JvmStatic
         private fun exist(name:String):Boolean = try{
             Class.forName(name)
             true

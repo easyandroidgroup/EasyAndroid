@@ -11,6 +11,7 @@ object EasyAndroid {
 
     private var context:Context? = null
 
+    @JvmStatic
     fun getApplicationContext():Context {
         if (context == null) {
             throw RuntimeException("Please call [EasyAndroid.init(context)] first")

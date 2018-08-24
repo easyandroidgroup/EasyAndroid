@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import java.io.File
+import java.lang.RuntimeException
 
 
 /**
@@ -20,11 +21,12 @@ import java.io.File
  * 备注：参考自 CSDN_LQR 的 LQRPhotoSelectUtils
  */
 class EasyPhoto(val isCrop:Boolean = false) {
-
     /**
      * 设置图片选择结果回调
      */
-    private var callback: ((file: File?) -> Unit)? = null
+    private var callback: ((file: File) -> Unit)? = null
+
+    private var error:((error:Exception) -> Unit)? = null
 
     /**
      * 拍照或剪切后图片的存放位置(参考file_provider_paths.xml中的路径)
@@ -32,6 +34,11 @@ class EasyPhoto(val isCrop:Boolean = false) {
     private var mImgPath:File? = null
 
     private val mainHandler = Handler(Looper.getMainLooper())
+
+    fun setError(error:((error:Exception) -> Unit)?):EasyPhoto {
+        this.error = error
+        return this
+    }
 
     fun setCallback(callback: ((file: File?) -> Unit)): EasyPhoto {
         this.callback = callback
@@ -64,14 +71,15 @@ class EasyPhoto(val isCrop:Boolean = false) {
 
     private fun selectPhotoInternal(intent: Intent, activity: Activity) {
         PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_SELECT_PHOTO) { requestCode: Int, data: Intent? ->
-            if (requestCode == PhotoFragment.REQ_SELECT_PHOTO) {
-                data ?: return@start
-
+            if (requestCode != PhotoFragment.REQ_SELECT_PHOTO || data == null) {
+                return@start
+            }
+            try {
                 val sourceUri = data.data
                 val projection = arrayOf(MediaStore.Images.Media.DATA)
                 @Suppress("DEPRECATION")
                 val cursor = activity.managedQuery(sourceUri, projection, null, null, null)
-
+                cursor?:RuntimeException("Could not query file for selected file.")
                 val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
                 cursor.moveToFirst()
                 val imgPath = cursor.getString(columnIndex)
@@ -82,7 +90,10 @@ class EasyPhoto(val isCrop:Boolean = false) {
                 } else {//不裁剪
                     callback?.invoke(inputFile)
                 }
+            } catch (e:Exception) {
+                error?.invoke(e)
             }
+
         }
     }
 
@@ -131,23 +142,28 @@ class EasyPhoto(val isCrop:Boolean = false) {
      * 图片裁剪
      */
     private fun zoomPhoto(inputFile: File?, outputFile: File, activity: Activity) {
-        val intent = Intent("com.android.camera.action.CROP")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.setDataAndType(getImageContentUri(activity, inputFile), "image/*")
-        } else {
-            intent.setDataAndType(Uri.fromFile(inputFile), "image/*")
+        try {
+            val intent = Intent("com.android.camera.action.CROP")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                intent.setDataAndType(getImageContentUri(activity, inputFile), "image/*")
+            } else {
+                intent.setDataAndType(Uri.fromFile(inputFile), "image/*")
+            }
+            intent.putExtra("crop", "true")
+
+            // 是否返回uri
+            intent.putExtra("return-data", false)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile))
+            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
+
+            zoomPhotoInternal(outputFile,intent, activity)
+        } catch (e:Exception) {
+            error?.invoke(e)
         }
-        intent.putExtra("crop", "true")
 
-        // 是否返回uri
-        intent.putExtra("return-data", false)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(outputFile))
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
-
-        zoomPhotoInternal(outputFile,intent, activity)
     }
 
-    private fun zoomPhotoInternal(outputFile: File?,intent: Intent, activity: Activity) {
+    private fun zoomPhotoInternal(outputFile: File,intent: Intent, activity: Activity) {
         PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_ZOOM_PHOTO) { requestCode: Int, data: Intent? ->
             if (requestCode == PhotoFragment.REQ_ZOOM_PHOTO) {
                 data ?: return@start

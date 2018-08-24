@@ -1,7 +1,6 @@
 package com.haoge.sample.easyandroid.activities
 
 import android.Manifest
-import android.net.Uri
 import android.os.Bundle
 import butterknife.OnClick
 import com.bumptech.glide.Glide
@@ -19,7 +18,6 @@ import java.io.File
  * 备注：
  */
 class EasyPhotoActivity : BaseActivity() {
-
 
     override fun getLayoutId(): Int {
         return R.layout.activity_easy_photo

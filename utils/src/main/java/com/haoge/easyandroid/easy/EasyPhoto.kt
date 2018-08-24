@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Fragment
 import android.content.ContentValues
 import android.content.Context
+import android.content.CursorLoader
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -77,9 +78,9 @@ class EasyPhoto(val isCrop:Boolean = false) {
             try {
                 val sourceUri = data.data
                 val projection = arrayOf(MediaStore.Images.Media.DATA)
-                @Suppress("DEPRECATION")
-                val cursor = activity.managedQuery(sourceUri, projection, null, null, null)
-                cursor?:RuntimeException("Could not query file for selected file.")
+                val cursor = CursorLoader(activity, sourceUri, projection, null, null, null)
+                        .loadInBackground()
+                cursor?:throw RuntimeException("Could not query file for selected file.")
                 val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
                 cursor.moveToFirst()
                 val imgPath = cursor.getString(columnIndex)

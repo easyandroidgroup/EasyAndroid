@@ -19,7 +19,7 @@ import java.io.File
  * 加工：3332168769
  * 备注：参考自 CSDN_LQR 的 LQRPhotoSelectUtils
  */
-class EasyPhoto(private val isCrop: Boolean) {
+class EasyPhoto {
 
     /**
      * 设置图片选择结果回调
@@ -31,17 +31,7 @@ class EasyPhoto(private val isCrop: Boolean) {
      */
     private var mImgPath:File? = null
 
-    /**
-     * 剪裁图片宽高比
-     */
-    private var mAspectX: Int = 1
-    private var mAspectY: Int = 1
-
-    /**
-     * 剪裁图片大小
-     */
-    private var mOutputX: Int = 800
-    private var mOutputY: Int = 400
+    private var mDimension:Dimen? = null
 
     private val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
 
@@ -55,10 +45,7 @@ class EasyPhoto(private val isCrop: Boolean) {
      *      （只有在裁剪图片时该参数才生效）
      */
     fun setDimens(aspectX: Int, aspectY: Int, outputX: Int, outputY: Int): EasyPhoto {
-        this.mAspectX = aspectX
-        this.mAspectY = aspectY
-        this.mOutputX = outputX
-        this.mOutputY = outputY
+        mDimension = Dimen(aspectX, aspectY, outputX, outputY)
         return this
     }
 
@@ -101,9 +88,10 @@ class EasyPhoto(private val isCrop: Boolean) {
                 val imgPath = cursor.getString(columnIndex)
                 val inputFile = File(imgPath)
 
-                if (isCrop) {//裁剪
+                if (mDimension != null) {//裁剪
                     zoomPhoto(inputFile, mImgPath?:File(generateImagePath(activity)), activity)
                 } else {//不裁剪
+                    mDimension = null
                     callback?.invoke(inputFile)
                 }
             }
@@ -115,7 +103,7 @@ class EasyPhoto(private val isCrop: Boolean) {
      * 拍照获取
      */
     fun takePhoto(activity: Activity) {
-        val imgFile = if (isCrop) {
+        val imgFile = if (mDimension == null) {
             File(generateImagePath(activity))
         } else {
             mImgPath?: File(generateImagePath(activity))
@@ -143,9 +131,10 @@ class EasyPhoto(private val isCrop: Boolean) {
         val fragment = PhotoFragment.findOrCreate(activity)
         fragment.start(intent, PhotoFragment.REQ_TAKE_PHOTO) { requestCode: Int, _: Intent? ->
             if (requestCode == PhotoFragment.REQ_TAKE_PHOTO) {
-                if (isCrop) {
+                if (mDimension == null) {
                     zoomPhoto(takePhotoPath, mImgPath?: File(generateImagePath(activity)), activity)
                 } else {
+                    mDimension = null
                     callback?.invoke(takePhotoPath)
                 }
             }
@@ -165,12 +154,12 @@ class EasyPhoto(private val isCrop: Boolean) {
         intent.putExtra("crop", "true")
 
         //设置剪裁图片宽高比
-        intent.putExtra("mAspectX", mAspectX)
-        intent.putExtra("mAspectY", mAspectY)
+        intent.putExtra("mAspectX", mDimension?.aspectX)
+        intent.putExtra("mAspectY", mDimension?.aspectY)
 
         //设置剪裁图片大小
-        intent.putExtra("mOutputX", mOutputX)
-        intent.putExtra("mOutputY", mOutputY)
+        intent.putExtra("mOutputX", mDimension?.outputX)
+        intent.putExtra("mOutputY", mDimension?.outputY)
 
         // 是否返回uri
         intent.putExtra("return-data", false)
@@ -184,6 +173,7 @@ class EasyPhoto(private val isCrop: Boolean) {
         PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_ZOOM_PHOTO) { requestCode: Int, data: Intent? ->
             if (requestCode == PhotoFragment.REQ_ZOOM_PHOTO) {
                 data ?: return@start
+                mDimension = null
                 callback?.invoke(outputFile)
             }
         }
@@ -296,4 +286,9 @@ class EasyPhoto(private val isCrop: Boolean) {
 
         }
     }
+
+    private class Dimen(val aspectX:Int = 1,
+                        val aspectY: Int = 1,
+                        val outputX: Int = 800,
+                        val outputY: Int = 400)
 }

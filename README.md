@@ -55,7 +55,35 @@ EasyAndroid.init(application)
 - [EasyPermissions](#easypermissions): 动态权限申请组件
 - [EasyExecutor](#easyexecutor): 线程池封装组件
 - [EasyBundle](#easybundle): Bundle数据存取组件
+- [EasyPhoto](#easyphoto): 从拍照、图库进行图片选择组件。
 - [MVP](#mvp): 简单MVP架构
+
+### [EasyPhoto](./docs/EasyPhoto.md)
+
+> 从图库或者使用相机拍照获取图片的组件。
+
+贡献者：[Vicent9920](https://github.com/Vicent9920)
+
+- 支持链式调用
+- 支持图片指定宽高、指定宽高比例进行裁剪
+- 支持图片输出到指定地址
+- 支持任意线程选择进行图片选择
+
+用户实例：
+
+```
+// 创建EasyPhoto实例并添加配置
+val photo = EasyPhoto(isCrop) // isCrop设置是否进行图片裁剪
+    // 设置裁剪
+	.setDimens(aspectX: Int, aspectY: Int, outputX: Int, outputY: Int)
+	.setImgPath(imgPath:String)
+
+// 跳转拍照并获取图片
+photo.takePhoto(activity)
+
+// 或者跳转图库进行图片选择
+photo.selectPhoto(activity)
+```
 
 ### [EasySharedPreferences](./docs/EasySharedPreferences.md)
 

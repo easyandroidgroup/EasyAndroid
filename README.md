@@ -72,11 +72,22 @@ EasyAndroid.init(application)
 用户实例：
 
 ```
-// 创建EasyPhoto实例并添加配置
-val photo = EasyPhoto(isCrop) // isCrop设置是否进行图片裁剪
-    // 设置裁剪
-	.setDimens(aspectX: Int, aspectY: Int, outputX: Int, outputY: Int)
-	.setImgPath(imgPath:String)
+val photo = EasyPhoto()// 创建EasyPhoto实例
+    .setCrop(true|false)// 是否需要进行裁剪
+	.setImgPath(imgPath:String)// 指定创建的图片地址。
+	.setCallback { file:File ->
+	    // TODO 使用选择的文件进行操作
+	}
+
+// 通过设置回调，获取选择到的文件
+photo.setCallback { file:File ->
+    // TODO 使用选择的文件进行操作
+}
+
+// 当然。不排除出现非预期的问题。所以也提供了错误回调
+photo.setError { error:Exception ->
+    // TODO
+}
 
 // 跳转拍照并获取图片
 photo.takePhoto(activity)

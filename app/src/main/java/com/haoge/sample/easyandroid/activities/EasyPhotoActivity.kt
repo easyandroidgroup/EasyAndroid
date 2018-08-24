@@ -10,7 +10,6 @@ import com.haoge.easyandroid.easy.EasyPhoto
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 import kotlinx.android.synthetic.main.activity_easy_photo.*
-import java.io.File
 
 
 /**
@@ -32,29 +31,28 @@ class EasyPhotoActivity : BaseActivity() {
            if(!grant){
                finish()
            } }.request(this)
-
     }
 
     @OnClick(R.id.takePhoto)
     fun takePhoto() {
-        EasyPhoto(false).setCallback { outputFile: File?, outputUri: Uri? ->
-            showImg(outputFile, outputUri)
+        EasyPhoto(false).setCallback { outputUri: Uri? ->
+            showImg(outputUri)
         }.takePhoto(this)
 
     }
 
     @OnClick(R.id.selectPhoto)
     fun selectPhoto() {
-        EasyPhoto(false).setCallback { outputFile: File?, outputUri: Uri? ->
-            showImg(outputFile, outputUri)
+        EasyPhoto(false).setCallback { outputUri: Uri? ->
+            showImg(outputUri)
         }.selectPhoto(this)
 
     }
 
     @OnClick(R.id.takePhoto_zoom)
     fun takePhotoZoom() {
-        EasyPhoto(true).setCallback { outputFile: File?, outputUri: Uri? ->
-            showImg(outputFile, outputUri)
+        EasyPhoto(true).setCallback {outputUri: Uri? ->
+            showImg(outputUri)
         }.setDimens(800, 400, 2, 1)
                 .takePhoto(this)
 
@@ -62,8 +60,8 @@ class EasyPhotoActivity : BaseActivity() {
 
     @OnClick(R.id.selectPhoto_zoom)
     fun selectPhotoZoom() {
-        EasyPhoto(true).setCallback { outputFile: File?, outputUri: Uri? ->
-            showImg(outputFile, outputUri)
+        EasyPhoto(true).setCallback { outputUri: Uri? ->
+            showImg(outputUri)
         }.selectPhoto(this)
     }
 
@@ -71,9 +69,9 @@ class EasyPhotoActivity : BaseActivity() {
      * 加载图片
      */
 
-    private fun showImg(outputFile: File?, outputUri: Uri?) {
+    private fun showImg(outputUri: Uri?) {
         //加载图片
-        Glide.with(showImg).load(outputFile ?: outputUri!!).into(showImg)
+        Glide.with(showImg).load(outputUri).into(showImg)
 
 
     }

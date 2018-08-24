@@ -55,7 +55,7 @@ val photo = EasyPhoto(isCrop)
 	.setImgPath(imgPath:String)
 
 // 跳转拍照并获取图片
-photo.takePhoto(activity)// 
+photo.takePhoto(activity)
 
 // 或者跳转图库进行图片选择
 photo.selectPhoto(activity)
@@ -67,3 +67,5 @@ photo.selectPhoto(activity)
 2. aspectX, aspectY -> 剪裁图片的宽高比。
 3. outputX, outputY -> 剪裁图片大小
 3. imgPath -> 修改图片的存储路径（默认的图片存储路径是SD卡上 Android/data/应用包名/时间戳.jpg）
+
+请注意：启动拍照或图库选择时。传入的activity需要为当前正在展示的页面的activity实例！

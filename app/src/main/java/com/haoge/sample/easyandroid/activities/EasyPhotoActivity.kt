@@ -10,6 +10,7 @@ import com.haoge.easyandroid.easy.EasyPhoto
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 import kotlinx.android.synthetic.main.activity_easy_photo.*
+import java.io.File
 
 
 /**
@@ -35,33 +36,32 @@ class EasyPhotoActivity : BaseActivity() {
 
     @OnClick(R.id.takePhoto)
     fun takePhoto() {
-        EasyPhoto(false).setCallback { outputUri: Uri? ->
-            showImg(outputUri)
+        EasyPhoto(false).setCallback { outputFile: File? ->
+            showImg(outputFile)
         }.takePhoto(this)
 
     }
 
     @OnClick(R.id.selectPhoto)
     fun selectPhoto() {
-        EasyPhoto(false).setCallback { outputUri: Uri? ->
-            showImg(outputUri)
+        EasyPhoto(false).setCallback { outputFile: File? ->
+            showImg(outputFile)
         }.selectPhoto(this)
 
     }
 
     @OnClick(R.id.takePhoto_zoom)
     fun takePhotoZoom() {
-        EasyPhoto(true).setCallback {outputUri: Uri? ->
-            showImg(outputUri)
+        EasyPhoto(true).setCallback {outputFile: File? ->
+            showImg(outputFile)
         }.setDimens(800, 400, 2, 1)
                 .takePhoto(this)
-
     }
 
     @OnClick(R.id.selectPhoto_zoom)
     fun selectPhotoZoom() {
-        EasyPhoto(true).setCallback { outputUri: Uri? ->
-            showImg(outputUri)
+        EasyPhoto(true).setCallback { outputFile: File? ->
+            showImg(outputFile)
         }.selectPhoto(this)
     }
 
@@ -69,13 +69,9 @@ class EasyPhotoActivity : BaseActivity() {
      * 加载图片
      */
 
-    private fun showImg(outputUri: Uri?) {
+    private fun showImg(outputFile: File?) {
         //加载图片
-        Glide.with(showImg).load(outputUri).into(showImg)
-
-
+        Glide.with(showImg).load(outputFile).into(showImg)
     }
-
-
 
 }

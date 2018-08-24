@@ -24,7 +24,7 @@ class EasyPhoto(private val isCrop: Boolean) {
     /**
      * 设置图片选择结果回调
      */
-    private var uriCallback: ((outputUri: Uri?) -> Unit)? = null
+    private var callback: ((file: File?) -> Unit)? = null
 
     /**
      * 拍照或剪切后图片的存放位置(参考file_provider_paths.xml中的路径)
@@ -45,8 +45,8 @@ class EasyPhoto(private val isCrop: Boolean) {
 
     private val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
 
-    fun setCallback(callback: ((outputUri: Uri?) -> Unit)): EasyPhoto {
-        this.uriCallback = callback
+    fun setCallback(callback: ((file: File?) -> Unit)): EasyPhoto {
+        this.callback = callback
         return this
     }
 
@@ -93,6 +93,7 @@ class EasyPhoto(private val isCrop: Boolean) {
 
                 val sourceUri = data.data
                 val projection = arrayOf(MediaStore.Images.Media.DATA)
+                @Suppress("DEPRECATION")
                 val cursor = activity.managedQuery(sourceUri, projection, null, null, null)
 
                 val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
@@ -103,7 +104,7 @@ class EasyPhoto(private val isCrop: Boolean) {
                 if (isCrop) {//裁剪
                     zoomPhoto(inputFile, mImgPath?:File(generateImagePath(activity)), activity)
                 } else {//不裁剪
-                    uriCallback?.invoke(Uri.fromFile(inputFile))
+                    callback?.invoke(inputFile)
                 }
             }
 
@@ -145,8 +146,7 @@ class EasyPhoto(private val isCrop: Boolean) {
                 if (isCrop) {
                     zoomPhoto(takePhotoPath, mImgPath?: File(generateImagePath(activity)), activity)
                 } else {
-                    val outputUri = Uri.fromFile(takePhotoPath)
-                    uriCallback?.invoke(outputUri)
+                    callback?.invoke(takePhotoPath)
                 }
             }
         }
@@ -184,9 +184,7 @@ class EasyPhoto(private val isCrop: Boolean) {
         PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_ZOOM_PHOTO) { requestCode: Int, data: Intent? ->
             if (requestCode == PhotoFragment.REQ_ZOOM_PHOTO) {
                 data ?: return@start
-
-                val outputUri = Uri.fromFile(outputFile)
-                uriCallback?.invoke(outputUri)
+                callback?.invoke(outputFile)
             }
         }
     }
@@ -217,7 +215,6 @@ class EasyPhoto(private val isCrop: Boolean) {
     /**
      * 安卓7.0裁剪根据文件路径获取uri
      */
-
     private fun getImageContentUri(context: Context, imageFile: File?): Uri? {
         val filePath = imageFile?.absolutePath
         val cursor = context.contentResolver.query(
@@ -226,7 +223,7 @@ class EasyPhoto(private val isCrop: Boolean) {
                 MediaStore.Images.Media.DATA + "=? ",
                 arrayOf(filePath), null)
 
-        cursor.use { cursor ->
+        cursor.use { _ ->
             return if (cursor != null && cursor.moveToFirst()) {
                 val id = cursor.getInt(cursor
                         .getColumnIndex(MediaStore.MediaColumns._ID))
@@ -245,57 +242,6 @@ class EasyPhoto(private val isCrop: Boolean) {
                 }
 
             }
-        }
-    }
-
-
-    companion object {
-        fun uriToFile(uri: Uri?, context: Context): File? {
-            uri ?: return null
-            var path: String? = null
-            if ("file" == uri.scheme) {
-                path = uri.encodedPath
-                if (path != null) {
-                    path = Uri.decode(path)
-                    val cr = context.contentResolver
-                    val buff = StringBuffer()
-                    buff.append("(").append(MediaStore.Images.ImageColumns.DATA).append("=").append("'$path'").append(")")
-                    val cur = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA), buff.toString(), null, null)
-                    var index = 0
-                    var dataIdx = 0
-                    cur!!.moveToFirst()
-                    while (!cur.isAfterLast) {
-                        index = cur.getColumnIndex(MediaStore.Images.ImageColumns._ID)
-                        index = cur.getInt(index)
-                        dataIdx = cur.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-                        path = cur.getString(dataIdx)
-                        cur.moveToNext()
-                    }
-                    cur.close()
-                    if (index == 0) {
-                    } else {
-                        val u = Uri.parse("content://media/external/images/media/$index")
-                        println("temp uri is :$u")
-                    }
-                }
-                if (path != null) {
-                    return File(path)
-                }
-            } else if ("content" == uri.scheme) {
-                // 4.2.2以后
-                val proj = arrayOf(MediaStore.Images.Media.DATA)
-                val cursor = context.contentResolver.query(uri, proj, null, null, null)
-                if (cursor!!.moveToFirst()) {
-                    val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                    path = cursor.getString(columnIndex)
-                }
-                cursor.close()
-
-                return File(path!!)
-            } else {
-                //Log.i(TAG, "Uri Scheme:" + uri.getScheme());
-            }
-            return null
         }
     }
 

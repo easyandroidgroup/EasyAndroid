@@ -36,7 +36,7 @@ class EasyPhotoActivity : BaseActivity() {
 
     @OnClick(R.id.takePhoto)
     fun takePhoto() {
-        EasyPhoto(false).setCallback { outputFile: File? ->
+        EasyPhoto().setCallback { outputFile: File? ->
             showImg(outputFile)
         }.takePhoto(this)
 
@@ -44,7 +44,7 @@ class EasyPhotoActivity : BaseActivity() {
 
     @OnClick(R.id.selectPhoto)
     fun selectPhoto() {
-        EasyPhoto(false).setCallback { outputFile: File? ->
+        EasyPhoto().setCallback { outputFile: File? ->
             showImg(outputFile)
         }.selectPhoto(this)
 
@@ -54,8 +54,7 @@ class EasyPhotoActivity : BaseActivity() {
     fun takePhotoZoom() {
         EasyPhoto(true).setCallback {outputFile: File? ->
             showImg(outputFile)
-        }.setDimens(800, 400, 2, 1)
-                .takePhoto(this)
+        }.takePhoto(this)
     }
 
     @OnClick(R.id.selectPhoto_zoom)

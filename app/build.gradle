@@ -39,8 +39,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
 
 
-//    implementation project(':utils')
-    implementation 'com.github.yjfnypeu:EasyAndroid:1.1.8'
+    implementation project(':utils')
+//    implementation 'com.github.yjfnypeu:EasyAndroid:1.1.8'
 }
 
 apply plugin: 'kotlin-android-extensions'

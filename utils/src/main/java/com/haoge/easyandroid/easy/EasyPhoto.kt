@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
+import com.haoge.easyandroid.EasyAndroid
 import java.io.File
 import java.lang.RuntimeException
 
@@ -85,15 +86,7 @@ class EasyPhoto {
                 return@start
             }
             try {
-                val sourceUri = data.data
-                val projection = arrayOf(MediaStore.Images.Media.DATA)
-                val cursor = CursorLoader(activity, sourceUri, projection, null, null, null)
-                        .loadInBackground()
-                cursor?:throw RuntimeException("Could not query file for selected file.")
-                val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                cursor.moveToFirst()
-                val imgPath = cursor.getString(columnIndex)
-                val inputFile = File(imgPath)
+                val inputFile = uriToFile(data.data)
 
                 if (isCrop) {//裁剪
                     zoomPhoto(inputFile, mImgPath?:File(generateImagePath(activity)), activity)
@@ -103,7 +96,54 @@ class EasyPhoto {
             } catch (e:Exception) {
                 error?.invoke(e)
             }
+        }
+    }
 
+    private fun uriToFile(uri: Uri):File {
+        // 首先使用系统提供的CursorLoader进行file获取
+        val context = EasyAndroid.getApplicationContext()
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = CursorLoader(context, uri, projection, null, null, null)
+                .loadInBackground()
+        cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor?.let {
+            val index = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            it.moveToFirst()
+            return File(it.getString(index))
+        }
+
+        // 当没获取到。再使用别的方式进行获取
+        val scheme = uri.scheme
+        var path = uri.path?:throw RuntimeException("Could not find path in this uri:[$uri]")
+        if (scheme == "file") {
+            val cr = context.contentResolver
+            val buff = StringBuffer()
+            buff.append("(").append(MediaStore.Images.ImageColumns.DATA).append("=").append("'$path'").append(")")
+            val cur = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.ImageColumns._ID, MediaStore.Images.ImageColumns.DATA), buff.toString(), null, null)
+            cur?.let {
+                var dataIdx: Int
+                while (!cur.isAfterLast) {
+                    dataIdx = cur.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                    path = cur.getString(dataIdx)
+                    cur.moveToNext()
+                }
+                cur.close()
+
+                return File(path)
+            }?:throw RuntimeException("cursor is null")
+        } else if (scheme == "content") {
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            val cursor = context.contentResolver.query(uri, proj, null, null, null)
+            cursor?.let {
+                if (cursor.moveToFirst()) {
+                    val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                    path = cursor.getString(columnIndex)
+                }
+                cursor.close()
+                return File(path)
+            }?:throw RuntimeException("cursor is null")
+        } else {
+            throw IllegalArgumentException("Could not find file by this uri：$uri")
         }
     }
 

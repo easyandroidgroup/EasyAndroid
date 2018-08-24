@@ -49,10 +49,22 @@ EasyPermissions.create(
 #### 完整调用api展示
 
 ```
-// 创建EasyPhoto实例并添加配置
-val photo = EasyPhoto(isCrop)
-	.setDimens(aspectX: Int, aspectY: Int, outputX: Int, outputY: Int)
-	.setImgPath(imgPath:String)
+val photo = EasyPhoto()// 创建EasyPhoto实例
+    .setCrop(true|false)// 是否需要进行裁剪
+	.setImgPath(imgPath:String)// 指定创建的图片地址。
+	.setCallback { file:File ->
+	    // TODO 使用选择的文件进行操作
+	}
+
+// 通过设置回调，获取选择到的文件
+photo.setCallback { file:File ->
+    // TODO 使用选择的文件进行操作
+}
+
+// 当然。不排除出现非预期的问题。所以也提供了错误回调
+photo.setError { error:Exception ->
+    // TODO
+}
 
 // 跳转拍照并获取图片
 photo.takePhoto(activity)
@@ -61,11 +73,5 @@ photo.takePhoto(activity)
 photo.selectPhoto(activity)
 ```
 
-示例配置说明：
-
-1. isCrop:Boolean ->  是否为裁剪模式, 档位true时。表示是裁剪模式。选择好图片后将会进行裁剪处理
-2. aspectX, aspectY -> 剪裁图片的宽高比。
-3. outputX, outputY -> 剪裁图片大小
-3. imgPath -> 修改图片的存储路径（默认的图片存储路径是SD卡上 Android/data/应用包名/时间戳.jpg）
 
 请注意：启动拍照或图库选择时。传入的activity需要为当前正在展示的页面的activity实例！

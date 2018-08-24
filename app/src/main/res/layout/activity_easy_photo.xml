@@ -31,6 +31,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/indicate_img_path"
+        android:text="使用默认缓存地址"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <ImageView
         android:id="@+id/showImg"
         android:layout_width="match_parent"

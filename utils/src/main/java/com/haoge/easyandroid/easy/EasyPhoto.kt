@@ -21,12 +21,12 @@ import java.lang.RuntimeException
  * 加工：3332168769
  * 备注：参考自 CSDN_LQR 的 LQRPhotoSelectUtils
  */
-class EasyPhoto(val isCrop:Boolean = false) {
+class EasyPhoto {
     /**
      * 设置图片选择结果回调
      */
     private var callback: ((file: File) -> Unit)? = null
-
+    private var isCrop:Boolean = false
     private var error:((error:Exception) -> Unit)? = null
 
     /**
@@ -41,8 +41,13 @@ class EasyPhoto(val isCrop:Boolean = false) {
         return this
     }
 
-    fun setCallback(callback: ((file: File?) -> Unit)): EasyPhoto {
+    fun setCallback(callback: ((file: File) -> Unit)): EasyPhoto {
         this.callback = callback
+        return this
+    }
+
+    fun setCrop(isCrop: Boolean):EasyPhoto {
+        this.isCrop = isCrop
         return this
     }
 
@@ -51,9 +56,13 @@ class EasyPhoto(val isCrop:Boolean = false) {
      *
      * @param imgPath 图片的存储路径（包括文件名和后缀）
      */
-    fun setImgPath(imgPath: String): EasyPhoto {
-        this.mImgPath = File(imgPath)
-        this.mImgPath?.parentFile?.mkdirs()
+    fun setImgPath(imgPath: String?): EasyPhoto {
+        if (imgPath.isNullOrEmpty()) {
+            this.mImgPath = null
+        } else {
+            this.mImgPath = File(imgPath)
+            this.mImgPath?.parentFile?.mkdirs()
+        }
         return this
     }
 

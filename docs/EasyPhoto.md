@@ -50,11 +50,10 @@ EasyPermissions.create(
 
 ```
 val photo = EasyPhoto()// 创建EasyPhoto实例
-    .setCrop(true|false)// 是否需要进行裁剪
-	.setImgPath(imgPath:String)// 指定创建的图片地址。
-	.setCallback { file:File ->
-	    // TODO 使用选择的文件进行操作
-	}
+    // 是否需要进行裁剪
+    .setCrop(true|false)
+    // 指定创建的图片地址。
+    .setImgPath(imgPath:String)
 
 // 通过设置回调，获取选择到的文件
 photo.setCallback { file:File ->

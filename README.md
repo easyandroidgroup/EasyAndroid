@@ -65,7 +65,6 @@ EasyAndroid.init(application)
 贡献者：[Vicent9920](https://github.com/Vicent9920)
 
 - 支持链式调用
-- 支持图片指定宽高、指定宽高比例进行裁剪
 - 支持图片输出到指定地址
 - 支持任意线程选择进行图片选择
 

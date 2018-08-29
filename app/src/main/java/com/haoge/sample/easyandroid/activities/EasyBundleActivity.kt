@@ -31,7 +31,7 @@ class EasyBundleActivity:BaseActivity() {
                 .put("boolean", true)
                 .put("String", "String")
                 .bundle
-        EasyLog.DEFAULT.e("存储基本数据类型后的bundle数据为==>$bundle \n 要求长度为9 实际为${bundle.size()}")
+        EasyLog.DEFAULT.e("存储后的bundle: %s", bundle)
     }
 
     @OnClick(R.id.savePrimiteArray)
@@ -48,7 +48,7 @@ class EasyBundleActivity:BaseActivity() {
                 .put("StringArray", arrayOf("hello", "world"))
                 .bundle
 
-        EasyLog.DEFAULT.e("存储基本数据类型数组后的bundle数据为==>$bundle \n 要求长度为8 实际为${bundle.size()}")
+        EasyLog.DEFAULT.e("存储后的bundle: %s", bundle)
     }
 
     @OnClick(R.id.saveSerializable)
@@ -60,7 +60,7 @@ class EasyBundleActivity:BaseActivity() {
                 .put("arrayParcelable", arrayOf(ParcelableSubclass(), ParcelableSubclass()))
                 .put("bundle", Bundle())
                 .bundle
-        EasyLog.DEFAULT.e("存储可序列化数据后 ==> $bundle \n 要求长度为4，实际为${bundle.size()}")
+        EasyLog.DEFAULT.e("存储后的bundle: %s", bundle)
     }
 
     @OnClick(R.id.saveUnSerializable)
@@ -68,7 +68,18 @@ class EasyBundleActivity:BaseActivity() {
         val bundle = EasyBundle.create(null)
                 .put("info", Info("存储的名字"))
                 .bundle
-        EasyLog.DEFAULT.e("存储后的info数据为 ==> ${bundle.get("info")}")
+        EasyLog.DEFAULT.e("存储后的bundle: %s", bundle)
+    }
+
+    @OnClick(R.id.saveCollectionAndMap)
+    fun saveCollectionAndMap() {
+        val bundle = EasyBundle.create(null)
+                .put("list", arrayListOf("Hello", "World"))
+                .put("set", setOf("Hello"))
+                .put("map", mapOf(1 to "Hello"))
+                .bundle
+
+        EasyLog.DEFAULT.e("存储后的bundle: %s", bundle)
     }
 
     @OnClick(R.id.restorePrimite)
@@ -85,17 +96,6 @@ class EasyBundleActivity:BaseActivity() {
         EasyLog.DEFAULT.e("读取空Boolean数据：${easyBundle.get("key", Boolean::class.java)}")
     }
 
-    @OnClick(R.id.testForConverter)
-    fun testForConverter() {
-        val easyBundle = EasyBundle.create(null)
-                .put("int", 10)// 测试自动基本数据类型转换
-                // 测试json自动转换
-                .put("jsonOfInfo", Gson().toJson(Info("不可序列化的类, 将转换为json存储")))
-
-        EasyLog.DEFAULT.e("从json反序列化回来后的info数据：${easyBundle.get<Info>("jsonOfInfo")} \n bundle中保存的info原始数据为：${easyBundle.bundle["jsonOfInfo"]}")
-        EasyLog.DEFAULT.e("从json反序列化回来后的int数据：${easyBundle.get<Int>("int")}")
-    }
-
     @OnClick(R.id.testForInjector)
     fun testForInjector() {
         val entity = TestInjector("this is name of Injector",
@@ -104,7 +104,7 @@ class EasyBundleActivity:BaseActivity() {
                 SerializableSubclass("Hello Serializable!"),
                 Info())
 
-        val bundle = EasyBundle.toBundle(entity, null)
+        val bundle = EasyBundle.toBundle(entity, Bundle())
         EasyLog.DEFAULT.e("注入后的bundle数据：\n$bundle")
 
         // 对bundle数据部分数据进行重置：
@@ -115,7 +115,6 @@ class EasyBundleActivity:BaseActivity() {
         EasyBundle.toEntity(entity, bundle)
         EasyLog.DEFAULT.e("反注入回后的entity实例：\n$entity")
     }
-
 
 }
 

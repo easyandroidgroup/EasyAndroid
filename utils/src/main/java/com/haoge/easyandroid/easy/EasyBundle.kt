@@ -3,11 +3,16 @@ package com.haoge.easyandroid.easy
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.TextUtils
+import android.util.Size
+import android.util.SizeF
+import android.util.SparseArray
 import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import java.io.Serializable
 import java.lang.StringBuilder
 import java.lang.reflect.Field
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
 /**
  * 用于方便的进行Bundle数据存取。
@@ -16,68 +21,91 @@ import java.lang.reflect.Field
 class EasyBundle private constructor(val bundle: Bundle){
 
     fun put(map:Map<String, Any?>):EasyBundle {
-        for ((key, value) in map) {
-            put(key, value)
-        }
+        map.forEach { key, value -> put(key, value) }
         return this
     }
 
     fun put(vararg items:Pair<String, Any?>):EasyBundle {
-        for ((name, value) in items) {
-            put(name, value)
-        }
+        items.forEach { put(it.first, it.second) }
         return this
     }
 
-    fun put(name:String, value:Any?):EasyBundle {
-        if (TextUtils.isEmpty(name) || value == null) {
+    /**
+     * 将指定[key]-[value]键值对数据存储到Bundle容器中
+     *
+     * **存储规则：**
+     *
+     * 1. 当[value]的数据类型支持直接被bundle进行存储时，直接进行存储
+     * 2. 当[value]的数据类型不支持被bundle进行存储是，则将先将value转换为json后再进行存储
+     */
+    fun put(key:String, value:Any?):EasyBundle {
+        if (TextUtils.isEmpty(key) || value == null) {
             return this
         }
 
+        var store = true
         // 根据value的类型，选择合适的api进行存储
         @Suppress("UNCHECKED_CAST")
         when (value) {
-            is Int -> bundle.putInt(name, value)
-            is Long -> bundle.putLong(name, value)
-            is CharSequence -> bundle.putCharSequence(name, value)
-            is String -> bundle.putString(name, value)
-            is Float -> bundle.putFloat(name, value)
-            is Double -> bundle.putDouble(name, value)
-            is Char -> bundle.putChar(name, value)
-            is Short -> bundle.putShort(name, value)
-            is Boolean -> bundle.putBoolean(name, value)
-            is Serializable -> bundle.putSerializable(name, value)
-            is Bundle -> bundle.putBundle(name, value)
-            is Parcelable -> bundle.putParcelable(name, value)
+            is Int -> bundle.putInt(key, value)
+            is Long -> bundle.putLong(key, value)
+            is CharSequence -> bundle.putCharSequence(key, value)
+            is String -> bundle.putString(key, value)
+            is Float -> bundle.putFloat(key, value)
+            is Double -> bundle.putDouble(key, value)
+            is Char -> bundle.putChar(key, value)
+            is Short -> bundle.putShort(key, value)
+            is Boolean -> bundle.putBoolean(key, value)
+            is Parcelable -> bundle.putParcelable(key, value)
+            is SparseArray<*> -> bundle.putSparseParcelableArray(key, value as SparseArray<out Parcelable>)
             is Array<*> -> when {
-                value.isArrayOf<CharSequence>() -> bundle.putCharSequenceArray(name, value as Array<out CharSequence>)
-                value.isArrayOf<String>() -> bundle.putStringArray(name, value as Array<out String>?)
-                value.isArrayOf<Parcelable>() -> bundle.putParcelableArray(name, value as Array<out Parcelable>?)
-                else -> bundle.putString(name, toJSON(value))
+                value.isArrayOf<CharSequence>() -> bundle.putCharSequenceArray(key, value as Array<out CharSequence>)
+                value.isArrayOf<String>() -> bundle.putStringArray(key, value as Array<out String>?)
+                value.isArrayOf<Parcelable>() -> bundle.putParcelableArray(key, value as Array<out Parcelable>?)
+                else -> store = false
             }
-            is IntArray -> bundle.putIntArray(name, value)
-            is LongArray -> bundle.putLongArray(name, value)
-            is FloatArray -> bundle.putFloatArray(name, value)
-            is DoubleArray -> bundle.putDoubleArray(name, value)
-            is CharArray -> bundle.putCharArray(name, value)
-            is ShortArray -> bundle.putShortArray(name, value)
-            is BooleanArray -> bundle.putBooleanArray(name, value)
-            else -> bundle.putString(name, toJSON(value))
+            is Size -> bundle.putSize(key, value)
+            is SizeF -> bundle.putSizeF(key, value)
+            is IntArray -> bundle.putIntArray(key, value)
+            is LongArray -> bundle.putLongArray(key, value)
+            is FloatArray -> bundle.putFloatArray(key, value)
+            is DoubleArray -> bundle.putDoubleArray(key, value)
+            is CharArray -> bundle.putCharArray(key, value)
+            is ShortArray -> bundle.putShortArray(key, value)
+            is BooleanArray -> bundle.putBooleanArray(key, value)
+            is Serializable -> when (value) {
+                is Collection<*>, is Map<*, *> -> store = false
+                else -> bundle.putSerializable(key, value)
+            }
+            else -> store = false
+        }
+
+        if (store.not()) {
+            bundle.putString(key, toJSON(value))
         }
 
         return this
     }
 
     inline fun <reified T> get(key:String):T? {
-        return get(key, T::class.java)
+        val type = object : TypeGeneric<T>(T::class.java){}.getType()
+        return get(key, type) as T?
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T> get(key:String, type:Class<T>):T? {
-        var value = bundle.get(key) ?: return returnsValue(null, type) as T?
+    fun <T> get(key: String, clazz:Class<T>):T? {
+        @Suppress("UNCHECKED_CAST")
+        return get(key, type = clazz) as T?
+    }
+
+    /**
+     * 从容器中读取出指定[key]值，并转换为指定[type]后再返回
+     */
+    fun get(key:String, type:Type):Any? {
+        val rawType = getRawClass(type)
+        var value = bundle.get(key) ?: return returnsValue(null, rawType)
         // 当取出数据类型与指定类型匹配时。直接返回
-        if (type.isInstance(value)) {
-            return value as T
+        if (rawType.isInstance(value)) {
+            return value
         }
 
         if (value !is String) {
@@ -88,11 +116,12 @@ class EasyBundle private constructor(val bundle: Bundle){
         value = value as String
         if (value.isEmpty()) {
             // 过滤空数据
-            returnsValue(null, type)
+            returnsValue(null, rawType)
         }
 
         // 处理两种情况下的数据自动转换：
-        val result = when(type.canonicalName) {
+        @Suppress("IMPLICIT_CAST_TO_ANY")
+        val result = when(rawType.canonicalName) {
             "byte", "java.lang.Byte" -> value.toByte()
             "short", "java.lang.Short" -> value.toShort()
             "int", "java.lang.Integer" -> value.toInt()
@@ -105,7 +134,15 @@ class EasyBundle private constructor(val bundle: Bundle){
             "java.lang.StringBuffer" -> StringBuffer(value)
             else -> parseJSON(value, type)
         }
-        return result as T
+        return result
+    }
+
+    private fun getRawClass(type:Type):Class<*> {
+        return when(type) {
+            is Class<*> -> type
+            is ParameterizedType -> getRawClass(type.rawType)
+            else -> throw RuntimeException("Only support of Class and ParameterizedType")
+        }
     }
 
     // 兼容java环境使用，对返回数据进行二次处理。避免对基本数据类型返回null导致crash
@@ -125,16 +162,20 @@ class EasyBundle private constructor(val bundle: Bundle){
         }
     }
 
-    private fun toJSON(value:Any) = when {
-        GSON -> Gson().toJson(value)
-        FASTJSON -> JSON.toJSONString(value)
-        else -> throw RuntimeException("Please make sure your project support [FASTJSON] or [GSON] to be used")
+    private fun toJSON(value:Any):String {
+        return when {
+            GSON -> Gson().toJson(value)
+            FASTJSON -> JSON.toJSONString(value)
+            else -> throw RuntimeException("Please make sure your project support [FASTJSON] or [GSON] to be used")
+        }
     }
 
-    private fun parseJSON(json:String, clazz: Class<*>) = when {
-        GSON -> Gson().fromJson(json, clazz)
-        FASTJSON -> JSON.parseObject(json, clazz)
-        else -> throw RuntimeException("Please make sure your project support [FASTJSON] or [GSON] to be used")
+    private fun parseJSON(json:String, type: Type):Any {
+        return when {
+            GSON -> Gson().fromJson(json, type)
+            FASTJSON -> JSON.parseObject(json, type)
+            else -> throw RuntimeException("Please make sure your project support [FASTJSON] or [GSON] to be used")
+        }
     }
     
     companion object {
@@ -150,7 +191,7 @@ class EasyBundle private constructor(val bundle: Bundle){
 
         @JvmStatic
         fun toEntity(entity:Any?, bundle: Bundle?):Any? {
-            if (entity == null || bundle == null) return null
+            if (entity == null || bundle == null) return entity
             return injector.toEntity(entity, bundle)
         }
 
@@ -249,3 +290,12 @@ private class BundleInjector {
         return bundle
     }
 }
+
+abstract class TypeGeneric<T>(val raw:Class<*>) {
+    fun getType():Type {
+        val type = (this.javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
+        return if (type is Class<*> || type is ParameterizedType) type else raw
+    }
+}
+
+

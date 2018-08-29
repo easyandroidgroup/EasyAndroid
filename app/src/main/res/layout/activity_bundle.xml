@@ -39,14 +39,14 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/restorePrimite"
-            android:text="基本数据类型读取测试"
+            android:id="@+id/saveCollectionAndMap"
+            android:text="存储Collection与Map(自动转为json)"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/testForConverter"
-            android:text="自动转换功能测试"
+            android:id="@+id/restorePrimite"
+            android:text="基本数据类型读取测试"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

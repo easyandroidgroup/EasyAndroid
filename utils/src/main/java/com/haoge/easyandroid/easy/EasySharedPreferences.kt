@@ -16,7 +16,7 @@ import java.lang.reflect.Field
 class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPreferenceChangeListener {
 
     // 绑定的具体实体类。
-    internal val entity:PreferenceSupport
+    private val entity:PreferenceSupport
     // 所有的可操作变量
     private val fields = mutableMapOf<String, Field>()
     // 绑定的SharedPreference实例

@@ -14,8 +14,8 @@ import android.os.Looper
  */
 class EasyPermissions private constructor(private val permissions:Array<out String>){
 
-    internal var rational:((String, RationalChain) -> Boolean)? = null
-    internal var callback:((Boolean) -> Unit)? = null
+    private var rational:((String, RationalChain) -> Boolean)? = null
+    private var callback:((Boolean) -> Unit)? = null
 
     /**
      * 设置权限申请说明文案。向用户展示为什么需要申请此权限
@@ -47,7 +47,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    internal fun requestInternal(permissions: Array<out String>, activity: Activity) {
+    private fun requestInternal(permissions: Array<out String>, activity: Activity) {
         if (activity.isFinishing || activity.isDestroyed) {
             callback?.invoke(false)
             return
@@ -81,7 +81,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
 
     companion object {
 
-        internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+        private val mainHandler = Handler(Looper.getMainLooper())
 
         @JvmStatic
         fun create(vararg permissions:String): EasyPermissions {
@@ -91,10 +91,10 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
 }
 
 @TargetApi(Build.VERSION_CODES.M)
-class RationalChain internal constructor(internal val denies: MutableIterator<String>,
-                                         internal val fragment: PermissionFragment,
-                                         internal val rational: ((String, RationalChain) -> Boolean)?,
-                                         internal val result: (Boolean) -> Unit) {
+class RationalChain internal constructor(private val denies: MutableIterator<String>,
+                                         private val fragment: PermissionFragment,
+                                         private val rational: ((String, RationalChain) -> Boolean)?,
+                                         private val result: (Boolean) -> Unit) {
 
     fun process() {
         // 到底了。用户未拦截

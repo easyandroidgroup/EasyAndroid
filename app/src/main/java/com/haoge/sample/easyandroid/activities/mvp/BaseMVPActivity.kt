@@ -22,14 +22,9 @@ import com.haoge.easyandroid.safeShow
 abstract class BaseMVPActivity:Activity(), MVPView{
 
     // 一个Activity持有一个唯一的Dispatcher派发器。
-    val mvpDispatcher = MVPDispatcher()
-    // 加载中的提示Dialog
-    @Suppress("DEPRECATION")
-    val progressDialog:Dialog by lazy {
-        val dialog = ProgressDialog(this)
-        dialog.setMessage("加载中...")
-        return@lazy dialog
-    }
+    private val mvpDispatcher = MVPDispatcher()
+    // 一个Activity持有一个唯一的model做基础交互展示
+    val viewModel by lazy { MVPViewImpl(this) }
 
     // 然后在对应生命周期进行派发
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,25 +86,12 @@ abstract class BaseMVPActivity:Activity(), MVPView{
         mvpDispatcher.dispatchOnRestoreInstanceState(savedInstanceState)
     }
 
-    override fun getHostActivity(): Activity {
-        return this
-    }
-
-    override fun showLoadingDialog() {
-        progressDialog.safeShow()
-    }
-
-    override fun hideLoadingDialog() {
-        progressDialog.safeDismiss()
-    }
-
-    override fun toastMessage(message: String) {
-        EasyToast.DEFAULT.show(message)
-    }
-
-    override fun toastMessage(resId: Int) {
-        EasyToast.DEFAULT.show(resId)
-    }
+    // 交由统一的交互器进行统一样式展示
+    override fun getHostActivity() = this
+    override fun showLoadingDialog() = viewModel.showLoadingDialog()
+    override fun hideLoadingDialog() = viewModel.hideLoadingDialog()
+    override fun toastMessage(message: String) = viewModel.toastMessage(message)
+    override fun toastMessage(resId: Int) = viewModel.toastMessage(resId)
 
     /**
      * 指定使用的LayoutID，用于进行setContentView操作。当return 0时，则代表不使用

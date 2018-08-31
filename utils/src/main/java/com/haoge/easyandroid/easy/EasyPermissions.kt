@@ -170,7 +170,6 @@ class PermissionFragment: Fragment() {
         private const val REQUEST_CODE = 25
         private const val TAG = "EasyPermission:PermissionFragment"
 
-        @JvmStatic
         fun findOrCreate(activity: Activity):PermissionFragment {
             var fragment:PermissionFragment? = activity.fragmentManager.findFragmentByTag(TAG) as PermissionFragment?
             if (fragment == null) {

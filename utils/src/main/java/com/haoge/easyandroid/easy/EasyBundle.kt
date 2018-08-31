@@ -1,6 +1,7 @@
 package com.haoge.easyandroid.easy
 
 import android.os.Bundle
+import android.os.IBinder
 import android.os.Parcelable
 import android.text.TextUtils
 import android.util.Size
@@ -73,6 +74,7 @@ class EasyBundle private constructor(val bundle: Bundle){
             is CharArray -> bundle.putCharArray(key, value)
             is ShortArray -> bundle.putShortArray(key, value)
             is BooleanArray -> bundle.putBooleanArray(key, value)
+            is IBinder -> bundle.putBinder(key, value)
             is Serializable -> when (value) {
                 is Collection<*>, is Map<*, *> -> store = false
                 else -> bundle.putSerializable(key, value)

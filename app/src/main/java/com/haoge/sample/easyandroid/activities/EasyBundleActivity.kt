@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import butterknife.OnClick
-import com.google.gson.Gson
 import com.haoge.easyandroid.easy.BundleField
 import com.haoge.easyandroid.easy.EasyBundle
 import com.haoge.easyandroid.easy.EasyLog

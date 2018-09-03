@@ -128,19 +128,24 @@ class EasyReflect private constructor(val clazz: Class<*>, private var instance:
      * 获取与此name与参数想匹配的Method实例
      */
     fun getMethod(name: String, vararg types:Class<*>):MethodReflect {
-        val method:Method = try {
-            clazz.getDeclaredMethod(name, *types)
-        } catch (e:NoSuchMethodException) {
-            var matched:Method? = null
-            for (method in clazz.declaredMethods) {
-                if (method.name == name && match(method.parameterTypes, types)) {
-                    matched = method
-                    break
+        var find:Method? = null
+        var type:Class<*>? = clazz
+        while (type != null) {
+            try {
+                find = type.getDeclaredMethod(name, *types)
+                break
+            } catch (e:NoSuchMethodException) {
+                for (method in type.declaredMethods) {
+                    if (method.name == name && match(method.parameterTypes, types)) {
+                        find = method
+                        break
+                    }
                 }
+                type = type.superclass
             }
-            matched?:throw ReflectException("")
         }
-        return MethodReflect(accessible(method), this)
+        accessible(find?:throw RuntimeException(""))
+        return MethodReflect(find, this)
     }
 
     /**

@@ -1,17 +1,12 @@
-package com.haoge.sample.easyandroid.activities.mvp
+package com.haoge.sample.easyandroid.activities.mvp.base
 
 import android.app.Activity
-import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import butterknife.ButterKnife
-import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.easyandroid.mvp.MVPDispatcher
 import com.haoge.easyandroid.mvp.MVPPresenter
 import com.haoge.easyandroid.mvp.MVPView
-import com.haoge.easyandroid.safeDismiss
-import com.haoge.easyandroid.safeShow
 
 
 /**

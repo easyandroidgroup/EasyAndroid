@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import com.haoge.sample.easyandroid.activities.*
-import com.haoge.sample.easyandroid.activities.mvp.MVPDemoActivity
+import com.haoge.sample.easyandroid.activities.mvp.login.LoginActivity
 
 /**
  * @author haoge on 2018/5/9
@@ -31,7 +31,7 @@ class DemosActivity : ListActivity() {
             Item("测试EasyBundle", EasyBundleActivity::class.java),
             Item("测试EasySharedPreferences", EasySharedPreferencesActivity::class.java),
             Item("测试EasyPhoto", EasyPhotoActivity::class.java),
-            Item("测试MVPDemo", MVPDemoActivity::class.java)
+            Item("测试MVPDemo", LoginActivity::class.java)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

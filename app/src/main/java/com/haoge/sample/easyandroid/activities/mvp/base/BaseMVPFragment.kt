@@ -1,4 +1,4 @@
-package com.haoge.sample.easyandroid.activities.mvp
+package com.haoge.sample.easyandroid.activities.mvp.base
 
 import android.app.Activity
 import android.app.Fragment
@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import butterknife.ButterKnife
 import com.haoge.easyandroid.mvp.MVPDispatcher
 import com.haoge.easyandroid.mvp.MVPPresenter
 import com.haoge.easyandroid.mvp.MVPView
@@ -20,11 +21,13 @@ abstract class BaseMVPFragment:Fragment(), MVPView {
 
     // 一个Activity持有一个唯一的Dispatcher派发器。
     private val mvpDispatcher = MVPDispatcher()
-    private lateinit var viewModel:MVPViewImpl
+    lateinit var viewModel: MVPViewImpl
 
     // =====初始化页面=======
-    override final fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(getLayoutId(), container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val root = inflater.inflate(getLayoutId(), container, false)
+        ButterKnife.bind(this, root)
+        return root
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {

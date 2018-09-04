@@ -1,4 +1,4 @@
-package com.haoge.sample.easyandroid.activities.mvp
+package com.haoge.sample.easyandroid.activities.mvp.base
 
 import android.app.Activity
 import android.app.Dialog

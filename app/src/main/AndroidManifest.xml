@@ -28,13 +28,13 @@
         <activity android:name=".activities.EasyFormaterActivity" />
         <activity android:name=".activities.EasyLogActivity" />
         <activity android:name=".activities.EasyReflectActivity" />
-        <activity android:name=".activities.mvp.MVPDemoActivity" />
         <activity android:name=".activities.EasyResultActivity" />
         <activity android:name=".activities.EasyPermissionsActivity" />
         <activity android:name=".activities.EasyExecutorActivity" />
         <activity android:name=".activities.EasyBundleActivity" />
         <activity android:name=".activities.EasySharedPreferencesActivity" />
-        <activity android:name=".activities.EasyPhotoActivity"></activity>
+        <activity android:name=".activities.EasyPhotoActivity"/>
+        <activity android:name=".activities.mvp.login.LoginActivity" />
     </application>
 
 </manifest>

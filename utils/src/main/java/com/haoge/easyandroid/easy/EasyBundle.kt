@@ -89,10 +89,6 @@ class EasyBundle private constructor(val bundle: Bundle){
         return this
     }
 
-    inline fun <reified T> get(key: String, defaultValue:T):T {
-        return get<T>(key)?:defaultValue
-    }
-
     inline fun <reified T> get(key:String):T? {
         val type = object : TypeGeneric<T>(T::class.java){}.getType()
         return get(key, type) as T?

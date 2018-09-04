@@ -40,7 +40,6 @@ dependencies {
 
 
     implementation project(':utils')
-//    implementation 'com.github.yjfnypeu:EasyAndroid:1.1.8'
+//    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.0'
 }
 
-apply plugin: 'kotlin-android-extensions'

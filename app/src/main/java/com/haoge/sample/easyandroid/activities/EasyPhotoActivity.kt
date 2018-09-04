@@ -3,6 +3,7 @@ package com.haoge.sample.easyandroid.activities
 import android.Manifest
 import android.os.Bundle
 import android.os.Environment
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.OnClick
 import com.bumptech.glide.Glide
@@ -11,7 +12,6 @@ import com.haoge.easyandroid.easy.EasyPhoto
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
-import kotlinx.android.synthetic.main.activity_easy_photo.*
 import java.io.File
 
 
@@ -77,8 +77,8 @@ class EasyPhotoActivity : BaseActivity() {
     /**
      * 加载图片
      */
-
     private fun showImg(outputFile: File) {
+        val showImg:ImageView = findViewById(R.id.showImg)
         EasyToast.DEFAULT.show("得到的文件名为：${outputFile.absolutePath}")
         //加载图片
         Glide.with(showImg).load(outputFile).into(showImg)

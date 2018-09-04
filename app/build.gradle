@@ -33,7 +33,6 @@ dependencies {
     implementation 'org.jetbrains.anko:anko-commons:0.10.5'
 
     implementation "com.jakewharton:butterknife:$butterknife_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
     implementation 'com.github.bumptech.glide:glide:4.5.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'

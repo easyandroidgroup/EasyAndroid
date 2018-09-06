@@ -33,6 +33,11 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
         return this
     }
 
+    /**
+     * 当请求的权限中，有被默认拒绝的权限时，将会通知待此[denied]通知器中。
+     *
+     * 可在此提醒用户前往权限设置。打开权限。
+     */
     fun alwaysDenyNotifier(denied:PermissionDenied?):EasyPermissions {
         this.denied = denied
         return this
@@ -46,6 +51,9 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
         return this
     }
 
+    /**
+     * 启动动态权限请求
+     */
     fun request(activity: Activity) {
         if (Build.VERSION.SDK_INT < 23) {
             callback?.invoke(true)
@@ -95,6 +103,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
     companion object {
         private val mainHandler = Handler(Looper.getMainLooper())
 
+        @JvmStatic
         fun create(vararg permissions:String): EasyPermissions {
             return EasyPermissions(permissions)
         }

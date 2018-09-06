@@ -3,6 +3,7 @@ package com.haoge.easyandroid.easy
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Fragment
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,7 +12,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import com.haoge.easyandroid.EasyAndroid
 
 /**
  * @author haoge on 2018/6/4
@@ -108,8 +108,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             return EasyPermissions(permissions)
         }
 
-        fun getPermissionGroupInfos(permissions: Array<String>):List<PermissionGroupInfo> {
-            val context = EasyAndroid.getApplicationContext()
+        fun getPermissionGroupInfos(permissions: Array<String>, context: Context):List<PermissionGroupInfo> {
             val names = mutableListOf<String>()// 进行过滤去重处理的临时变量
             val groups = mutableListOf<PermissionGroupInfo>()
             for (permission in permissions) {
@@ -126,8 +125,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             return groups
         }
 
-        fun getPermissionInfos(permissions: Array<String>):List<PermissionInfo> {
-            val context = EasyAndroid.getApplicationContext()
+        fun getPermissionInfos(permissions: Array<String>, context: Context):List<PermissionInfo> {
             val infos = mutableListOf<PermissionInfo>()
             val names = mutableListOf<String>()
             for (permission in permissions) {

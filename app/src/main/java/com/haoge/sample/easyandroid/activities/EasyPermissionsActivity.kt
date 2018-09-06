@@ -25,6 +25,7 @@ class EasyPermissionsActivity:BaseActivity() {
     private val callback:(Boolean) -> Unit = {grant ->
         EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
     }
+    private val denyNotifier = DenyNotifier()
 
     override fun getLayoutId() = R.layout.activity_easy_permissions
 
@@ -36,12 +37,7 @@ class EasyPermissionsActivity:BaseActivity() {
     @OnClick(R.id.permissionSingle)
     fun permissionSingle() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .alwaysDenyNotifier(DenyNotifier())
-                .alwaysDenyNotifier(object : PermissionAlwaysDenyNotifier() {
-                    override fun onAlwaysDeny(permissions: Array<String>, activity: Activity) {
-
-                    }
-                })
+                .alwaysDenyNotifier(denyNotifier)
                 .callback(callback)
                 .request(this)
     }
@@ -61,7 +57,7 @@ class EasyPermissionsActivity:BaseActivity() {
                         Manifest.permission.WRITE_CALENDAR,
                         Manifest.permission.WRITE_CONTACTS
                 )
-                .alwaysDenyNotifier(DenyNotifier())
+                .alwaysDenyNotifier(denyNotifier)
                 .callback(callback)
                 .request(this)
     }
@@ -69,6 +65,7 @@ class EasyPermissionsActivity:BaseActivity() {
     @OnClick(R.id.permissionWithRational)
     fun permissionWithRational() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .alwaysDenyNotifier(denyNotifier)
                 .rational { permission, chain ->
                     AlertDialog.Builder(this)
                             .setTitle("权限申请说明")

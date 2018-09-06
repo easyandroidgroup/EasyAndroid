@@ -385,9 +385,6 @@ class CustomActivity:BaseMVPActivity<CustomPresenter>, CustomView {
 }
 ```
 
-### [APIs](./docs/APIs.md)
-> 提供的一些其他零散的类库APIs
-
 ## 联系作者
 
 <a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=99e758d20823a18049a06131b6d1b2722878720a437b4690e238bce43aceb5e1"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="安卓交流会所" title="安卓交流会所"></a>

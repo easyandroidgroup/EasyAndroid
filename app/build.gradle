@@ -39,6 +39,6 @@ dependencies {
 
 
     implementation project(':utils')
-//    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.0'
+//    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.1'
 }
 

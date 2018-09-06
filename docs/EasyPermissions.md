@@ -82,3 +82,35 @@ EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     .request(this)
 ```
 
+### 5. 定制权限默认拒绝时的通知说明
+
+当申请的权限中。有`被默认拒绝`的权限时。此时需要提醒用户手动去权限管理页。主动将权限打开后再进行操作
+
+所以，EasyPermission提供了`alwaysDenyNotifier`方法. 便于在需要的时候进行提醒：
+
+```
+class DenyNotifier:PermissionAlwaysDenyNotifier() {
+    override fun onAlwaysDeny(permissions: Array<String>, activity: Activity) {
+        val message = StringBuilder("以下部分权限已被默认拒绝，请前往设置页将其打开:\n\n")
+        EasyPermissions.getPermissionGroupInfos(permissions, activity).forEach {
+            message.append("${it.label} : ${it.desc} \n")
+        }
+        AlertDialog.Builder(activity)
+                .setTitle("权限申请提醒")
+                .setMessage(message)
+                .setPositiveButton("确定", {_,_-> goSetting(activity)// 前往设置页})
+                .setNegativeButton("取消", {_,_-> cancel(activity)// 取消当前的权限请求任务})
+                .show()
+    }
+
+    override fun createIntent(activity: Activity): Intent {
+        // EasyPermissions本身并没做不同厂商的`跳转权限设置页`的针对性适配。
+        // 所以如果需要的话。可以通过复写此方法。主动的去针对性适配
+    }
+}
+
+EasyPermissions.create(permissions)
+    .alwaysDenyNotifier(DenyNotifier())
+    .request(activity)
+```
+

@@ -253,6 +253,7 @@ EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.
 - 多权限申请时进行去重与空过滤
 - 自动使用顶层Activity执行权限请求
 - 支持在任意线程进行权限申请
+- 当有默认拒绝的权限时，提示用户前往权限设置页。手动开启权限
 
 博客地址：https://juejin.im/post/5b1a2a326fb9a01e5d32f208
 
@@ -279,6 +280,9 @@ EasyPermissions.create(// 指定待申请权限
     .callback { grant ->
         EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
     }
+    .alwaysDenyNotifier(object : PermissionAlwaysDenyNotifier() {
+        ...
+    })
     // 发起请求
     .request()
 ```

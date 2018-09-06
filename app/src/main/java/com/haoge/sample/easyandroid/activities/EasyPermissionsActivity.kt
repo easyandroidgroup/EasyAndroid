@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import butterknife.OnClick
@@ -36,6 +37,11 @@ class EasyPermissionsActivity:BaseActivity() {
     fun permissionSingle() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .alwaysDenyNotifier(DenyNotifier())
+                .alwaysDenyNotifier(object : PermissionAlwaysDenyNotifier() {
+                    override fun onAlwaysDeny(permissions: Array<String>, activity: Activity) {
+
+                    }
+                })
                 .callback(callback)
                 .request(this)
     }
@@ -77,14 +83,14 @@ class EasyPermissionsActivity:BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        EasyLog.DEFAULT.e("PermissionActivity has destroy")
+        EasyLog.DEFAULT.e("PermissionFragment has destroy")
     }
 }
 
 class DenyNotifier:PermissionAlwaysDenyNotifier() {
     override fun onAlwaysDeny(permissions: Array<String>, activity: Activity) {
         val message = StringBuilder("以下部分权限已被默认拒绝，请前往设置页将其打开:\n\n")
-        EasyPermissions.getPermissionGroupInfos(permissions).forEach {
+        EasyPermissions.getPermissionGroupInfos(permissions, activity).forEach {
             message.append("${it.label} : ${it.desc} \n")
         }
         AlertDialog.Builder(activity)
@@ -94,5 +100,4 @@ class DenyNotifier:PermissionAlwaysDenyNotifier() {
                 .setNegativeButton("取消", {_,_ -> cancel(activity)})
                 .show()
     }
-
 }

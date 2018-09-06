@@ -2,12 +2,15 @@ package com.haoge.sample.easyandroid.activities
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.Activity
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import butterknife.OnClick
+import com.haoge.easyandroid.easy.EasyLog
 import com.haoge.easyandroid.easy.EasyPermissions
 import com.haoge.easyandroid.easy.EasyToast
+import com.haoge.easyandroid.easy.PermissionAlwaysDenyNotifier
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 import java.util.concurrent.Executors
@@ -32,6 +35,7 @@ class EasyPermissionsActivity:BaseActivity() {
     @OnClick(R.id.permissionSingle)
     fun permissionSingle() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .alwaysDenyNotifier(DenyNotifier())
                 .callback(callback)
                 .request(this)
     }
@@ -50,7 +54,10 @@ class EasyPermissionsActivity:BaseActivity() {
         EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_CALENDAR,
                         Manifest.permission.WRITE_CONTACTS
-                ).callback(callback).request(this)
+                )
+                .alwaysDenyNotifier(DenyNotifier())
+                .callback(callback)
+                .request(this)
     }
 
     @OnClick(R.id.permissionWithRational)
@@ -66,6 +73,26 @@ class EasyPermissionsActivity:BaseActivity() {
                     return@rational true
                 }.callback(callback)
                 .request(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EasyLog.DEFAULT.e("PermissionActivity has destroy")
+    }
+}
+
+class DenyNotifier:PermissionAlwaysDenyNotifier() {
+    override fun onAlwaysDeny(permissions: Array<String>, activity: Activity) {
+        val message = StringBuilder("以下部分权限已被默认拒绝，请前往设置页将其打开:\n\n")
+        EasyPermissions.getPermissionGroupInfos(permissions).forEach {
+            message.append("${it.label} : ${it.desc} \n")
+        }
+        AlertDialog.Builder(activity)
+                .setTitle("权限申请提醒")
+                .setMessage(message)
+                .setPositiveButton("确定", { _, _ ->  goSetting(activity)})
+                .setNegativeButton("取消", {_,_ -> cancel(activity)})
+                .show()
     }
 
 }

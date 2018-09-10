@@ -375,7 +375,11 @@ class CustomPresenter(view:CustomView):MVPPresenter(view) {
 }
 
 // 3. 创建具体的V层(Activity or Fragment),并绑定Presenter进行使用：
-class CustomActivity:BaseMVPActivity<CustomPresenter>, CustomView {
+class CustomActivity:BaseMVPActivity, CustomView {
+
+    // 创建presenter并绑定。可创建多个persenter使用
+    val persenter = CustomPresenter(this)
+    override fun createPresenters() = arrayOf(presenter)
     override fun updateUI() {// TODO 进行界面更新}
 
     fun initPage() {

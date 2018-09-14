@@ -14,9 +14,9 @@ import android.view.ContextThemeWrapper
  *
  * AUTHOR: haoge
  */
-internal object SafeDialogHandle {
+object SafeDialogHandle {
 
-    internal val mainHandler by lazy { return@lazy Handler(Looper.getMainLooper()) }
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     fun safeShowDialog(dialog: Dialog?) {
         if (Looper.myLooper() == Looper.getMainLooper()) {

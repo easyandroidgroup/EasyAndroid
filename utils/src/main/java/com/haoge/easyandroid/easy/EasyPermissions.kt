@@ -179,7 +179,7 @@ class RationalChain internal constructor(private val denies: MutableIterator<Str
         noticeAccept(false)
     }
 
-    internal fun noticeAccept(accept:Boolean) {
+    private fun noticeAccept(accept:Boolean) {
         result.invoke(accept)
     }
 }

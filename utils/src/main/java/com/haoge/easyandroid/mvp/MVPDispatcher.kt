@@ -24,7 +24,7 @@ class MVPDispatcher{
     /**
      * 移除制定的Presenter实例。并将其与View解绑。
      */
-    internal fun <V:MVPView> removePresenter(presenter:MVPPresenter<V>) {
+    fun <V:MVPView> removePresenter(presenter:MVPPresenter<V>) {
         if (presenters.contains(presenter)) {
             presenters.remove(presenter)
             if (presenter.isViewAttached()) {

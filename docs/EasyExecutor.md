@@ -172,13 +172,13 @@ Thread.currentThread().setUncaughtExceptionHandler {
 派发器的本质，是一个`Executor`接口的实现类：
 
 ```
-internal var deliver:Executor = UIDeliver
+private var deliver:Executor = UIDeliver
 ```
 
 而默认使用的`UIDeliver`，就是专门针对`Android运行时环境`创建的：**将消息派发到UI线程进行通知**
 
 ```
-internal val UIDeliver:Executor = Executor { runnable ->
+private val UIDeliver:Executor = Executor { runnable ->
     if (Looper.myLooper() == Looper.getMainLooper()) {
         runnable.run()
     } else {

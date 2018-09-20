@@ -21,11 +21,13 @@ import java.lang.reflect.Type
  */
 class EasyBundle private constructor(val bundle: Bundle){
 
+    /** 将map中的所有数据均存放至容器中*/
     fun put(map:Map<String, Any?>):EasyBundle {
         map.forEach { key, value -> put(key, value) }
         return this
     }
 
+    /** 直接一起存储不定数量的键值对数据到容器中*/
     fun put(vararg items:Pair<String, Any?>):EasyBundle {
         items.forEach { put(it.first, it.second) }
         return this
@@ -89,19 +91,29 @@ class EasyBundle private constructor(val bundle: Bundle){
         return this
     }
 
+    /** 获取指定[key]对应的值，若获取失败，则返回默认值[defValue]*/
+    inline fun <reified T> get(key: String, defValue:T):T {
+        return get<T>(key)?:defValue
+    }
+
+    /** 获取指定[key]对应的值，可为null*/
     inline fun <reified T> get(key:String):T? {
         val type = object : TypeGeneric<T>(T::class.java){}.getType()
         return get(key, type) as T?
     }
 
+    /** 获取指定[key]对应的值，类型为[clazz], 若获取失败，则返回默认值[defValue]*/
+    fun <T> get(key: String, clazz: Class<T>, defValue:T):T {
+        return get(key, clazz)?:defValue
+    }
+
+    /** 获取指定[key]对应的值，类型为[clazz], 可为null*/
     fun <T> get(key: String, clazz:Class<T>):T? {
         @Suppress("UNCHECKED_CAST")
         return get(key, type = clazz) as T?
     }
 
-    /**
-     * 从容器中读取出指定[key]值，并转换为指定[type]后再返回
-     */
+    /** 获取指定[key]对应的值，类型为[type], 可为null*/
     fun get(key:String, type:Type):Any? {
         val rawType = getRawClass(type)
         var value = bundle.get(key) ?: return returnsValue(null, rawType)
@@ -123,7 +135,8 @@ class EasyBundle private constructor(val bundle: Bundle){
 
         // 处理两种情况下的数据自动转换：
         @Suppress("IMPLICIT_CAST_TO_ANY")
-        val result = when(rawType.canonicalName) {
+        return when(rawType.canonicalName) {
+            // String自动转换基本数据类型
             "byte", "java.lang.Byte" -> value.toByte()
             "short", "java.lang.Short" -> value.toShort()
             "int", "java.lang.Integer" -> value.toInt()
@@ -132,11 +145,11 @@ class EasyBundle private constructor(val bundle: Bundle){
             "double", "java.lang.Double" -> value.toDouble()
             "char", "java.lang.Character" -> value.toCharArray()[0]
             "boolean", "java.lang.Boolean" -> value.toBoolean()
+            // 特殊处理StringBuilder、StringBuffer
             "java.lang.StringBuilder" -> StringBuilder(value)
             "java.lang.StringBuffer" -> StringBuffer(value)
             else -> parseJSON(value, type)
         }
-        return result
     }
 
     private fun getRawClass(type:Type):Class<*> {

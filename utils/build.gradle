@@ -28,6 +28,7 @@ dependencies {
 
     compileOnly 'com.alibaba:fastjson:1.2.47'
     compileOnly 'com.google.code.gson:gson:2.8.5'
+    compileOnly 'com.github.bumptech.glide:glide:4.8.0'
 }
 
 apply from: '../javadoc.gradle'

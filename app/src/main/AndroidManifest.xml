@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name=".App"
@@ -35,6 +36,7 @@
         <activity android:name=".activities.EasySharedPreferencesActivity" />
         <activity android:name=".activities.EasyPhotoActivity"/>
         <activity android:name=".activities.mvp.login.LoginActivity" />
+        <activity android:name=".activities.EasyImageGetterActivity" />
     </application>
 
 </manifest>

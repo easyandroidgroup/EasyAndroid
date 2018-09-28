@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable
 import android.os.AsyncTask
 import android.os.Build
 import android.text.Html
+import android.util.Log
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.haoge.easyandroid.EasyAndroid
@@ -111,14 +112,19 @@ class EasyImageGetter:Html.ImageGetter {
 
                 val url = params[0]?:throw RuntimeException("URL is null")
                 // 先使用用户设置的loader进行加载
-                val result = loader?.invoke(url)
-                if (result != null) return result
+                try {
+                    val result = loader?.invoke(url)
+                    if (result != null) return result
+                } catch (e:Exception) {
+                    Log.e("EasyImageGetter", "A error occurs with loader:[${loader?.javaClass?.canonicalName}]", e)
+                }
+
                 // 当用户设置的loader加载失败时(返回null), 则使用内部机制进行drawable获取
                 if (glideSupport.not()) throw RuntimeException("Internal loader requires glide to load drawable!")
                 val context = container.get()?.context?:throw RuntimeException("Fetch context failed from container")
                 return Glide.with(context).load(url).submit().get()
             } catch (e:Exception) {
-                e.printStackTrace()
+                Log.e("EasyImageGetter", "A error occurs with internal loader", e)
                 return null
             }
         }

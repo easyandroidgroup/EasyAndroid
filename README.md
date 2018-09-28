@@ -56,7 +56,40 @@ EasyAndroid.init(application)
 - [EasyExecutor](#easyexecutor): 线程池封装组件
 - [EasyBundle](#easybundle): Bundle数据存取组件
 - [EasyPhoto](#easyphoto): 从拍照、图库进行图片选择组件。
+- [EasyImageGetter](#easyimagegetter): TextView加载html标签时，提供`img`标签的图片加载功能
 - [MVP](#mvp): 简单MVP架构
+
+### [EasyImageGetter](./docs/EasyImageGetter.md)
+
+- 支持设置`placeholde`图片加载时占位图
+- 支持设置`error`图片加载失败时的占位图
+- 支持指定uri进行加载。不仅仅局限于网络图片。还包括加载本地图片、assets图片等。
+- 支持自定义加载器：满足各种加载需求。
+
+用户实例：
+
+```
+// 提供html文本数据
+private val html =
+"""
+<h5>asset图片加载示例</h5>
+<img src="file:///android_asset/imagegetter/cat.png">
+<h5>http图片加载示例</h5>
+<img src="http://www.w3school.com.cn/i/eg_tulip.jpg">
+""".trimIndent()
+
+// 提供展示的TextView控件
+private val textView:TextView = getTextView()
+
+EasyImageGetter.create()
+    // 设置图片加载时的占位图
+    .setPlaceHolder(R.drawable.placeholder)
+    // 设置图片加载失败时的占位图
+    .setError(R.drawable.error)
+    // 指定加载的html与tv控件即可
+    .loadHtml(html, textView)
+
+```
 
 ### [EasyPhoto](./docs/EasyPhoto.md)
 

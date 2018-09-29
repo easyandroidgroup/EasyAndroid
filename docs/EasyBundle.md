@@ -57,6 +57,14 @@ val age = easyBundle.get<Int>("age")
 val name = easyBundle.get<String>("name")
 ```
 
+- **使用EasyBundle进行读取**: 当读取失败时。指定默认值
+
+```
+val easyBundle = EasyBundle.create(getBundle())
+val age = easyBundle.get<Int>("age", defAge)
+val name = easyBundle.get<String>("name", defName)
+```
+
 - **原生方式页面取值**
 
 ```
@@ -217,6 +225,12 @@ val user = easyBundle.get<User>("user")
 
 ```
 User user = easyBundle.get("user", User.class)
+```
+
+与此想对应的，**也可以为读取操作指定默认值**：当通过指定key读取数据失败时，返回提供的默认值进行使用。防止空指针
+
+```
+val user = easyBundle.get<User>("user", deUser)
 ```
 
 ### 打破Bundle存储数据限制

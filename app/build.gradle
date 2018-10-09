@@ -11,11 +11,10 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -24,7 +23,6 @@ android {
 def butterknife_version = '8.8.1'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:27.1.1'
 
     implementation 'com.alibaba:fastjson:1.1.68.android'

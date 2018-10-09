@@ -141,7 +141,7 @@ class EasyLog private constructor(
     private fun dispatchToLogPrinterThread(invoke:(Thread, StackTraceElement, String) -> Unit) {
         val trace = findTrace()
         val current = Thread.currentThread()
-        val tag = if (tag.isEmpty()) trace.fileName else tag
+        val tag = if (tag.isEmpty()) trace.fileName?:trace.className?:"unknown tag" else tag
         this.tag = ""
         if (immediate) {
             invoke.invoke(current, trace, tag)
@@ -288,8 +288,8 @@ class EasyLog private constructor(
 
         private val rules:MutableMap<String, (StackTraceElement, Thread)->String> = mutableMapOf(
                 Pair("#T", { _, thread -> "[${thread.name}]"}),
-                Pair("#F", { trace, _ -> "${trace.className.substringAfterLast('.')}.${trace.methodName}(${trace.fileName}:${trace.lineNumber})"}),
-                Pair("#f", { trace, _ -> "(${trace.fileName}:${trace.lineNumber})"})
+                Pair("#F", { trace, _ -> "${trace.className.substringAfterLast('.')}.${trace.methodName}(${trace.fileName?:"unknown"}:${trace.lineNumber})"}),
+                Pair("#f", { trace, _ -> "(${trace.fileName?:"unknown"}:${trace.lineNumber})"})
         )
 
         /**

@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# EasyBundle
+-keepclasseswithmembernames class * {
+    @com.haoge.easyandroid.easy.BundleField <fields>;
+}
+
+# EasySharedPreferences
+-keep class * implements com.haoge.easyandroid.easy.PreferenceSupport { *; }

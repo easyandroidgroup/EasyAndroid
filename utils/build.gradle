@@ -22,8 +22,6 @@ android {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     compileOnly 'com.alibaba:fastjson:1.2.47'

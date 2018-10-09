@@ -596,7 +596,6 @@ var age:Int = 18 // 直接对变量指定默认数据即可
 因为自动注入操作使用了反射进行操作。所以如果需要对项目进行混淆的。记得添加上以下混淆规则：
 
 ```
--keep class com.haoge.easyandroid.easy.BundleField
 -keepclasseswithmembernames class * {
     @com.haoge.easyandroid.easy.BundleField <fields>;
 }

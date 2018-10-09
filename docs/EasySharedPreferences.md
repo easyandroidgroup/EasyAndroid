@@ -323,5 +323,5 @@ user.passwordWithEncrypty = password
 最后，为了避免混淆后导致使用异常，请添加以下混淆配置：
 
 ```
--keep class * implements com.haoge.easyandroid.easy.PreferenceSupport
+-keep class * implements com.haoge.easyandroid.easy.PreferenceSupport { *; }
 ```

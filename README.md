@@ -1,4 +1,4 @@
-# EasyAndroid
+# EasyAndroid [![](https://jitpack.io/v/yjfnypeu/EasyAndroid.svg)](https://jitpack.io/#yjfnypeu/EasyAndroid)
 
 在平时的开发过程中，我们经常会需要使用到一些基础功能组件，比如Toast,比如Log等。
 

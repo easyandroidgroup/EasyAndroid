@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package com.haoge.easyandroid.easy
 
 import android.annotation.TargetApi
@@ -106,13 +108,13 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             return
         }
 
-        RationalChain(denies.iterator(), fragment, rational, { accept:Boolean ->
+        RationalChain(denies.iterator(), fragment, rational) { accept:Boolean ->
             if (accept) {
                 fragment.requestPermissions(denies, callback, denied, this)
             } else {
                 callback?.invoke(false)
             }
-        }).process()
+        }.process()
     }
 
     companion object {

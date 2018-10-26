@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package com.haoge.easyandroid.easy
 
 import android.text.TextUtils
@@ -36,7 +38,7 @@ class EasyLog private constructor(
     /**
      * 设置一个临时的tag值。在下次调用d/i/v/w/e/wtf方法进行日志输出时。进行使用。
      *
-     * 使用后将自动置空。所以此tag的作用域[只在下一次打印]
+     * 使用后将自动置空。所以此tag的作用域 -> 只在下一次打印
      */
     fun tag(tag:String):EasyLog {
         this.tag = tag
@@ -46,7 +48,7 @@ class EasyLog private constructor(
     /**
      * 指定是否使日志进行即时输出：即不讲打印任务派发到专属任务线程中，而是直接在当前线程进行打印。
      *
-     * 使用后将自动置空。所以此immediate的作用域[只在下一次打印]
+     * 使用后将自动置空。所以此immediate的作用域 -> 只在下一次打印
      */
     fun immediate(immediate:Boolean): EasyLog {
         this.immediate = immediate

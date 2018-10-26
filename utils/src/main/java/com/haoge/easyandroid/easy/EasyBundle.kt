@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package com.haoge.easyandroid.easy
 
 import android.os.Bundle
@@ -38,7 +40,7 @@ class EasyBundle private constructor(val bundle: Bundle){
 
     /** 将map中的所有数据均存放至容器中*/
     fun put(map:Map<String, Any?>):EasyBundle {
-        map.forEach { key, value -> put(key, value) }
+        map.forEach { put(it.key, it.value) }
         return this
     }
 
@@ -142,7 +144,6 @@ class EasyBundle private constructor(val bundle: Bundle){
             value = toJSON(value)
         }
 
-        value = value as String
         if (value.isEmpty()) {
             // 过滤空数据
             returnsValue(null, rawType)
@@ -321,7 +322,7 @@ private class BundleInjector {
     }
 }
 
-abstract class TypeGeneric<T>(val raw:Class<*>) {
+abstract class TypeGeneric<T>(private val raw:Class<*>) {
     fun getType():Type {
         val type = (this.javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
         return if (type is Class<*> || type is ParameterizedType) type else raw

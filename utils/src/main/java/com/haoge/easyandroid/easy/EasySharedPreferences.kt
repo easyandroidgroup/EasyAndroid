@@ -28,7 +28,7 @@ import java.lang.reflect.Field
  * 对SharedPreferences的存取操作进行封装。
  * @author haoge on 2018/6/25
  */
-class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPreferenceChangeListener {
+class EasySharedPreferences(clazz: Class<*>):SharedPreferences.OnSharedPreferenceChangeListener {
 
     // 绑定的具体实体类。
     private val entity:PreferenceSupport
@@ -76,7 +76,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
         read()
     }
 
-    private val handler:Handler = Handler(thread.looper, { msg ->
+    private val handler:Handler = Handler(thread.looper) { msg ->
         return@Handler when(msg.what) {
             READ -> {
                 // 更新指定字段的数据
@@ -100,7 +100,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
             }
             else -> false
         }
-    })
+    }
 
     // 从SP中读取数据。注入到实体类中。
     private fun read() {
@@ -173,7 +173,7 @@ class EasySharedPreferences(val clazz: Class<*>):SharedPreferences.OnSharedPrefe
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         // 将待更新的key值进行存储
         synchronized(modifierKeys) {
-            key?.let { (!modifierKeys.contains(it)).let { modifierKeys.add(key) } }
+            key?.let {it ->  (!modifierKeys.contains(it)).let { modifierKeys.add(key) } }
         }
 
         // 延迟100毫秒进行数据更新

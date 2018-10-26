@@ -223,14 +223,14 @@ class EasyFormatter private constructor(private val builder: Builder) {
     private fun formatAny(any:Any?):StringBuilder =
         when(any) {
             null -> StringBuilder()
-            is Collection<*> -> checkIfFormatted(any, {return@checkIfFormatted formatCollection(any)})
-            is Map<*, *> -> checkIfFormatted(any, {return@checkIfFormatted formatMap(any)})
-            is Array<*> -> checkIfFormatted(any, {return@checkIfFormatted formatCollection(Arrays.asList(*any))})
+            is Collection<*> -> checkIfFormatted(any) {return@checkIfFormatted formatCollection(any)}
+            is Map<*, *> -> checkIfFormatted(any) {return@checkIfFormatted formatMap(any)}
+            is Array<*> -> checkIfFormatted(any) {return@checkIfFormatted formatCollection(Arrays.asList(*any))}
             is String -> formatString(any)
             is Throwable -> formatException(any)
             is Int, is Boolean, is Short, is Char, is Byte, is Long, is Float, is Double
             -> StringBuilder(any.toString())
-            else -> checkIfFormatted(any, {return@checkIfFormatted formatOther(any)})
+            else -> checkIfFormatted(any) {return@checkIfFormatted formatOther(any)}
         }
 
     private fun appendIterator(container:StringBuilder, /*数据存储容器*/

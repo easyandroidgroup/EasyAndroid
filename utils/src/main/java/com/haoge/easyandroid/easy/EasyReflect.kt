@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package com.haoge.easyandroid.easy
 
 import java.lang.reflect.*
@@ -195,7 +197,7 @@ class EasyReflect private constructor(val clazz: Class<*>, private var instance:
      */
     fun <T> proxy(proxy:Class<T>):T {
         @Suppress("UNCHECKED_CAST")
-        return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy), {_, method, args ->
+        return Proxy.newProxyInstance(proxy.classLoader, arrayOf(proxy)) { _, method, args ->
             try {
                 // 优先匹配存在的方法
                 return@newProxyInstance this@EasyReflect.callWithReturn(method.name, *args?:arrayOf()).get()
@@ -228,7 +230,7 @@ class EasyReflect private constructor(val clazz: Class<*>, private var instance:
                     else -> null
                 }
             }
-        }) as T
+        } as T
     }
 
     // 检查是否存在有效的可操作实例。若不存在则抛出异常。
@@ -281,7 +283,7 @@ class EasyReflect private constructor(val clazz: Class<*>, private var instance:
             if (args.isEmpty()) {
                 return arrayOf()
             }
-            return Array(args.size, { index -> args[index]?.javaClass ?: Void::class.java})
+            return Array(args.size) { index -> args[index]?.javaClass ?: Void::class.java}
         }
 
         @JvmStatic

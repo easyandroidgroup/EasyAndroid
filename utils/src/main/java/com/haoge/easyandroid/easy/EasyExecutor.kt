@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package com.haoge.easyandroid.easy
 
 import android.os.Handler
@@ -43,41 +45,31 @@ class EasyExecutor private constructor(val executor: ExecutorService,
     private var deliver:Executor? = null
     private var progress:PROGRESS? = null
 
-    /**
-     * 设置临时任务名[线程名]
-     */
+    /** 设置临时任务名线程名[name]*/
     fun setName(name:String):EasyExecutor {
         this.name = name
         return this
     }
 
-    /**
-     * 设置任务启动延迟时间：单位为毫秒
-     */
+    /** 设置任务启动延迟时间[delay]：单位为毫秒*/
     fun setDelay(delay:Long):EasyExecutor {
         this.delay = Math.max(delay, 0)
         return this
     }
 
-    /**
-     * 设置临时[任务执行成功回调通知]
-     */
+    /** 设置临时任务执行成功回调通知*/
     fun onSuccess(success:SUCCESS):EasyExecutor {
         this.success = success
         return this
     }
 
-    /**
-     * 设置临时[任务指定失败回调通知]
-     */
+    /** 设置临时任务指定失败回调通知*/
     fun onError(error:ERROR): EasyExecutor {
         this.error = error
         return this
     }
 
-    /**
-     * 设置临时[任务开始执行回调通知]
-     */
+    /** 设置临时任务开始执行回调通知*/
     fun onStart(start:START):EasyExecutor {
         this.start = start
         return this
@@ -89,17 +81,13 @@ class EasyExecutor private constructor(val executor: ExecutorService,
         return this
     }
 
-    /**
-     * 设置临时[回调通知派发器]
-     */
+    /** 设置临时回调通知派发器*/
     fun setDeliver(deliver: Executor): EasyExecutor {
         this.deliver = deliver
         return this
     }
 
-    /**
-     * 执行[普通异步任务]
-     */
+    /** 执行普通异步任务*/
     fun execute(task:NORMAL_TASK) {
         postDelay {
             executor.execute(TaskWrapper<Any>(
@@ -111,18 +99,14 @@ class EasyExecutor private constructor(val executor: ExecutorService,
         }
     }
 
-    /**
-     * 执行[普通异步任务]
-     */
+    /** 执行普通异步任务*/
     fun execute(task:Runnable) {
         execute {
             task.run()
         }
     }
 
-    /**
-     * 执行[异步回调任务]
-     */
+    /** 执行异步回调任务*/
     fun <T> async(task:ASYNC_TASK<T>, result:RESULT<T>? = null) {
         postDelay {
             executor.execute(TaskWrapper(
@@ -134,9 +118,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
         }
     }
 
-    /**
-     * 执行[异步回调任务]
-     */
+    /** 执行异步回调任务*/
     fun <T> async(task:Callable<T>, result: RESULT<T>? = null) {
         async({
             task.call()
@@ -171,12 +153,12 @@ class EasyExecutor private constructor(val executor: ExecutorService,
             }
         }
 
-        private val dispatcher:ScheduledExecutorService = Executors.newScheduledThreadPool(1, {
+        private val dispatcher:ScheduledExecutorService = Executors.newScheduledThreadPool(1) {
             val thread = Thread(it)
             thread.name = "Easy-task-Dispatcher"
             thread.priority = Thread.MAX_PRIORITY
-             thread
-        })
+            thread
+        }
 
         @JvmStatic
         fun newBuilder(size:Int):Builder {
@@ -200,9 +182,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
         fun getStart() = start
         fun getDeliver() = deliver
 
-        /**
-         * 设置默认任务名[线程名]
-         */
+        /** 设置默认任务名线程名*/
         fun setName(name:String):Builder {
             if (name.isNotEmpty()) {
                 this.name = name
@@ -210,9 +190,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
             return this
         }
 
-        /**
-         * 设置创建的任务的[线程优先级]
-         */
+        /** 设置创建的任务的线程优先级*/
         fun setPriority(priority:Int):Builder {
             when {
                 priority < Thread.MIN_PRIORITY -> this.priority = Thread.MIN_PRIORITY
@@ -222,33 +200,25 @@ class EasyExecutor private constructor(val executor: ExecutorService,
             return this
         }
 
-        /**
-         * 设置默认[任务成功回调]
-         */
+        /** 设置默认任务成功回调*/
         fun onSuccess(success:SUCCESS):Builder {
             this.success = success
             return this
         }
 
-        /**
-         * 设置默认[任务失败回调]
-         */
+        /** 设置默认任务失败回调*/
         fun onError(error:ERROR): Builder {
             this.error = error
             return this
         }
 
-        /**
-         * 设置默认[任务启动回调]
-         */
+        /** 设置默认任务启动回调*/
         fun onStart(start: START):Builder {
             this.start = start
             return this
         }
 
-        /**
-         * 设置默认[任务派发器]
-         */
+        /** 设置默认任务派发器*/
         fun setDeliver(deliver:Executor):Builder{
             this.deliver = deliver
             return this

@@ -32,6 +32,7 @@ class DemosActivity : ListActivity() {
             Item("测试EasySharedPreferences", EasySharedPreferencesActivity::class.java),
             Item("测试EasyPhoto", EasyPhotoActivity::class.java),
             Item("测试EasyImageGetter", EasyImageGetterActivity::class.java),
+            Item("测试EasyGuideLayer", EasyGuideLayerActivity::class.java),
             Item("测试MVPDemo", LoginActivity::class.java)
     )
 

@@ -37,6 +37,7 @@
         <activity android:name=".activities.EasyPhotoActivity"/>
         <activity android:name=".activities.mvp.login.LoginActivity" />
         <activity android:name=".activities.EasyImageGetterActivity" />
+        <activity android:name=".activities.EasyGuideLayerActivity" />
     </application>
 
 </manifest>

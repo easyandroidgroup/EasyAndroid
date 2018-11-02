@@ -13,7 +13,7 @@ import com.haoge.sample.easyandroid.R
 /**
  * @author haoge on 2018/5/10
  */
-class EasyDimensionActivity: BaseActivity() {
+open class EasyDimensionActivity: BaseActivity() {
     override fun getLayoutId(): Int {
         return R.layout.activity_dimen_converter
     }

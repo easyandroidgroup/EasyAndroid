@@ -41,7 +41,7 @@ class EasyGuideLayerActivity: EasyDimensionActivity() {
                 .setBackgroundColor(0x33000000)
                 .setOnGuideShownListener { EasyToast.DEFAULT.show("蒙层已${if (it) "展示" else "消失"}") }
                 .setDismissIfNoItems(true)
-                .setDismissOnClickOutside(true)
+                .setDismissOnClickOutside(false)
                 .addItem(inputItem)
                 .addItem(transformItem)
                 .addHighLightForSelector(this)
@@ -76,7 +76,7 @@ private fun EasyGuideLayer.addHighLightForTransform(activity: Activity): EasyGui
         val item = GuideItem.newInstance(view.getChildAt(index))
         item.setHighLightShape(GuideItem.SHAPE_OVAL)
                 .setOnHighLightClickListener { it.getGuideLayer().removeItem(item).show() }
-                .setOnDrawHighLightListener { canvas, rect, paint ->
+                .setOnDrawHighLightCallback { canvas, rect, paint ->
                     canvas.drawRoundRect(rect, 20f, 20f, paint)
                     true
                 }

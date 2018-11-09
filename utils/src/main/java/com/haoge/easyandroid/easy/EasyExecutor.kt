@@ -106,7 +106,10 @@ class EasyExecutor private constructor(val executor: ExecutorService,
         }
     }
 
+    fun <T> asyncResult(result:RESULT<T>?) = AsyncTask(result, this)
+
     /** 执行异步回调任务*/
+    @Deprecated("This is deprecated!", ReplaceWith("this.asyncResult(result).asyncTask(task)"))
     fun <T> async(task:ASYNC_TASK<T>, result:RESULT<T>? = null) {
         postDelay {
             executor.execute(TaskWrapper(
@@ -119,6 +122,7 @@ class EasyExecutor private constructor(val executor: ExecutorService,
     }
 
     /** 执行异步回调任务*/
+    @Deprecated("This is deprecated!", ReplaceWith("this.asyncResult(task).asyncTask(task)"))
     fun <T> async(task:Callable<T>, result: RESULT<T>? = null) {
         async({
             task.call()
@@ -278,6 +282,12 @@ class EasyExecutor private constructor(val executor: ExecutorService,
                 builder.getSuccess()?.invoke(name)
                 success?.invoke(name)
             }
+        }
+    }
+
+    class AsyncTask<in T>(val result: RESULT<T>?, val executor: EasyExecutor) {
+        fun asyncTask(task:ASYNC_TASK<T>) {
+            executor.async(task, result)
         }
     }
 }

@@ -10,14 +10,15 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.support.annotation.DrawableRes
 import android.support.annotation.IntDef
+import android.support.annotation.LayoutRes
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.haoge.easyandroid.EasyAndroid
 
 private typealias OnGuideShowListener = (Boolean) -> Unit
-private typealias OnGuideViewCreatedListener = (View, EasyGuideLayer.Controller) -> Unit
-private typealias OnDrawHighLightCallback = (canvas:Canvas, rect:RectF, paint:Paint) -> Boolean
+private typealias OnGuideViewAttachedListener = (View, EasyGuideLayer.Controller) -> Unit
+private typealias OnDrawHighLightCallback = (canvas:Canvas, rect:RectF, paint:Paint) -> Unit
 private typealias OnHighLightClickListener = (EasyGuideLayer.Controller) -> Unit
 private typealias OnGuideViewOffsetProvider = (Point, RectF, View) -> Unit
 class EasyGuideLayer private constructor(private val anchor: View){
@@ -132,11 +133,13 @@ class EasyGuideLayer private constructor(private val anchor: View){
         private var layer:EasyGuideLayer? = null
         private var container = mutableMapOf<RectF, GuideItem>()
         private val paint = Paint()
+        private var copyPaint: Paint
 
         init {
             paint.isAntiAlias = true
             paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
             paint.maskFilter = BlurMaskFilter(10f, BlurMaskFilter.Blur.INNER)
+            copyPaint = Paint(paint)
             setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             setWillNotDraw(true)
             setOnClickListener(this)
@@ -159,7 +162,7 @@ class EasyGuideLayer private constructor(private val anchor: View){
                 val child = createItemView(item)
                 child.setTag(GuideItem.TAG_ID, item)
                 addView(child)
-                item.getOnViewCreatedListener()?.invoke(child, this)
+                item.getOnViewAttachedListener()?.invoke(child, this)
             }
         }
 
@@ -239,12 +242,15 @@ class EasyGuideLayer private constructor(private val anchor: View){
         }
 
         override fun onDraw(canvas: Canvas) {
-            container.forEach {
-                if (it.value.getOnDrawHighLightListener()?.invoke(canvas, it.key, paint) == true) return@forEach
+            container.forEach { entry ->
+                entry.value.getOnDrawHighLightListener()?.let {
+                    it.invoke(canvas, entry.key, copyPaint)
+                    return@forEach
+                }
 
-                when(it.value.getShapeType()) {
-                    GuideItem.SHAPE_RECT -> canvas.drawRect(it.key, paint)
-                    GuideItem.SHAPE_OVAL -> canvas.drawOval(it.key, paint)
+                when(entry.value.getShapeType()) {
+                    GuideItem.SHAPE_RECT -> canvas.drawRect(entry.key, paint)
+                    GuideItem.SHAPE_OVAL -> canvas.drawOval(entry.key, paint)
                 }
             }
         }
@@ -295,7 +301,7 @@ class EasyGuideLayer private constructor(private val anchor: View){
  * */
 class GuideItem private constructor(val rect: RectF? = null, val view: View? = null, val padding: Int = 0){
     private var shapeType = SHAPE_NONE
-    private var onViewCreated:OnGuideViewCreatedListener? = null
+    private var onViewAttached:OnGuideViewAttachedListener? = null
     private var onDrawHighLight:OnDrawHighLightCallback? = null
     private var onHighLightClickListener:OnHighLightClickListener? = null
     private var offsetProvider:OnGuideViewOffsetProvider? = null
@@ -304,7 +310,7 @@ class GuideItem private constructor(val rect: RectF? = null, val view: View? = n
     private var gravity = Gravity.NO_GRAVITY
 
     fun getShapeType() = shapeType
-    fun getOnViewCreatedListener() = onViewCreated
+    fun getOnViewAttachedListener() = onViewAttached
     fun getOnDrawHighLightListener() = onDrawHighLight
     fun getOnHighLightClickListenter() = onHighLightClickListener
     fun getDrawable() = drawable
@@ -333,8 +339,8 @@ class GuideItem private constructor(val rect: RectF? = null, val view: View? = n
      * 1. View:被创建的引导View。
      * 2. Controller: 提供给上层使用的控制器。可用于进行蒙层关闭或者蒙层引导更新等操作。
      */
-    fun setOnViewCreatedListener(onViewCreatedListener: OnGuideViewCreatedListener?): GuideItem {
-        this.onViewCreated = onViewCreatedListener
+    fun setOnViewAttachedListener(onViewAttachedListener: OnGuideViewAttachedListener?): GuideItem {
+        this.onViewAttached = onViewAttachedListener
         return this
     }
 
@@ -361,7 +367,7 @@ class GuideItem private constructor(val rect: RectF? = null, val view: View? = n
     /**
      * 设置引导层View的布局id。与[setDrawable]互斥。
      */
-    fun setLayout(layout:Int): GuideItem {
+    fun setLayout(@LayoutRes layout:Int): GuideItem {
         this.layout = layout
         this.drawable = null
         return this
@@ -403,8 +409,11 @@ class GuideItem private constructor(val rect: RectF? = null, val view: View? = n
         const val SHAPE_OVAL = 1
 
         internal const val TAG_ID = 0x0F000000
+        /** 不指定具体的高亮绘制区域，使用默认区域Rect(0,0,0,0)*/
         fun newInstance() = GuideItem()
+        /** 通过指定view与padding创建具体的高亮绘制区域*/
         fun newInstance(view: View, padding: Int = 0) = GuideItem(view = view, padding = padding)
+        /** 直接指定具体的高亮绘制区域*/
         fun newInstance(rect: RectF) = GuideItem(rect = rect)
     }
 }

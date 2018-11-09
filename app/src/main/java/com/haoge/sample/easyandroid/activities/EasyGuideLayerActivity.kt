@@ -52,7 +52,7 @@ class EasyGuideLayerActivity: EasyDimensionActivity() {
 
 private fun GuideItem.setTextLayout(message:String):GuideItem {
     return this.setLayout(R.layout.guide_text_layout)
-            .setOnViewCreatedListener { view, controller ->
+            .setOnViewAttachedListener { view, controller ->
                 (view as TextView).text = message
                 // 点击后。关闭自身的引导层。
                 view.setOnClickListener { controller.getGuideLayer().removeItem(this).show() }
@@ -78,7 +78,6 @@ private fun EasyGuideLayer.addHighLightForTransform(activity: Activity): EasyGui
                 .setOnHighLightClickListener { it.getGuideLayer().removeItem(item).show() }
                 .setOnDrawHighLightCallback { canvas, rect, paint ->
                     canvas.drawRoundRect(rect, 20f, 20f, paint)
-                    true
                 }
         addItem(item)
     }

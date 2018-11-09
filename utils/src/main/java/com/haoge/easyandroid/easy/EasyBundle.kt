@@ -329,4 +329,6 @@ abstract class TypeGeneric<T>(private val raw:Class<*>) {
     }
 }
 
-
+fun Bundle.put(key:String, value:Any?):Bundle = EasyBundle.create(this).put(key, value).bundle
+fun Bundle.put(map: Map<String, Any?>):Bundle = EasyBundle.create(this).put(map).bundle
+fun Bundle.put(vararg params:Pair<String, Any?>):Bundle = EasyBundle.create(this).put(*params).bundle

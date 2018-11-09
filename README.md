@@ -45,6 +45,7 @@ EasyAndroid.init(application)
 
 ### 目录索引
 
+- [EasyGuideLayer](#easyguidelayer): 界面蒙层引导组件
 - [EasySharedPreferences](#easysharedpreferences): SharedPreferences存取组件
 - [EasyDimension](#easydimension): 尺寸转换组件
 - [EasyFormatter](#easyformatter): 数据格式化排版组件
@@ -58,6 +59,39 @@ EasyAndroid.init(application)
 - [EasyPhoto](#easyphoto): 从拍照、图库进行图片选择组件。
 - [EasyImageGetter](#easyimagegetter): TextView加载html标签时，提供`img`标签的图片加载功能
 - [MVP](#mvp): 简单MVP架构
+
+### [EasyGuideLayer](./docs/EasyGuideLayer.md)
+
+- 链式调用。调用逻辑清晰直观
+- 支持同时设置多个引导层
+- 支持高亮区域的自定义绘制
+- 支持高亮区域点击监听
+- 支持指定任意View设置蒙层引导
+- 支持进行蒙层展示、隐藏事件监听
+
+使用示例：
+
+```
+// 创建引导层示例，并为引导层添加指定配置
+val item = GuideItem.newInstance(view, padding)
+    .setLayout(guideLayout)// 设置引导View
+    .setGravity(Gravity.LEFT)// 设置引导View位置
+    .setOffsetProvider(provider)// 设置用于进行引导View的位置调整
+    .setHighLightShape(GuideItem.SHAPE_RECT)// 设置高亮区域绘制模式
+    .setOnViewAttachedListener(listener)// 设置引导View被添加到蒙层布局中时的通知监听
+    .setOnDrawHighLightCallback(callback)// 这是自定义高亮块绘制回调
+    .setOnHighLightClickListener(listener)// 设置高亮点击回调监听
+
+
+// 创建蒙层实例并绑定引导层，进行展示：
+EasyGuideLayer.with(activity)
+    .setBackgroundColor(color)// 蒙层背景色
+    .setOnGuideShownListener(lambda)// 蒙层展示、消失监听
+    .addItem(item)// 绑定引导层实例
+    .setDismissOnClickOutside(false)// 设置点击到蒙层上的非点击区域时，是否自动让蒙层消失
+    .setDismissIfNoItems(true)// 设置当蒙层中一个引导层实例都没绑定时，自动让蒙层消失
+    .show()// 展示蒙层
+```
 
 ### [EasyImageGetter](./docs/EasyImageGetter.md)
 

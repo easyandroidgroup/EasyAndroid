@@ -33,10 +33,9 @@ dependencies {
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
     implementation 'com.github.bumptech.glide:glide:4.8.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
+    kapt 'com.github.bumptech.glide:compiler:4.5.0'
 
-    implementation 'com.github.huburt-Hu:NewbieGuide:v2.4.2'
     implementation project(':utils')
-//    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.3'
+//    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.4'
 }
 

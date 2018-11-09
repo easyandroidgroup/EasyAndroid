@@ -288,11 +288,6 @@ class PermissionFragment: Fragment() {
             return fragment
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        EasyLog.DEFAULT.e("PermissionFragment has destroy")
-    }
 }
 
 abstract class PermissionAlwaysDenyNotifier{

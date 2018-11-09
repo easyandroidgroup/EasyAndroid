@@ -2,9 +2,9 @@ package com.haoge.sample.easyandroid.activities
 
 import android.annotation.SuppressLint
 import butterknife.OnClick
+import com.haoge.easyandroid.easy.EasyFormatter
 import com.haoge.easyandroid.easy.EasyLog
 import com.haoge.easyandroid.easy.EasyReflect
-import com.haoge.easyandroid.easyFormat
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
 import java.util.*
@@ -180,3 +180,5 @@ interface TestProxy {
 data class A(var b:B?)
 
 data class B(var a:A?)
+
+private fun Any.easyFormat() = EasyFormatter.DEFAULT.format(this)

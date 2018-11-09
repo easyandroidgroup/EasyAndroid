@@ -5,8 +5,7 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.easyandroid.mvp.MVPView
-import com.haoge.easyandroid.safeDismiss
-import com.haoge.easyandroid.safeShow
+import com.haoge.easyandroid.safe.SafeDialogHandle
 
 /**
  * 为了使Activity与其绑定的所有Fragment均享有同样的基础展示逻辑。
@@ -25,8 +24,8 @@ class MVPViewImpl(private val activity:Activity):MVPView {
 
     // 基础实现。
     override fun getHostActivity() = activity
-    override fun showLoadingDialog() = progressDialog.safeShow()
-    override fun hideLoadingDialog() = progressDialog.safeDismiss()
+    override fun showLoadingDialog() = SafeDialogHandle.safeShowDialog(progressDialog)
+    override fun hideLoadingDialog() = SafeDialogHandle.safeDismissDialog(progressDialog)
     override fun toastMessage(message: String) = toast.show(message)
     override fun toastMessage(resId: Int) = toast.show(resId)
 }

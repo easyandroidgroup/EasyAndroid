@@ -20,6 +20,7 @@ import com.haoge.sample.easyandroid.activities.mvp.login.LoginActivity
 class DemosActivity : ListActivity() {
 
     private val mContainer = arrayListOf<Item<*>>(
+            Item("测试EasyGuideLayer", EasyGuideLayerActivity::class.java),
             Item("测试EasyToast", EasyToastActivity::class.java),
             Item("测试EasyFormater", EasyFormaterActivity::class.java),
             Item("测试EasyLog", EasyLogActivity::class.java),
@@ -32,7 +33,6 @@ class DemosActivity : ListActivity() {
             Item("测试EasySharedPreferences", EasySharedPreferencesActivity::class.java),
             Item("测试EasyPhoto", EasyPhotoActivity::class.java),
             Item("测试EasyImageGetter", EasyImageGetterActivity::class.java),
-            Item("测试EasyGuideLayer", EasyGuideLayerActivity::class.java),
             Item("测试MVPDemo", LoginActivity::class.java)
     )
 

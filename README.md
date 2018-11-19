@@ -43,6 +43,17 @@ EasyAndroid.init(application)
 
 然后即可直接使用
 
+### Attention!!!
+
+由于此为`轻量组件集成库`, 所以框架中包含了多个`独立`的应用组件提供使用。
+
+但是有的时候，如果你只需要使用框架中的少数或者`个别的组件`。可以直接`copy对应的组件源码文件`到工程中去直接使用。
+
+请注意：大部分组件均是完全独立存在的。直接copy源文件即可正常使用。
+
+而部分组件会需要依赖EasyAndroid类。去获取可用的`Application Context`实例进行使用。对于这部分的组件。
+替换内部`EasyAndroid.getApplicationContext()`为你们项目自身的application context即可。
+
 ### 目录索引
 
 - [EasyGuideLayer](#easyguidelayer): 界面蒙层引导组件
@@ -63,6 +74,8 @@ EasyAndroid.init(application)
 ### [EasyGuideLayer](./docs/EasyGuideLayer.md)
 
 > [点我查看完整使用文档](./docs/EasyGuideLayer.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyGuideLayer.kt)
 
 - 链式调用。调用逻辑清晰直观
 - 支持同时设置多个引导层
@@ -99,6 +112,8 @@ EasyGuideLayer.with(activity)
 
 > [点我查看完整使用文档](./docs/EasyImageGetter.md)
 
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyImageGetter.kt)
+
 - 支持设置`placeholde`图片加载时占位图
 - 支持设置`error`图片加载失败时的占位图
 - 支持指定uri进行加载。不仅仅局限于网络图片。还包括加载本地图片、assets图片等。
@@ -132,6 +147,8 @@ EasyImageGetter.create()
 ### [EasyPhoto](./docs/EasyPhoto.md)
 
 > [点我查看完整使用文档](./docs/EasyPhoto.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyPhoto.kt)
 
 > 从图库或者使用相机拍照获取图片的组件。
 
@@ -171,6 +188,8 @@ photo.selectPhoto(activity)
 
 > [点我查看完整使用文档](./docs/EasySharedPreferences.md)
 
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasySharedPreferences.kt)
+
 > 使用一个具体的实体类，进行SharedPreferences数据存取
 
 - 通过具体的实体类进行SP数据存储操作。避免`key值硬编码`
@@ -207,6 +226,8 @@ user.apply()
 
 > [点我查看完整使用文档](./docs/EasyDimension.md)
 
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyDimension.kt)
+
 > 用于灵活的进行设备尺寸单位转换
 > 
 > 支持全尺寸数值转换。
@@ -224,6 +245,8 @@ EasyDimension.withSP(30).toMM()
 
 > [点我查看完整使用文档](./docs/EasyFormatter.md)
 
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyFormatter.kt)
+
 > 用于对任意类型数据，进行格式化输出排版，结合log打印组件使用，使log输出展示更清晰
 
 - 支持对`Set/List/Map/JSON/POJO`数据进行格式化排版
@@ -236,13 +259,13 @@ EasyDimension.withSP(30).toMM()
 val any:Any = create()
 // 使用formatter实例进行格式化
 val result:String = EasyFormatter.DEFAULT.format(any)
-// 或者使用扩展函数。直接格式化
-val result2:String = any.easyFormat()
 ```
 
 ### [EasyLog](./docs/EasyLog.md)
 
 > [点我查看完整使用文档](./docs/EasyLog.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyLog.kt)
 
 > 用于简单的进行日志打印输出，支持格式化输出、自定义打印格式。
 
@@ -260,12 +283,13 @@ val result2:String = any.easyFormat()
 ```
 val any:Any = create()// 创建待打印数据
 EasyLog.DEFAULT.d(any)// 使用默认log实例进行数据打印. 以Log.d()的方式进行输出
-any.easyLogE()// 使用扩展函数直接进行数据打印，以Log.e()的方式进行输出
 ```
 
 ### [EasyToast](./docs/EasyToast.md)
 
 > [点我查看完整使用文档](./docs/EasyToast.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyToast.kt)
 
 > 用于进行Toast提示，可很简单的指定输出样式。
 
@@ -286,6 +310,8 @@ EasyToast.create(layoutID:Int, tvID:Int, duration:Int).show(message)// 使用自
 ### [EasyReflect](./docs/EasyReflect.md)
 
 > [点我查看完整使用文档](./docs/EasyReflect.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyReflect.kt)
 
 > 对常规的反射操作进行封装。达到更便于使用反射的效果
 
@@ -317,6 +343,8 @@ val result = reflect.callWithReturn("wrap", value).get<String>()
 
 > [点我查看完整使用文档](./docs/EasyActivityResult.md)
 
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyActivityResult.kt)
+
 >用于解决onActivityResult业务逻辑臃肿的问题
 
 - **业务解耦分离**: 各自启动业务线处理各自的回调逻辑
@@ -337,6 +365,8 @@ EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.
 ### [EasyPermissions](./docs/EasyPermissions.md)
 
 > [点我查看完整使用文档](./docs/EasyPermissions.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyPermissions.kt)
 
 > 进行6.0+的动态权限请求
 
@@ -384,6 +414,8 @@ EasyPermissions.create(// 指定待申请权限
 
 > [点我查看完整使用文档](./docs/EasyExecutor.md)
 
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyExecutor.kt)
+
 > 用于进行`安全`、`高效`、`便利`的线程池操作功能组件
 
 - **安全**: 直接catch住任务执行期间出现的异常。并通知给用户，避免出现crash
@@ -411,13 +443,19 @@ val executor =
 
 // 2. 第二步：启动任务
 executor.execute(runnable:Runnable)// 启动普通任务
-executor.async(callable:Callable<T>, result:(T) -> Unit)// 启动异步回调任务
+
+// 启动异步回调任务
+executor.asyncResult(result:(T) -> Unit) // 先配置任务回调
+    .asyncTask(task:(Notifier) -> T)// 配置后台执行任务
+
 executor.setDelay(delay).execute(runnable)// 延时启动任务
 ```
 
 ### [EasyBundle](./docs/EasyBundle.md)
 
 > [点我查看完整使用文档](./docs/EasyBundle.md)
+
+> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyBundle.kt)
 
 > 用于使Bundle数据存取操作变得`简单`、`方便`、`灵活`、`强大`
 

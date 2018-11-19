@@ -75,7 +75,7 @@ EasyAndroid.init(application)
 
 > [点我查看完整使用文档](./docs/EasyGuideLayer.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyGuideLayer.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyGuideLayer.kt)
 
 - 链式调用。调用逻辑清晰直观
 - 支持同时设置多个引导层
@@ -112,7 +112,7 @@ EasyGuideLayer.with(activity)
 
 > [点我查看完整使用文档](./docs/EasyImageGetter.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyImageGetter.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyImageGetter.kt)
 
 - 支持设置`placeholde`图片加载时占位图
 - 支持设置`error`图片加载失败时的占位图
@@ -148,7 +148,7 @@ EasyImageGetter.create()
 
 > [点我查看完整使用文档](./docs/EasyPhoto.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyPhoto.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyPhoto.kt)
 
 > 从图库或者使用相机拍照获取图片的组件。
 
@@ -188,7 +188,7 @@ photo.selectPhoto(activity)
 
 > [点我查看完整使用文档](./docs/EasySharedPreferences.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasySharedPreferences.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasySharedPreferences.kt)
 
 > 使用一个具体的实体类，进行SharedPreferences数据存取
 
@@ -226,7 +226,7 @@ user.apply()
 
 > [点我查看完整使用文档](./docs/EasyDimension.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyDimension.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyDimension.kt)
 
 > 用于灵活的进行设备尺寸单位转换
 > 
@@ -245,7 +245,7 @@ EasyDimension.withSP(30).toMM()
 
 > [点我查看完整使用文档](./docs/EasyFormatter.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyFormatter.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyFormatter.kt)
 
 > 用于对任意类型数据，进行格式化输出排版，结合log打印组件使用，使log输出展示更清晰
 
@@ -265,7 +265,7 @@ val result:String = EasyFormatter.DEFAULT.format(any)
 
 > [点我查看完整使用文档](./docs/EasyLog.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyLog.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyLog.kt)
 
 > 用于简单的进行日志打印输出，支持格式化输出、自定义打印格式。
 
@@ -289,7 +289,7 @@ EasyLog.DEFAULT.d(any)// 使用默认log实例进行数据打印. 以Log.d()的�
 
 > [点我查看完整使用文档](./docs/EasyToast.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyToast.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyToast.kt)
 
 > 用于进行Toast提示，可很简单的指定输出样式。
 
@@ -311,7 +311,7 @@ EasyToast.create(layoutID:Int, tvID:Int, duration:Int).show(message)// 使用自
 
 > [点我查看完整使用文档](./docs/EasyReflect.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyReflect.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyReflect.kt)
 
 > 对常规的反射操作进行封装。达到更便于使用反射的效果
 
@@ -343,7 +343,7 @@ val result = reflect.callWithReturn("wrap", value).get<String>()
 
 > [点我查看完整使用文档](./docs/EasyActivityResult.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyActivityResult.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyActivityResult.kt)
 
 >用于解决onActivityResult业务逻辑臃肿的问题
 
@@ -366,7 +366,7 @@ EasyActivityResult.startActivity(activity, Intent(activity, DemoActivity::class.
 
 > [点我查看完整使用文档](./docs/EasyPermissions.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyPermissions.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyPermissions.kt)
 
 > 进行6.0+的动态权限请求
 
@@ -414,7 +414,7 @@ EasyPermissions.create(// 指定待申请权限
 
 > [点我查看完整使用文档](./docs/EasyExecutor.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyExecutor.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyExecutor.kt)
 
 > 用于进行`安全`、`高效`、`便利`的线程池操作功能组件
 
@@ -455,7 +455,7 @@ executor.setDelay(delay).execute(runnable)// 延时启动任务
 
 > [点我查看完整使用文档](./docs/EasyBundle.md)
 
-> [点击下载组件源码文件进行使用](./utils/src/main/java/com/haoge/easyandroid/easy/EasyBundle.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyBundle.kt)
 
 > 用于使Bundle数据存取操作变得`简单`、`方便`、`灵活`、`强大`
 

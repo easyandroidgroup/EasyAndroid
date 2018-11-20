@@ -31,6 +31,7 @@ import android.os.Looper
 import android.provider.Settings
 
 /**
+ * Android动态权限申请组件
  * @author haoge on 2018/6/4
  */
 private typealias PermissionRational = (String, RationalChain) -> Boolean
@@ -43,7 +44,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
     private var denied:PermissionDenied? = null
 
     /**
-     * 设置权限申请说明文案。向用户展示为什么需要申请此权限
+     * 设置权限申请说明通知。向用户展示为什么需要申请此权限
      */
     fun rational(rational:PermissionRational?):EasyPermissions {
         this.rational = rational
@@ -95,7 +96,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
 
         val denies = mutableListOf<String>()
         for (permission in permissions) {
-            if (fragment.isGrant(permission)) {
+            if (isPermissionGranted(permission, activity)) {
                 continue
             }
             // 过滤重复权限
@@ -125,6 +126,14 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             return EasyPermissions(permissions)
         }
 
+        /** 判断此权限[permission]是否已被授权*/
+        fun isPermissionGranted(permission:String, activity: Activity):Boolean {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
+                    || activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+                    || activity.packageManager.isPermissionRevokedByPolicy(permission, activity.packageName)
+        }
+
+        /** 获取[permissions]中所有权限组的权限说明信息*/
         fun getPermissionGroupInfos(permissions: Array<String>, context: Context):List<PermissionGroupInfo> {
             val names = mutableListOf<String>()// 进行过滤去重处理的临时变量
             val groups = mutableListOf<PermissionGroupInfo>()
@@ -142,6 +151,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             return groups
         }
 
+        /** 获取[permissions]中所有权限的权限说明信息*/
         fun getPermissionInfos(permissions: Array<String>, context: Context):List<PermissionInfo> {
             val infos = mutableListOf<PermissionInfo>()
             val names = mutableListOf<String>()
@@ -157,6 +167,7 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             }
             return infos
         }
+
     }
 }
 
@@ -258,12 +269,6 @@ class PermissionFragment: Fragment() {
         if (requestCode != REQUEST_CODE_RESULT_SETTING) return
         // 从设置页回来，重启权限申请
         request?.request(activity)
-    }
-
-    fun isGrant(permission:String):Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-                || activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-                || activity.packageManager.isPermissionRevokedByPolicy(permission, activity.packageName)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

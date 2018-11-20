@@ -38,6 +38,7 @@ class EasyToast private constructor(private val builder:Builder) {
     private val context: Context = EasyAndroid.getApplicationContext()
     private var toast:Toast? = null
     private var tv:TextView? = null
+    private var container:View? = null
 
     fun show(resId:Int) {
         show(context.getString(resId))
@@ -60,6 +61,14 @@ class EasyToast private constructor(private val builder:Builder) {
         }
     }
 
+    /** 获取Toast的View进行使用，只支持自定义样式的Toast，若为系统默认Toast样式，则返回null*/
+    fun getView():View? {
+        if (container == null && builder.isDefault.not()) {
+            createToastIfNeeded()
+        }
+        return container
+    }
+
     private fun showInternal(message: String) {
         createToastIfNeeded()
 
@@ -78,8 +87,8 @@ class EasyToast private constructor(private val builder:Builder) {
             if (builder.isDefault) {
                 toast = Toast.makeText(context, "", builder.duration)
             } else {
-                val container = builder.layout?:LayoutInflater.from(context).inflate(builder.layoutId, null)
-                tv = container.findViewById(builder.tvId)
+                container = builder.layout?:LayoutInflater.from(context).inflate(builder.layoutId, null)
+                tv = container?.findViewById(builder.tvId)
                 toast = Toast(context)
                 toast?.view = container
                 toast?.duration = builder.duration

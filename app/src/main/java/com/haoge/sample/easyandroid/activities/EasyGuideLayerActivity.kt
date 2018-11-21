@@ -39,6 +39,21 @@ class EasyGuideLayerActivity: BaseActivity() {
             Gravity.BOTTOM or Gravity.RIGHT to "右下"
     )
 
+    @OnClick(R.id.show_with_activity)
+    fun showWithActivity() {
+        val item = GuideItem.newInstance(findViewById<View>(R.id.layer_layout))
+                .setGravity(Gravity.BOTTOM)
+                .setLayout(R.layout.guide_text_layout)
+                .setHighLightShape(GuideItem.SHAPE_OVAL)
+
+        item.setOnViewAttachedListener { view, controller ->
+            (view as TextView).text = "此处展示下方的各种蒙层展示效果"
+        }
+        EasyGuideLayer.with(this).addItem(item)
+                .setDismissOnClickOutside(true)
+                .show()
+    }
+
     @OnClick(R.id.show_with_gravities)
     fun showWithGravity() {
         var index = 0

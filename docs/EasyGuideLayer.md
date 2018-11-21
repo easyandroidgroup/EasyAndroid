@@ -148,11 +148,15 @@ item.setGravity(gravity:Int)
 
 引导View的相对位置是相对于`高亮块区域rect`的, 支持5种相对位置关系：
 
-- Gravity.LEFT: 位于高亮区域`左侧`，顶点(left, top)为`rect.left - view.width`和`rect.top`
-- Gravity.TOP: 位于高亮区域`顶部`，顶点为`rect.left`和`rect.top - view.height`
-- Gravity.RIGHT: 位于高亮区域`右侧`，顶点为`rect.right`和`rect.top`
-- Gravity.BOTTOM: 位于高亮区域`底部`，顶点为`rect.left`和`rect.bottom`
-- Gravity.NO_GRAVITY: 顶点为`rect.left`和`rect.top`
+- Gravity.LEFT|Gravity.TOP:     高亮区域`左上角`
+- Gravity.RIGHT|Gravity.TOP:    高亮区域`右上角`
+- Gravity.LEFT|Gravity.BOTTOM:  高亮区域`左下角`
+- Gravity.RIGHT|Gravity.BOTTOM: 高亮区域`右下角`
+- Gravity.LEFT:                 高亮区域`左侧`
+- Gravity.TOP:                  高亮区域`顶部`
+- Gravity.RIGHT:                高亮区域`右侧`
+- Gravity.BOTTOM:               高亮区域`底部`
+- Gravity.NO_GRAVITY:           不指定。高亮区域顶点位置
 
 4. 对引导View的位置进行微调
 

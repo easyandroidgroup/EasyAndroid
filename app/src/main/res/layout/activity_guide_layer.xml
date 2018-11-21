@@ -12,7 +12,7 @@
             android:background="@android:color/white"
             android:id="@+id/layer_layout"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="250dp">
 
             <Button
                 android:id="@+id/anchor_top"
@@ -37,6 +37,12 @@
                 android:layout_height="wrap_content" />
 
         </FrameLayout>
+
+        <Button
+            android:id="@+id/show_with_activity"
+            android:text="展示界面蒙层"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/show_simple_guide"

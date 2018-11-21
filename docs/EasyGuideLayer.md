@@ -36,7 +36,7 @@ layer.show()
 
 ### 创建蒙层实例。
 
-1. 蒙层实例的创建分为两种方式：
+#### 1. 蒙层实例的创建分为两种方式：
 
 ```
 // 1. 直接使用activity. 表示直接在content布局上展示蒙层
@@ -45,31 +45,31 @@ val layer = EasyGuideLayer.with(activity)
 val layer = EasyGuideLayer.with(view)
 ```
 
-2. 为蒙层添加背景色：
+#### 2. 为蒙层添加背景色：
 
 ```
 layer.setBackgroundColor(color)// 若不设置，为默认背景色：0x33000000
 ```
 
-3. 设置蒙层的展示/消失监听器：
+#### 3. 设置蒙层的展示/消失监听器：
 
 ```
 layer.setOnGuideShownListener { isShowing:Boolean -> // isShowing为true表示蒙层在展示，否则为消失 }
 ```
 
-4. 设置当点击到非预期区域(即非内部view点击以及非高亮区域点击事件)的时候，是否自动关闭蒙层
+#### 4. 设置当点击到非预期区域(即非内部view点击以及非高亮区域点击事件)的时候，是否自动关闭蒙层
 
 ```
 layer.setDismissOnClickOutside(false)
 ```
 
-5. 设置当未添加有引导层实例GuideItem时。是否自动将蒙层关闭：
+#### 5. 设置当未添加有引导层实例GuideItem时。是否自动将蒙层关闭：
 
 ```
 layer.setDismissIfNoItems(false)
 ```
 
-6. 设置引导层实例：
+#### 6. 设置引导层实例：
 
 一个蒙层的引导层可以添加多个。所以也就对应有新增、移除、清空操作：
 
@@ -82,7 +82,7 @@ layer.removeItem(item)
 layer.clearItems()
 ```
 
-7. 配置完毕。发起蒙层展示请求：
+#### 7. 配置完毕。发起蒙层展示请求：
 
 ```
 layer.show()
@@ -93,7 +93,7 @@ layer.show()
 在上面我们有提到`引导层`的概念，一个GuideItem实例表示一个具体的`引导层`，一个引导层相对于界面展示效果来说。
 即是指的对应的`高亮块`以及`引导View`。
 
-1. 引导层实例的创建：
+#### 1. 引导层实例的创建：
 
 GuideItem提供三个方法进行创建。根据不同的方法创建参数将会创建出不同的`高亮块区域`进行绘制。
 
@@ -112,7 +112,7 @@ val item = GuideItem.newInstance(rect:Rect)
 val item = GuideItem.newInstance()
 ```
 
-2. 设置引导View
+#### 2. 设置引导View
 
 一个引导层`GuideItem`可以绑定一个`引导View`。此View将被添加到蒙层布局中，并展示在蒙层顶部
 
@@ -140,7 +140,7 @@ item.setOnViewAttachedListener { view:View, controller:Controller ->
 }
 ```
 
-3. 设置引导View的相对位置
+#### 3. 设置引导View的相对位置
 
 ```
 item.setGravity(gravity:Int)
@@ -158,7 +158,7 @@ item.setGravity(gravity:Int)
 - Gravity.BOTTOM:               高亮区域`底部`
 - Gravity.NO_GRAVITY:           不指定。高亮区域顶点位置
 
-4. 对引导View的位置进行微调
+#### 4. 对引导View的位置进行微调
 
 `gravity`位置是比较单一的，所以为了满足更多的位置要求。组件也提供的对应的回调允许进行`位置偏移调整`
 
@@ -171,7 +171,7 @@ item.setOffsetProvider {
 }
 ```
 
-5. 设置高亮绘制模式
+#### 5. 设置高亮绘制模式
 
 ```
 item.setHighLightShape(shapeType:Int)
@@ -183,7 +183,7 @@ shapeType(高亮显示效果)组件自带三种模式：
 - GuideItem.SHAPE_RECT: 矩形模式，表示将高亮块绘制为矩形进行展示
 - GuideItem.SHAPE_OVAL: 椭圆模式，表示将高亮块绘制为椭圆进行展示
 
-5. 自定义高亮绘制逻辑
+#### 6. 自定义高亮绘制逻辑
 
 自带的绘制模式永远不可能满足设计师们的要求。所以也提供了回调做`自定义高亮块绘制`：
 
@@ -202,7 +202,7 @@ item.setOnDrawHighLightCallback {
 - 避免对提供的paint的属性进行修改，如果需要，请在外部额外创建单独的paint提供使用
 - 当配置了绘制回调时，则说明不再使用本身的`shapeType`模式进行高亮绘制。
 
-6. 添加高亮块点击监听
+#### 7. 添加高亮块点击监听
 
 高亮块的点击，只有在绘制模式为`非 SHAPE_NONE`时，才能被触发。
 

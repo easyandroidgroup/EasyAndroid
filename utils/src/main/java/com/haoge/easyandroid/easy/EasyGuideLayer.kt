@@ -105,6 +105,7 @@ class EasyGuideLayer private constructor(private val anchor: View){
         }
     }
 
+    // 获取View容器中的顶层View。
     private fun getLastView(view:ViewGroup):View? =
             if (view.childCount > 0) view.getChildAt(view.childCount - 1) else null
 
@@ -157,6 +158,7 @@ class EasyGuideLayer private constructor(private val anchor: View){
         fun bindLayer(layer:EasyGuideLayer) {
             removeAllViews()
             this.layer = layer
+            layer.onGuideShowListener?.invoke(true)
             setBackgroundColor(layer.backgroundColor)
             layer.items.forEach { item ->
                 val child = createItemView(item)
@@ -164,11 +166,6 @@ class EasyGuideLayer private constructor(private val anchor: View){
                 addView(child)
                 item.getOnViewAttachedListener()?.invoke(child, this)
             }
-        }
-
-        override fun onAttachedToWindow() {
-            super.onAttachedToWindow()
-            layer?.onGuideShowListener?.invoke(true)
         }
 
         override fun onDetachedFromWindow() {
@@ -194,9 +191,14 @@ class EasyGuideLayer private constructor(private val anchor: View){
             }
         }
 
+        // 计算出蒙层View的具体位置。 item: 蒙层实例。 rect: 高亮区域， child: 蒙层View
         private fun resetChildLayoutParams(item: GuideItem, rect:RectF, child:View) {
             // 根据不同的gravity获取指定的child顶点(X * Y)
             val point:Point = when(item.getGravity()) {
+                Gravity.LEFT or Gravity.TOP -> {Point(rect.left.toInt() - child.width, rect.top.toInt() - child.height)}
+                Gravity.RIGHT or Gravity.TOP -> {Point(rect.right.toInt(), rect.top.toInt() - child.height)}
+                Gravity.LEFT or Gravity.BOTTOM -> {Point(rect.left.toInt() - child.width, rect.bottom.toInt())}
+                Gravity.RIGHT or Gravity.BOTTOM -> {Point(rect.right.toInt(), rect.bottom.toInt())}
                 Gravity.TOP -> {Point(rect.left.toInt(), (rect.top - child.height).toInt())}
                 Gravity.BOTTOM -> {Point(rect.left.toInt(), rect.bottom.toInt())}
                 Gravity.LEFT -> {Point((rect.left - child.width).toInt(), rect.top.toInt())}
@@ -206,9 +208,11 @@ class EasyGuideLayer private constructor(private val anchor: View){
 
             item.getOffsetProvider()?.invoke(point, rect, child)
             val params = child.layoutParams as LayoutParams
-            params.leftMargin = point.x
-            params.topMargin = point.y
-            child.layoutParams = params
+            if (params.leftMargin != point.x || params.topMargin != point.y) {
+                params.leftMargin = point.x
+                params.topMargin = point.y
+                child.layoutParams = params
+            }
         }
 
         private fun getRectFromItem(item: GuideItem): RectF {
@@ -395,7 +399,7 @@ class GuideItem private constructor(val rect: RectF? = null, val view: View? = n
     /**
      * 设置引导层相对于高亮区域的相对位置，目前仅支持[Gravity.LEFT], [Gravity.TOP], [Gravity.BOTTOM], [Gravity.RIGHT], [Gravity.NO_GRAVITY]
      */
-    fun setGravity(@LimitGravity gravity: Int): GuideItem {
+    fun setGravity(gravity: Int): GuideItem {
         this.gravity = gravity
         return this
     }
@@ -421,7 +425,3 @@ class GuideItem private constructor(val rect: RectF? = null, val view: View? = n
 @Retention(AnnotationRetention.SOURCE)
 @IntDef(GuideItem.SHAPE_NONE, GuideItem.SHAPE_RECT, GuideItem.SHAPE_OVAL)
 annotation class ShapeType
-
-@Retention(AnnotationRetention.SOURCE)
-@IntDef(Gravity.LEFT, Gravity.TOP, Gravity.BOTTOM, Gravity.RIGHT, Gravity.NO_GRAVITY)
-annotation class LimitGravity

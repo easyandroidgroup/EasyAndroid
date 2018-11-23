@@ -24,18 +24,15 @@ def butterknife_version = '8.8.1'
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.1'
-
     implementation 'com.alibaba:fastjson:1.1.68.android'
     implementation 'com.google.code.gson:gson:2.8.5'
-
     implementation 'org.jetbrains.anko:anko-commons:0.10.5'
-
     implementation "com.jakewharton:butterknife:$butterknife_version"
     kapt "com.jakewharton:butterknife-compiler:$butterknife_version"
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     kapt 'com.github.bumptech.glide:compiler:4.5.0'
 
     implementation project(':utils')
-//    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.4'
+    //    implementation 'com.github.yjfnypeu:EasyAndroid:1.2.4'
 }
 

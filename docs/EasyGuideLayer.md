@@ -146,7 +146,7 @@ item.setOnViewAttachedListener { view:View, controller:Controller ->
 item.setGravity(gravity:Int)
 ```
 
-引导View的相对位置是相对于`高亮块区域rect`的, 支持5种相对位置关系：
+引导View的相对位置是相对于`高亮块区域rect`的, 支持以下几种相对位置关系：
 
 - Gravity.LEFT|Gravity.TOP:     高亮区域`左上角`
 - Gravity.RIGHT|Gravity.TOP:    高亮区域`右上角`
@@ -156,7 +156,7 @@ item.setGravity(gravity:Int)
 - Gravity.TOP:                  高亮区域`顶部`
 - Gravity.RIGHT:                高亮区域`右侧`
 - Gravity.BOTTOM:               高亮区域`底部`
-- Gravity.NO_GRAVITY:           不指定。高亮区域顶点位置
+- Gravity.NO_GRAVITY:           不指定。与高亮区域共同同一顶点
 
 #### 4. 对引导View的位置进行微调
 

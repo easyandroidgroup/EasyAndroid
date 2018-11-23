@@ -33,6 +33,6 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.5.0'
 
     implementation project(':utils')
-//    implementation 'com.github.yjfnypeu:EasyAndroid:3b6f0840ad'
+//    implementation 'com.github.yjfnypeu:EasyAndroid:aeb862495c'
 }
 

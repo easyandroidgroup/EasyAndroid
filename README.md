@@ -403,8 +403,14 @@ EasyPermissions.create(// 指定待申请权限
     .callback { grant ->
         EasyToast.DEFAULT.show("权限申请${if (grant) "成功" else "失败"}")
     }
+    // 当权限被默认拒绝时。调起弹窗提醒需要用户去主动开启权限
     .alwaysDenyNotifier(object : PermissionAlwaysDenyNotifier() {
-        ...
+        AlertDialog.Builder(activity)
+                .setTitle("权限申请提醒")
+                .setMessage("以下部分权限已被默认拒绝，请前往设置页将其打开:\n\n")
+                .setPositiveButton("确定", { _, _ ->  goSetting(activity)})
+                .setNegativeButton("取消", {_,_ -> cancel(activity)})
+                .show()
     })
     // 发起请求
     .request()

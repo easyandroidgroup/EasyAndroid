@@ -87,35 +87,41 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
 
     @TargetApi(Build.VERSION_CODES.M)
     private fun requestInternal(permissions: Array<out String>, activity: Activity) {
-        if (activity.isFinishing || activity.isDestroyed) {
-            callback?.invoke(false)
-            return
-        }
-
-        val fragment = PermissionFragment.findOrCreate(activity)
-
-        val denies = mutableListOf<String>()
-        for (permission in permissions) {
-            if (isPermissionGranted(permission, activity)) {
-                continue
-            }
-            // 过滤重复权限
-            denies.remove(permission)
-            denies.add(permission)
-        }
-
-        if (denies.isEmpty()) {
-            callback?.invoke(true)
-            return
-        }
-
-        RationalChain(denies.iterator(), fragment, rational) { accept:Boolean ->
-            if (accept) {
-                fragment.requestPermissions(denies, callback, denied, this)
-            } else {
+        try {
+            if (activity.isFinishing || activity.isDestroyed) {
                 callback?.invoke(false)
+                return
             }
-        }.process()
+
+            val fragment = PermissionFragment.findOrCreate(activity)
+
+            val denies = mutableListOf<String>()
+            for (permission in permissions) {
+                if (isPermissionGranted(permission, activity)) {
+                    continue
+                }
+                // 过滤重复权限
+                denies.remove(permission)
+                denies.add(permission)
+            }
+
+            if (denies.isEmpty()) {
+                callback?.invoke(true)
+                return
+            }
+
+            RationalChain(denies.iterator(), fragment, rational) { accept:Boolean ->
+                if (accept) {
+                    fragment.requestPermissions(denies, callback, denied, this)
+                } else {
+                    callback?.invoke(false)
+                }
+            }.process()
+        } catch (e:Exception) {
+            e.printStackTrace()
+            callback?.invoke(false)
+        }
+
     }
 
     companion object {
@@ -138,11 +144,15 @@ class EasyPermissions private constructor(private val permissions:Array<out Stri
             val names = mutableListOf<String>()// 进行过滤去重处理的临时变量
             val groups = mutableListOf<PermissionGroupInfo>()
             for (permission in permissions) {
-                val info = context.packageManager.getPermissionInfo(permission, PackageManager.GET_META_DATA)
-                if (names.contains(info.group)) continue
-                names.add(info.group)
+                val group = context.packageManager.getPermissionInfo(permission, PackageManager.GET_META_DATA)?.group
+                if (group == null) {
+                    groups.add(PermissionGroupInfo("Unknown", permission))
+                    continue
+                }
+                if (names.contains(group)) continue
+                names.add(group)
 
-                val groupInfo = context.packageManager.getPermissionGroupInfo(info.group, PackageManager.GET_META_DATA)
+                val groupInfo = context.packageManager.getPermissionGroupInfo(group, PackageManager.GET_META_DATA)
                 groups.add(PermissionGroupInfo(
                         context.resources.getString(groupInfo.labelRes),
                         context.resources.getString(groupInfo.descriptionRes)

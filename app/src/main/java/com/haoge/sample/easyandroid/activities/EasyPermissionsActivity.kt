@@ -36,7 +36,8 @@ class EasyPermissionsActivity:BaseActivity() {
 
     @OnClick(R.id.permissionSingle)
     fun permissionSingle() {
-        EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//        EasyPermissions.create(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        EasyPermissions.create("android.permission.READ_PRIVILEGED_PHONE_STATE")
                 .alwaysDenyNotifier(denyNotifier)
                 .callback(callback)
                 .request(this)

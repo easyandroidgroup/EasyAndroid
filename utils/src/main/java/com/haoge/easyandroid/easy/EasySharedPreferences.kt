@@ -190,6 +190,13 @@ class EasySharedPreferences(clazz: Class<*>):SharedPreferences.OnSharedPreferenc
         handler.apply {  }
     }
 
+    /**
+     * 将类中的数据同步到SP容器中去。(同步执行)
+     */
+    fun commit() {
+        write()
+    }
+
     private fun getValid(value:String?, default:String):String =
             if (value.isNullOrEmpty()) default else value as String
 
@@ -238,6 +245,10 @@ abstract class PreferenceSupport {
     fun apply() {
         // 将当前类中的修改。同步到sp中去(任务运行于子线程)
         EasySharedPreferences.find(javaClass).apply()
+    }
+
+    fun commit() {
+        EasySharedPreferences.find(javaClass).commit()
     }
 }
 

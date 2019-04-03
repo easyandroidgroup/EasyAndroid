@@ -103,7 +103,7 @@ class EasyPhoto {
                 return@start
             }
             try {
-                val inputFile = uriToFile(data.data)
+                val inputFile = uriToFile(activity,data.data)
 
                 if (isCrop) {//裁剪
                     zoomPhoto(inputFile, mImgPath?:File(generateImagePath(activity)), activity)
@@ -116,9 +116,9 @@ class EasyPhoto {
         }
     }
 
-    private fun uriToFile(uri: Uri):File {
+    private fun uriToFile(activity: Activity,uri: Uri):File {
         // 首先使用系统提供的CursorLoader进行file获取
-        val context = EasyAndroid.getApplicationContext()
+        val context = activity.application
         val projection = arrayOf(MediaStore.Images.Media.DATA)
         val cursor = CursorLoader(context, uri, projection, null, null, null)
                 .loadInBackground()

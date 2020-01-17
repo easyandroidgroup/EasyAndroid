@@ -5,6 +5,7 @@ import butterknife.OnClick
 import com.haoge.easyandroid.easy.*
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
+import kotlin.reflect.KProperty
 
 /**
  * @author haoge on 2018/6/26
@@ -48,5 +49,15 @@ class Entity:PreferenceSupport() {
     var mLong:Long = 0L
     var mStr:String = ""
     @PreferenceIgnore
-    var ignore:String = "This is ignore text"
+    var password:String by EncryptTool()
+}
+
+class EncryptTool{
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
+        return "这是一个解密后的密码"
+    }
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+        println("这里对密码进行了加密")
+    }
 }

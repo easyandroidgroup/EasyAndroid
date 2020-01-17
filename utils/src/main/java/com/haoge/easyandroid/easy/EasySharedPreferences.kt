@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
 package com.haoge.easyandroid.easy
 
 import android.content.Context
@@ -234,6 +235,18 @@ class EasySharedPreferences(clazz: Class<*>):SharedPreferences.OnSharedPreferenc
             }
         }
 
+        @JvmStatic
+        fun <E>getSPValue(key: String, default: E):E{
+            val result:E by PreferenceUtil(key, default)
+            return result
+        }
+
+        @JvmStatic
+        fun <E>putSPValue(key: String, value: E){
+            var old:E by PreferenceUtil(key, value)
+            old = value
+        }
+
         internal fun find(clazz: Class<*>):EasySharedPreferences {
             return container[clazz]?:throw RuntimeException("Could not find EasySharedPreferences by this clazz:[${clazz.canonicalName}]")
         }
@@ -257,5 +270,5 @@ abstract class PreferenceSupport {
 annotation class PreferenceRename(val value:String = "")
 
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
 annotation class PreferenceIgnore

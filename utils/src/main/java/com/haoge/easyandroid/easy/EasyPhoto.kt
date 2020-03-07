@@ -79,7 +79,6 @@ class EasyPhoto {
     }
 
 
-
     /**
      * 选择文件
      * 支持图片、音频、视频、联系人以及其它类型文件
@@ -188,7 +187,7 @@ class EasyPhoto {
                     buff.append("(").append(MediaStore.Images.ImageColumns.DATA).append("=").append("'$path'").append(")")
                     cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.ImageColumns._ID,
                             MediaStore.Images.ImageColumns.DATA), buff.toString(), null, null).apply {
-                        this?: throw RuntimeException("cursor is null")
+                        this ?: throw RuntimeException("cursor is null")
                         var dataIdx: Int
                         while (!this.isAfterLast) {
                             dataIdx = this.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
@@ -203,7 +202,7 @@ class EasyPhoto {
                 "content" -> {
 
                     context.contentResolver.query(uri, arrayOf(MediaStore.Images.Media.DATA), null, null, null).apply {
-                        this?: throw RuntimeException("cursor is null")
+                        this ?: throw RuntimeException("cursor is null")
                         if (this.moveToFirst()) {
                             val columnIndex = this.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
                             path = this.getString(columnIndex)
@@ -431,8 +430,19 @@ class EasyPhoto {
      */
     private fun takeFileInternal(takePhotoPath: File, intent: Intent, activity: Activity) {
         val fragment = PhotoFragment.findOrCreate(activity)
-        fragment.start(intent, PhotoFragment.REQ_TAKE_FILE) { requestCode: Int, _: Intent? ->
+        fragment.start(intent, PhotoFragment.REQ_TAKE_FILE) { requestCode: Int, data: Intent? ->
             if (requestCode == PhotoFragment.REQ_TAKE_FILE) {
+                if(data?.data != null){
+                    mFilePath = uriToFile(activity,data.data)
+                    if(isCrop){
+                        zoomPhoto(takePhotoPath, mFilePath
+                                ?: File(generateFilePath(activity)), activity)
+                    }else{
+                        callback?.invoke(mFilePath!!)
+                        mFilePath = null
+                    }
+                    return@start
+                }
                 if (isCrop) {
                     zoomPhoto(takePhotoPath, mFilePath
                             ?: File(generateFilePath(activity)), activity)
@@ -554,7 +564,7 @@ class EasyPhoto {
     /**
      * 用于获取图片的Fragment
      */
-     class PhotoFragment : Fragment() {
+    class PhotoFragment : Fragment() {
         /**
          * Fragment处理照片后返回接口
          */
@@ -585,7 +595,7 @@ class EasyPhoto {
             const val REQ_TAKE_FILE = 10001
             const val REQ_SELECT_FILE = 10002
             const val REQ_ZOOM_PHOTO = 10003
-             const val TAG = "EasyPhoto:PhotoFragment"
+            private const val TAG = "EasyPhoto:PhotoFragment"
 
             @JvmStatic
             fun findOrCreate(activity: Activity): PhotoFragment {

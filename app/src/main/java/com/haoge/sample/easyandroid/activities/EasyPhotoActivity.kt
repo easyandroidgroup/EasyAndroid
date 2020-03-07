@@ -124,14 +124,11 @@ class EasyPhotoActivity : BaseActivity() {
     private fun showImg(outputFile: File) {
         val showImg:ImageView = findViewById(R.id.showImg)
         EasyToast.DEFAULT.show("得到的文件名为：${outputFile.absolutePath}")
+        EasyLog.DEFAULT.e("得到的文件名为：${outputFile.absolutePath}")
         //加载图片
         Glide.with(showImg).load(outputFile).into(showImg)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        EasyLog.DEFAULT.e("onActivityResult $requestCode  $resultCode  $data"  )
-        this.fragmentManager.findFragmentByTag(EasyPhoto.PhotoFragment.TAG).onActivityResult(requestCode, resultCode, data)
-    }
+
 
 }

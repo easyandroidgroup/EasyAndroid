@@ -41,7 +41,7 @@ class EasyFormatter private constructor(private val builder: Builder) {
     fun formatWithArgs(message: String, vararg args:Any):String {
         val array = arrayOfNulls<String>(args.size)
         args.forEachIndexed { index, any -> array[index] = format(any) }
-        return String.format(message, *array)
+        return String.format("${message}%s", *array)
     }
 
     /**

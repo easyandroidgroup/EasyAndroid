@@ -30,10 +30,10 @@ import java.util.*
 
 /**
  * 创建日期：2018/8/21 0021on 下午 4:40
- * 描述：图片选择工具类
+ * 描述：多媒体选择工具类
  * @author：Vincent
  */
-class EasyPhoto {
+class EasyMedia {
     /**
      * 设置图片选择结果回调
      */
@@ -48,17 +48,17 @@ class EasyPhoto {
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    fun setError(error: ((error: Exception) -> Unit)?): EasyPhoto {
+    fun setError(error: ((error: Exception) -> Unit)?): EasyMedia {
         this.error = error
         return this
     }
 
-    fun setCallback(callback: ((file: File) -> Unit)): EasyPhoto {
+    fun setCallback(callback: ((file: File) -> Unit)): EasyMedia {
         this.callback = callback
         return this
     }
 
-    fun setCrop(isCrop: Boolean): EasyPhoto {
+    fun setCrop(isCrop: Boolean): EasyMedia {
         this.isCrop = isCrop
         return this
     }
@@ -68,7 +68,7 @@ class EasyPhoto {
      *
      * @param imgPath 图片的存储路径（包括文件名和后缀）
      */
-    fun setFilePath(imgPath: String?): EasyPhoto {
+    fun setFilePath(imgPath: String?): EasyMedia {
         if (imgPath.isNullOrEmpty()) {
             this.mFilePath = null
         } else {
@@ -81,11 +81,13 @@ class EasyPhoto {
 
     /**
      * 选择文件
-     * 支持图片、音频、视频、联系人以及其它类型文件
+     * 支持图片、音频、视频
      */
     fun selectFile(activity: Activity) {
         val intent = Intent(Intent.ACTION_PICK, null).apply {
             setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "*/*")
+            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "*/*")
+            setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "*/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
             selectFileInternal(intent, activity)
@@ -99,7 +101,7 @@ class EasyPhoto {
      */
     fun selectVideo(activity: Activity) {
         val intent = Intent(Intent.ACTION_PICK, null).apply {
-            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "video/*")
+            setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "video/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
             selectFileInternal(intent, activity)
@@ -113,7 +115,7 @@ class EasyPhoto {
      */
     fun selectAudio(activity: Activity) {
         val intent = Intent(Intent.ACTION_PICK, null).apply {
-            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "audio/*")
+            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "audio/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
             selectFileInternal(intent, activity)
@@ -136,6 +138,8 @@ class EasyPhoto {
         }
     }
 
+
+
     /**
      * 选择文件
      */
@@ -146,7 +150,7 @@ class EasyPhoto {
             }
             data ?: return@start
             try {
-                val inputFile = uriToFile(activity, data.data!!)
+                val inputFile = File(data.data.path)
 
                 if (isCrop) {//裁剪
                     zoomPhoto(inputFile, mFilePath ?: File(generateFilePath(activity)), activity)
@@ -258,8 +262,8 @@ class EasyPhoto {
         } else {
             //兼容android7.0 使用共享文件的形式
             val contentValues = ContentValues(1)
-            contentValues.put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
-            activity.application.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            contentValues.put(MediaStore.Audio.Media.DATA, imgFile.absolutePath)
+            activity.application.contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, contentValues)
         }
 
         val intent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION).apply {
@@ -285,8 +289,8 @@ class EasyPhoto {
         } else {
             //兼容android7.0 使用共享文件的形式
             val contentValues = ContentValues(1)
-            contentValues.put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
-            activity.application.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            contentValues.put(MediaStore.Video.Media.DATA, imgFile.absolutePath)
+            activity.application.contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
         }
 
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE).apply {
@@ -358,8 +362,8 @@ class EasyPhoto {
         } else {
             //兼容android7.0 使用共享文件的形式
             val contentValues = ContentValues(1)
-            contentValues.put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
-            activity.application.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            contentValues.put(MediaStore.Audio.Media.DATA, imgFile.absolutePath)
+            activity.application.contentResolver.insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, contentValues)
         }
         val cameraIntents = ArrayList<Intent>()
         val captureIntent = Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION)
@@ -396,8 +400,8 @@ class EasyPhoto {
         } else {
             //兼容android7.0 使用共享文件的形式
             val contentValues = ContentValues(1)
-            contentValues.put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
-            activity.application.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            contentValues.put(MediaStore.Video.Media.DATA, imgFile.absolutePath)
+            activity.application.contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
         }
         val cameraIntents = ArrayList<Intent>()
         val captureIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
@@ -433,7 +437,8 @@ class EasyPhoto {
         fragment.start(intent, PhotoFragment.REQ_TAKE_FILE) { requestCode: Int, data: Intent? ->
             if (requestCode == PhotoFragment.REQ_TAKE_FILE) {
                 if(data?.data != null){
-                    mFilePath = uriToFile(activity,data.data)
+                    mFilePath = File(data.data.path)
+
                     if(isCrop){
                         zoomPhoto(takePhotoPath, mFilePath
                                 ?: File(generateFilePath(activity)), activity)

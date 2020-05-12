@@ -1,7 +1,6 @@
 package com.haoge.sample.easyandroid.activities
 
 import android.Manifest
-import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.widget.ImageView
@@ -10,7 +9,7 @@ import butterknife.OnClick
 import com.bumptech.glide.Glide
 import com.haoge.easyandroid.easy.EasyLog
 import com.haoge.easyandroid.easy.EasyPermissions
-import com.haoge.easyandroid.easy.EasyPhoto
+import com.haoge.easyandroid.easy.EasyMedia
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
@@ -26,7 +25,7 @@ class EasyPhotoActivity : BaseActivity() {
 
     private val switcher by lazy { findViewById<TextView>(R.id.indicate_img_path) }
     private var indicatePath:String? = null
-    private val photo = EasyPhoto().setCallback {
+    private val photo = EasyMedia().setCallback {
         showImg(it)
     }
 

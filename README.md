@@ -67,7 +67,7 @@ EasyAndroid.init(application)
 - [EasyPermissions](#easypermissions): 动态权限申请组件
 - [EasyExecutor](#easyexecutor): 线程池封装组件
 - [EasyBundle](#easybundle): Bundle数据存取组件
-- [EasyPhoto](#easyphoto): 从拍照、图库进行图片选择组件。
+- [EasyMedia](#EasyMedia): 从拍照、图库进行图片选择组件。
 - [EasyImageGetter](#easyimagegetter): TextView加载html标签时，提供`img`标签的图片加载功能
 - [MVP](#mvp): 简单MVP架构
 
@@ -144,11 +144,11 @@ EasyImageGetter.create()
 
 ```
 
-### [EasyPhoto](./docs/EasyPhoto.md)
+### [EasyMedia](./docs/EasyPhoto.md)
 
 > [点我查看完整使用文档](./docs/EasyPhoto.md)
 
-> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyPhoto.kt)
+> [点击下载组件源码文件进行使用](https://raw.githubusercontent.com/yjfnypeu/EasyAndroid/master/utils/src/main/java/com/haoge/easyandroid/easy/EasyMedia.kt)
 
 > 从图库或者使用相机拍照获取图片的组件。
 
@@ -161,7 +161,7 @@ EasyImageGetter.create()
 用户实例：
 
 ```
-val photo = EasyPhoto()// 创建EasyPhoto实例
+val photo = EasyMedia()// 创建EasyMedia实例
     // 是否需要进行裁剪
     .setCrop(true|false)
     // 指定创建的图片地址。

@@ -473,7 +473,7 @@ class EasyMedia {
 
     private fun uriToFile(activity: Activity, data: Uri,type:Int):File {
         val cursor = activity.managedQuery(data, arrayOf(if(type == 1)MediaStore.Audio.Media.DATA else MediaStore.Video.Media.DATA), null,
-                null, null)
+            null, null)
         val path = if (cursor == null) {
             data.path
         } else {
@@ -481,8 +481,10 @@ class EasyMedia {
             cursor.moveToFirst()
             cursor.getString(index)
         }
-        cursor.close()
-       return File(path)
+        // 手动关掉报错如下
+//        Caused by: android.database.StaleDataException: Attempted to access a cursor after it has been closed.
+//        cursor.close()
+        return File(path)
     }
 
     /***

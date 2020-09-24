@@ -9,7 +9,7 @@ import butterknife.OnClick
 import com.bumptech.glide.Glide
 import com.haoge.easyandroid.easy.EasyLog
 import com.haoge.easyandroid.easy.EasyPermissions
-import com.haoge.easyandroid.easy.EasyMedia
+import com.haoge.easyandroid.easy.EasyMediaFile
 import com.haoge.easyandroid.easy.EasyToast
 import com.haoge.sample.easyandroid.BaseActivity
 import com.haoge.sample.easyandroid.R
@@ -25,7 +25,9 @@ class EasyPhotoActivity : BaseActivity() {
 
     private val switcher by lazy { findViewById<TextView>(R.id.indicate_img_path) }
     private var indicatePath:String? = null
-    private val photo = EasyMedia().setCallback {
+    private val photo = EasyMediaFile().setError {
+        EasyLog.DEFAULT.e(it.message)
+    }.setCallback {
         showImg(it)
     }
 
@@ -114,7 +116,7 @@ class EasyPhotoActivity : BaseActivity() {
 
     @OnClick(R.id.selectNormalFile)
     fun selectNormalFile() {
-        photo.selectFile(this)
+//        photo.selectFile(this)
     }
 
     /**

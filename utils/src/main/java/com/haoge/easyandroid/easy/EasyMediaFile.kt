@@ -20,6 +20,7 @@ package com.haoge.easyandroid.easy
 import android.app.Activity
 import android.app.Fragment
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.*
@@ -33,7 +34,7 @@ import java.util.*
  * 描述：多媒体选择工具类
  * @author：Vincent
  */
-class EasyMedia {
+class EasyMediaFile {
     /**
      * 设置图片选择结果回调
      */
@@ -48,17 +49,17 @@ class EasyMedia {
 
     private val mainHandler = Handler(Looper.getMainLooper())
 
-    fun setError(error: ((error: Exception) -> Unit)?): EasyMedia {
+    fun setError(error: ((error: Exception) -> Unit)?): EasyMediaFile {
         this.error = error
         return this
     }
 
-    fun setCallback(callback: ((file: File) -> Unit)): EasyMedia {
+    fun setCallback(callback: ((file: File) -> Unit)): EasyMediaFile {
         this.callback = callback
         return this
     }
 
-    fun setCrop(isCrop: Boolean): EasyMedia {
+    fun setCrop(isCrop: Boolean): EasyMediaFile {
         this.isCrop = isCrop
         return this
     }
@@ -68,7 +69,7 @@ class EasyMedia {
      *
      * @param imgPath 图片的存储路径（包括文件名和后缀）
      */
-    fun setFilePath(imgPath: String?): EasyMedia {
+    fun setFilePath(imgPath: String?): EasyMediaFile {
         if (imgPath.isNullOrEmpty()) {
             this.mFilePath = null
         } else {
@@ -83,19 +84,19 @@ class EasyMedia {
      * 选择文件
      * 支持图片、音频、视频
      */
-    fun selectFile(activity: Activity) {
-        isCrop = false
-        val intent = Intent(Intent.ACTION_PICK, null).apply {
-            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "*/*")
-            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "*/*")
-            setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "*/*")
-        }
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            selectFileInternal(intent, activity)
-        } else {
-            mainHandler.post { selectFileInternal(intent, activity) }
-        }
-    }
+//    fun selectFile(activity: Activity) {
+//        isCrop = false
+//        val intent = Intent(Intent.ACTION_PICK, null).apply {
+//            setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "*/*")
+//            setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "*/*")
+//            setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "*/*")
+//        }
+//        if (Looper.myLooper() == Looper.getMainLooper()) {
+//            selectFileInternal(intent, activity, -1)
+//        } else {
+//            mainHandler.post { selectFileInternal(intent, activity, -1) }
+//        }
+//    }
 
     /**
      * 选择视频
@@ -106,9 +107,9 @@ class EasyMedia {
             setDataAndType(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, "video/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            selectFileInternal(intent, activity)
+            selectFileInternal(intent, activity, 2)
         } else {
-            mainHandler.post { selectFileInternal(intent, activity) }
+            mainHandler.post { selectFileInternal(intent, activity, 2) }
         }
     }
 
@@ -121,9 +122,9 @@ class EasyMedia {
             setDataAndType(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "audio/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            selectFileInternal(intent, activity)
+            selectFileInternal(intent, activity, 1)
         } else {
-            mainHandler.post { selectFileInternal(intent, activity) }
+            mainHandler.post { selectFileInternal(intent, activity, 1) }
         }
     }
 
@@ -135,35 +136,59 @@ class EasyMedia {
             setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            selectFileInternal(intent, activity)
+            selectFileInternal(intent, activity, 0)
         } else {
-            mainHandler.post { selectFileInternal(intent, activity) }
+            mainHandler.post { selectFileInternal(intent, activity, 0) }
         }
     }
-
 
 
     /**
      * 选择文件
      */
-    private fun selectFileInternal(intent: Intent, activity: Activity) {
-        PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_SELECT_FILE) { requestCode: Int, data: Intent? ->
-            if (requestCode != PhotoFragment.REQ_SELECT_FILE) {
-                return@start
-            }
-            data ?: return@start
-            try {
-                val inputFile = File(data.data.path)
-
-                if (isCrop) {//裁剪
-                    zoomPhoto(inputFile, mFilePath ?: File(generateFilePath(activity)), activity)
-                } else {//不裁剪
-                    callback?.invoke(inputFile)
+    private fun selectFileInternal(intent: Intent, activity: Activity, type: Int) {
+        val resolveInfoList = activity.packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        if (resolveInfoList.isEmpty()) {
+            error?.invoke(IllegalStateException("No Activity found to handle Intent "))
+        } else {
+            PhotoFragment.findOrCreate(activity).start(intent, PhotoFragment.REQ_SELECT_FILE) { requestCode: Int, data: Intent? ->
+                if (requestCode != PhotoFragment.REQ_SELECT_FILE) {
+                    return@start
                 }
-            } catch (e: Exception) {
-                error?.invoke(e)
+                data ?: return@start
+                data.data ?: return@start
+                try {
+                    val inputFile = if (type != -1) {
+                        uriToFile(activity, data.data!!, type)
+                    } else {
+                        if (data.data!!.path!!.contains(".")) {
+                            File(data.data!!.path!!)
+                        } else {
+                            when {
+                                data.data!!.path!!.contains("images") -> {
+                                    uriToFile(activity, data.data!!, 0)
+                                }
+                                data.data!!.path!!.contains("video") -> {
+                                    uriToFile(activity, data.data!!, 2)
+                                }
+                                else -> {
+                                    uriToFile(activity, data.data!!, 1)
+                                }
+                            }
+                        }
+                    }
+                    if (isCrop) {//裁剪
+                        zoomPhoto(inputFile, mFilePath
+                                ?: File(generateFilePath(activity)), activity)
+                    } else {//不裁剪
+                        callback?.invoke(inputFile)
+                    }
+                } catch (e: Exception) {
+                    error?.invoke(e)
+                }
             }
         }
+
     }
 
     private fun uriToFile(activity: Activity, uri: Uri): File {
@@ -276,9 +301,9 @@ class EasyMedia {
 //            putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10000)
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            takeFileInternal(imgFile, intent, activity,1)
+            takeFileInternal(imgFile, intent, activity, 1)
         } else {
-            mainHandler.post { takeFileInternal(imgFile, intent, activity,1) }
+            mainHandler.post { takeFileInternal(imgFile, intent, activity, 1) }
         }
 
     }
@@ -304,9 +329,9 @@ class EasyMedia {
 //            putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10000)
         }
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            takeFileInternal(imgFile, intent, activity,2)
+            takeFileInternal(imgFile, intent, activity, 2)
         } else {
-            mainHandler.post { takeFileInternal(imgFile, intent, activity,2) }
+            mainHandler.post { takeFileInternal(imgFile, intent, activity, 2) }
         }
 
     }
@@ -389,9 +414,9 @@ class EasyMedia {
         }
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            takeFileInternal(imgFile, intent, activity,1)
+            takeFileInternal(imgFile, intent, activity, 1)
         } else {
-            mainHandler.post { takeFileInternal(imgFile, intent, activity,1) }
+            mainHandler.post { takeFileInternal(imgFile, intent, activity, 1) }
         }
     }
 
@@ -430,32 +455,32 @@ class EasyMedia {
         }
 
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            takeFileInternal(imgFile, intent, activity,2)
+            takeFileInternal(imgFile, intent, activity, 2)
         } else {
-            mainHandler.post { takeFileInternal(imgFile, intent, activity,2) }
+            mainHandler.post { takeFileInternal(imgFile, intent, activity, 2) }
         }
     }
 
     /**
      * 向系统发出指令
      */
-    private fun takeFileInternal(takePhotoPath: File, intent: Intent, activity: Activity,type:Int = 0) {
+    private fun takeFileInternal(takePhotoPath: File, intent: Intent, activity: Activity, type: Int = 0) {
         val fragment = PhotoFragment.findOrCreate(activity)
         fragment.start(intent, PhotoFragment.REQ_TAKE_FILE) { requestCode: Int, data: Intent? ->
             if (requestCode == PhotoFragment.REQ_TAKE_FILE) {
-                if(data?.data != null){
+                if (data?.data != null) {
                     mFilePath = when (type) {
                         0 -> {
-                            uriToFile(activity,data.data)
+                            uriToFile(activity, data.data!!)
                         }
-                        else -> uriToFile(activity, data.data,type)
+                        else -> uriToFile(activity, data.data!!, type)
                     }
 
 
-                    if(isCrop){
+                    if (isCrop) {
                         zoomPhoto(takePhotoPath, mFilePath
                                 ?: File(generateFilePath(activity)), activity)
-                    }else{
+                    } else {
                         callback?.invoke(mFilePath!!)
                         mFilePath = null
                     }
@@ -471,20 +496,20 @@ class EasyMedia {
         }
     }
 
-    private fun uriToFile(activity: Activity, data: Uri,type:Int):File {
-        val cursor = activity.managedQuery(data, arrayOf(if(type == 1)MediaStore.Audio.Media.DATA else MediaStore.Video.Media.DATA), null,
-            null, null)
+    private fun uriToFile(activity: Activity, data: Uri, type: Int): File {
+        val cursor = activity.managedQuery(data, arrayOf(if (type == 1) MediaStore.Audio.Media.DATA else MediaStore.Video.Media.DATA), null,
+                null, null)
         val path = if (cursor == null) {
             data.path
         } else {
-            val index = cursor.getColumnIndexOrThrow(if(type == 1) MediaStore.Audio.Media.DATA else MediaStore.Video.Media.DATA)
+            val index = cursor.getColumnIndexOrThrow(if (type == 1) MediaStore.Audio.Media.DATA else MediaStore.Video.Media.DATA)
             cursor.moveToFirst()
             cursor.getString(index)
         }
         // 手动关掉报错如下
 //        Caused by: android.database.StaleDataException: Attempted to access a cursor after it has been closed.
 //        cursor.close()
-        return File(path)
+        return File(path!!)
     }
 
     /***
